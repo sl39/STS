@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "react-native-paper": "^5.12.5",
-    "react-native-snap-carousel": "^3.9.1",
-    "react-native-vector-icons": "^10.1.0"
-  }
-}
