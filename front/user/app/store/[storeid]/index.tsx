@@ -1,5 +1,5 @@
 import { useGlobalSearchParams, useRouter } from "expo-router";
-import { Text, View } from "react-native";
+import { Text, View ,Button} from "react-native";
 
 export default function index() {
   const param = useGlobalSearchParams();
@@ -11,7 +11,7 @@ export default function index() {
     <View>
       <Text> store 화면 입니다</Text>
       <Text> store id : {param.storeid}</Text>
-      <button onClick={handleEnter}>table로 이동</button>
+      <Button onPress={handleEnter}title="table로 이동"></Button>
     </View>
   );
 }
