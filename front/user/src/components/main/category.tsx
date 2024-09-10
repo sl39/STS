@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FC, useState } from "react";
 import {
   useWindowDimensions,
   StyleSheet,
@@ -8,7 +8,11 @@ import {
   SafeAreaView,
 } from "react-native";
 
-export const CategoryList = () => {
+interface TopbarProps {
+  onSearch: (word: string) => void;
+}
+
+export const CategoryList: FC<TopbarProps> = ({ onSearch }) => {
   const { height, width } = useWindowDimensions();
   const categoryClick = (cate: String) => {
     console.log(cate);
@@ -23,7 +27,7 @@ export const CategoryList = () => {
       <Item
         item={item}
         onPress={() => {
-          setSelectedId(item.cate), console.log(item.id);
+          setSelectedId(item.cate), onSearch(item.id);
         }}
         backgroundColor={backgroundColor}
         textColor={color}

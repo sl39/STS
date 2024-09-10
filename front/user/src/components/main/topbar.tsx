@@ -4,7 +4,11 @@ import { View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
 
-export const Topbar = () => {
+interface TopbarProps {
+  onSearch: (word: string) => void;
+}
+
+export const Topbar: React.FC<TopbarProps> = ({ onSearch }) => {
   const [search, setSearch] = useState<string>("");
 
   const updateSearch = (search: string) => {
@@ -16,7 +20,7 @@ export const Topbar = () => {
   };
 
   const searchKeyword = () => {
-    console.log(search);
+    onSearch(search);
   };
 
   return (
@@ -38,7 +42,6 @@ export const Topbar = () => {
         onIconPress={() => searchKeyword()}
         value={search}
         inputStyle={{ borderRadius: 5, padding: 5 }}
-        onEndEditing={() => console.log(123)}
         onSubmitEditing={() => searchKeyword()}
       />
     </View>
