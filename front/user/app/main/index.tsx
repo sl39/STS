@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { Text, View } from "react-native";
+import { Button, Text, View } from "react-native";
 
 export default function index() {
   const router = useRouter();
@@ -9,7 +9,7 @@ export default function index() {
   return (
     <View>
       <Text> main 화면 입니다</Text>
-      <button onClick={handleEnter}>store로 이동</button>
+      <Button onPress={handleEnter} title="store로 이동"></Button>
     </View>
   );
 }
