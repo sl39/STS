@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Searchbar } from "react-native-paper";
 import { View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -6,9 +6,15 @@ import { useRouter } from "expo-router";
 
 interface TopbarProps {
   onSearch: (word: string) => void;
+  handleCategoryBtnState: (state: boolean) => void;
+  categoryState: boolean;
 }
 
-export const Topbar: React.FC<TopbarProps> = ({ onSearch }) => {
+export const Topbar: React.FC<TopbarProps> = ({
+  onSearch,
+  handleCategoryBtnState,
+  categoryState,
+}) => {
   const [search, setSearch] = useState<string>("");
 
   const updateSearch = (search: string) => {
@@ -21,7 +27,11 @@ export const Topbar: React.FC<TopbarProps> = ({ onSearch }) => {
 
   const searchKeyword = () => {
     onSearch(search);
+    handleCategoryBtnState(false);
   };
+  useEffect(() => {
+    if (categoryState) setSearch("");
+  }, [categoryState]);
 
   return (
     <View

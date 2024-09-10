@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   useWindowDimensions,
   StyleSheet,
@@ -10,14 +10,25 @@ import {
 
 interface TopbarProps {
   onSearch: (word: string) => void;
+  handleCategoryBtnState: (state: boolean) => void;
+  categoryState: boolean;
 }
 
-export const CategoryList: FC<TopbarProps> = ({ onSearch }) => {
+export const CategoryList: FC<TopbarProps> = ({
+  onSearch,
+  handleCategoryBtnState,
+  categoryState,
+}) => {
   const { height, width } = useWindowDimensions();
   const categoryClick = (cate: String) => {
     console.log(cate);
   };
   const [selectedId, setSelectedId] = useState<string>();
+  useEffect(() => {
+    if (!categoryState) {
+      setSelectedId("");
+    }
+  }, [categoryState]);
 
   const renderItem = ({ item }: { item: ItemData }) => {
     const backgroundColor = item.cate === selectedId ? "black" : "#D9D9D9";
@@ -27,7 +38,9 @@ export const CategoryList: FC<TopbarProps> = ({ onSearch }) => {
       <Item
         item={item}
         onPress={() => {
-          setSelectedId(item.cate), onSearch(item.id);
+          setSelectedId(item.cate),
+            onSearch(item.id),
+            handleCategoryBtnState(true);
         }}
         backgroundColor={backgroundColor}
         textColor={color}

@@ -14,6 +14,7 @@ export default function index() {
     type: 0,
     val: "",
   });
+  const [categoryState, setCategoryState] = useState<boolean>(false);
 
   const handleWrod = (keyword: string) => {
     setInputData({ type: 1, val: keyword });
@@ -21,6 +22,10 @@ export default function index() {
 
   const handleCate = (category: string) => {
     setInputData({ type: 2, val: category });
+  };
+
+  const handleCategoryBtnState = (state: boolean) => {
+    setCategoryState(state);
   };
 
   useEffect(() => {
@@ -44,8 +49,16 @@ export default function index() {
         <Text> main 화면 입니다</Text>
         <Button onPress={handleEnter} title="store로 이동"></Button>
 
-        <Topbar onSearch={handleWrod} />
-        <CategoryList onSearch={handleCate} />
+        <Topbar
+          onSearch={handleWrod}
+          handleCategoryBtnState={handleCategoryBtnState}
+          categoryState={categoryState}
+        />
+        <CategoryList
+          onSearch={handleCate}
+          handleCategoryBtnState={handleCategoryBtnState}
+          categoryState={categoryState}
+        />
         <StoreList inputData={inputData} />
       </View>
     </View>
