@@ -7,7 +7,7 @@ function App(): React.JSX.Element {
   const responsiveStyles = useMemo(() => getResponsiveStyles(), []);
 
   const router = useRouter();
-  const { storeid, tableid } = useLocalSearchParams();
+  const {storeid, tableid} = useLocalSearchParams();
   const [inputText, setInputText] = useState('');
 
   const [orderItems, setOrderItems] = useState([
