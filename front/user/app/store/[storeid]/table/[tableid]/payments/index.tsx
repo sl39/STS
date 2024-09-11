@@ -16,9 +16,8 @@ function App(): React.JSX.Element {
   const [phoneNumber, setPhoneNumber] = useState('');
 
   const handlePaymentRequest = () => {
-    if (!phoneNumber.trim()) {
-      window.alert('휴대폰 번호를 입력해주세요.');
-      Alert.alert('알림', '휴대폰 번호를 입력해주세요.');
+    if (!phoneNumber.trim()) {      
+      
     } else {
       router.push(`/store/${storeid}/table/${tableid}/payments/pay`);
     }
@@ -26,6 +25,9 @@ function App(): React.JSX.Element {
   const handlePhoneNumberInput = (text: string) => {
     setPhoneNumber(text);
   }
+  const handlesocketRequest = () => {
+    router.push(`/store/${storeid}/table/${tableid}/payments/pay/soket`);
+  };
   const handleDutchpayRequest = () => {
     router.push(`/store/${storeid}/table/${tableid}/payments/dutchpay`);
   };
@@ -42,7 +44,7 @@ function App(): React.JSX.Element {
         >
         <Text style={styles.title}>결제 방법</Text>
         <View style={styles.buttonContainer}>      
-          <TouchableOpacity style={styles.button} onPress={handleDutchpayRequest}>
+          <TouchableOpacity style={styles.button} onPress={handlesocketRequest}>
             <Text style={styles.buttonText}>간편 결제</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleDutchpayRequest}>
@@ -96,8 +98,7 @@ function App(): React.JSX.Element {
           </Text>
         </TouchableOpacity>
       </View>
-      </ScrollView>
-      
+      </ScrollView>      
     </View>
   );
 }

@@ -117,6 +117,21 @@ export const styles = StyleSheet.create({
   selectedButton: {
     backgroundColor: "#007AFF",
   },
+  disabledButton: {
+    opacity: 0.5,
+    backgroundColor: "#ccc",
+  },
+  menuButtonText: {
+    color: "black",
+    fontSize: 16,
+  },
+  menuButton: {
+    backgroundColor: "#000",
+    padding: 15,
+    borderRadius: 5,
+    marginBottom: 10,
+    alignItems: "center",
+  },
 });
 
 export default getResponsiveStyles;

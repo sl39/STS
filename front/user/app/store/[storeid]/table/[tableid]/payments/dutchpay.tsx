@@ -34,24 +34,28 @@ function App(): React.JSX.Element {
     switch (selectedButton) {
       case '사람 수':
         return (
-          <View>
-            <View style={styles.inputContainer}>
-              <Text style={styles.orderTitle}>주문 내역</Text>
-              {orderItems.map((item, index) => (
-                <View key={index} style={styles.orderItemContainer}>
-                  <Text style={styles.orderItemName}>{item.name} x {item.quantity}</Text>
-                  <Text style={styles.orderItemPrice}>{item.price}원</Text>
-                </View>
-              ))}
-              <Text style={styles.orderTotal}>
-                결제 금액: {orderItems.reduce((total, item) => total + item.price * item.quantity, 0)}원
-              </Text>
-             
-            </View>
-            <View style={styles.inputContainer}>
-                <Text style={styles.orderTitle}>사람 수</Text>
-                <TextInput style={styles.input} placeholder="사람 수를 입력하세요" />
+          <View style={styles.inputContainer}>
+            <Text style={styles.orderTitle}>주문 내역</Text>
+            {orderItems.map((item, index) => (
+              <View key={index} style={styles.orderItemContainer}>
+                <TouchableOpacity style={styles.menuButton}>
+                  <Text style={styles.buttonText}>{item.name} x {item.quantity}</Text>
+                </TouchableOpacity>
+                  <Text style={styles.menuButtonText}>{item.price}원</Text>
               </View>
+            ))}
+            <Text style={styles.orderTotal}>
+              결제 금액: {orderItems.reduce((total, item) => total + item.price * item.quantity, 0)}원
+            </Text>
+            <View>
+              <TextInput
+                style={styles.input}
+                onChangeText={handleInput}
+                value={inputText}
+                placeholder="사람수만큼 입력하세요"
+                placeholderTextColor="gray"
+              />
+            </View>
           </View>
         );
       case '메뉴별':
@@ -60,8 +64,10 @@ function App(): React.JSX.Element {
             <Text style={styles.orderTitle}>주문 내역</Text>
             {orderItems.map((item, index) => (
               <View key={index} style={styles.orderItemContainer}>
-                <Text style={styles.orderItemName}>{item.name} x {item.quantity}</Text>
-                <Text style={styles.orderItemPrice}>{item.price}원</Text>
+                <TouchableOpacity style={styles.menuButton}>
+                  <Text style={styles.buttonText}>{item.name} x {item.quantity}</Text>
+                </TouchableOpacity>
+                  <Text style={styles.menuButtonText}>{item.price}원</Text>
               </View>
             ))}
             <Text style={styles.orderTotal}>
@@ -71,23 +77,26 @@ function App(): React.JSX.Element {
         );
       case '금액 지정':
         return (
-          <View>
-            <View style={styles.inputContainer}>
-              <Text style={styles.orderTitle}>주문 내역</Text>
-              {orderItems.map((item, index) => (
-                <View key={index} style={styles.orderItemContainer}>
-                  <Text style={styles.orderItemName}>{item.name} x {item.quantity}</Text>
-                  <Text style={styles.orderItemPrice}>{item.price}원</Text>
-                </View>
-              ))}
-              <Text style={styles.orderTotal}>
-                결제 금액: {orderItems.reduce((total, item) => total + item.price * item.quantity, 0)}원
-              </Text>
-            </View>
-            <View style={styles.inputContainer}>
-              <Text style={styles.orderTitle}>금액 지정</Text>
-              <TextInput style={styles.input} placeholder="금액을 입력하세요" />
-            </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.orderTitle}>주문 내역</Text>
+            {orderItems.map((item, index) => (
+              <View key={index} style={styles.orderItemContainer}>
+                <TouchableOpacity style={styles.menuButton}>
+                  <Text style={styles.buttonText}>{item.name} x {item.quantity}</Text>
+                </TouchableOpacity>
+                  <Text style={styles.menuButtonText}>{item.price}원</Text>
+              </View>
+            ))}
+            <Text style={styles.orderTotal}>
+              결제 금액: {orderItems.reduce((total, item) => total + item.price * item.quantity, 0)}원
+            </Text>
+            <TextInput
+                style={styles.input}
+                onChangeText={handleInput}
+                value={inputText}
+                placeholder="금액 지정"
+                placeholderTextColor="gray"
+              />
           </View>
         );
       default:
@@ -110,11 +119,13 @@ function App(): React.JSX.Element {
               style={[styles.button, selectedButton === button && styles.selectedButton]}
               onPress={() => handleButtonPress(button)}
             >
-              <Text style={styles.buttonText}>{button}</Text>
+            <Text style={styles.buttonText}>{button}</Text>
             </TouchableOpacity>
           ))}
-        </View>        
+        </View>
+        
         {renderContent()}
+        
         <View style={styles.bottomButtonContainer}>
           <TouchableOpacity style={styles.bottomButton} onPress={handlePaymentRequest}>
             <Text style={styles.buttonText}> 
@@ -123,7 +134,6 @@ function App(): React.JSX.Element {
           </TouchableOpacity>
         </View>
       </ScrollView>
-
     </View>
   );
 }
