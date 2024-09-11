@@ -112,6 +112,7 @@ export const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     padding: 15,
+    marginBottom: 10,
   },
   selectedButton: {
     backgroundColor: "#007AFF",

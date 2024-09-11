@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, TouchableOpacity, TextInput, useWindowDimensions ,ScrollView} from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, useWindowDimensions ,ScrollView, Alert} from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { styles ,getResponsiveStyles} from './styles';
 
 function App(): React.JSX.Element {
   const responsiveStyles = useMemo(() => getResponsiveStyles(), []);
-
   const router = useRouter();
   const {storeid, tableid} = useLocalSearchParams();
   const [inputText, setInputText] = useState('');
@@ -14,10 +13,19 @@ function App(): React.JSX.Element {
     { name: '초밥', quantity: 2, price: 15000 },
     { name: '알밥', quantity: 1, price: 8000 },
   ]);
- 
+  const [phoneNumber, setPhoneNumber] = useState('');
+
   const handlePaymentRequest = () => {
-    router.push(`/store/${storeid}/table/${tableid}/payments/pay`);
+    if (!phoneNumber.trim()) {
+      window.alert('휴대폰 번호를 입력해주세요.');
+      Alert.alert('알림', '휴대폰 번호를 입력해주세요.');
+    } else {
+      router.push(`/store/${storeid}/table/${tableid}/payments/pay`);
+    }
   };
+  const handlePhoneNumberInput = (text: string) => {
+    setPhoneNumber(text);
+  }
   const handleDutchpayRequest = () => {
     router.push(`/store/${storeid}/table/${tableid}/payments/dutchpay`);
   };
@@ -74,10 +82,11 @@ function App(): React.JSX.Element {
           </TouchableOpacity>
           <TextInput
             style={styles.input}
-            onChangeText={handleInput}
-            value={inputText}
+            onChangeText={handlePhoneNumberInput}
+            value={phoneNumber}
             placeholder="여기에 입력하세요"
             placeholderTextColor="gray"
+            keyboardType="phone-pad"
           />
         </View>     
         <View style={styles.bottomButtonContainer}>

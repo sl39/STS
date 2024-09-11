@@ -1,13 +1,8 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet , Text, TouchableOpacity} from 'react-native';
 import { ImageSlider } from '../../../src/components/store'; // ImageSlider 컴포넌트 경로에 맞게 수정
-import { TouchableOpacity, Text } from 'react-native-web';
-import { styles } from './table/[tableid]/payments/styles';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-
-const router = useRouter();
-const {storeid, tableid} = useLocalSearchParams();
-
+import { useRouter , useGlobalSearchParams } from 'expo-router';
+import {styles} from './table/[tableid]/payments/styles';
 // 테스트용 이미지 URL 배열 (온라인에서 사용할 수 있는 이미지 URL)
 const imageUrls = [
   'https://via.placeholder.com/300/FF0000/FFFFFF?text=Image+1',
@@ -17,22 +12,26 @@ const imageUrls = [
   'https://via.placeholder.com/300/FF00FF/FFFFFF?text=Image+5',
   'https://via.placeholder.com/300/00FFFF/FFFFFF?text=Image+6',
 ];
-const handlePaymentRequest = () => {
-  router.push(`/store/${storeid}/table/${tableid}/payments`);
-};
+
 const App = () => {
+  const param = useGlobalSearchParams();
+  const router = useRouter();
+  const handlePaymentRequest = () => {
+    router.push(`store/${param.storeid}/table/1`);
+  };
   return (
     <View style={styles.container}>
-      {/* ImageSlider에 imageUrls 배열과 기타 속성을 전달 */}
-        <ImageSlider imageUrls={imageUrls} imageWidth={300} showThumbnails={true} />
-        <TouchableOpacity style={styles.button} onPress={handlePaymentRequest}>
-            <Text style={styles.buttonText}>결제 방식 설정</Text>
-          </TouchableOpacity>
+      <ImageSlider imageUrls={imageUrls} imageWidth={300} showThumbnails={true} />
+      <View style={styles.bottomButtonContainer}>
+        <TouchableOpacity style={styles.bottomButton} onPress={handlePaymentRequest}>
+          <Text style={styles.buttonText}>
+            결제방식 설정
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
     );
   };
-
-
 
 export default App;
 

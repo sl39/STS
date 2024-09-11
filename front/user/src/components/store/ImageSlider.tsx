@@ -74,7 +74,7 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({
   });
 
   return (
-    <View style={{ width: imageWidth }}> {/* 부모 View의 너비를 이미지 너비로 설정 */}
+    <View style={{ width: imageWidth }}> 
       <FlatList
         ref={flatListRef}
         horizontal
