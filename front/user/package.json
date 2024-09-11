@@ -10,7 +10,10 @@
   },
   "dependencies": {
     "@expo/metro-runtime": "~3.2.3",
+<<<<<<< HEAD
     "@rneui/themed": "^4.0.0-rc.8",
+=======
+>>>>>>> front/feat/pay
     "expo": "~51.0.28",
     "expo-constants": "~16.0.2",
     "expo-linking": "~6.3.1",
