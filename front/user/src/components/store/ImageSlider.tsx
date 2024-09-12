@@ -53,7 +53,7 @@ export const ImageSlider: FC<ImageSliderProps> = ({
   }, [autoSlide, autoSlideInterval])
 
   return (
-    <>
+    <View style={{ width: imageWidth }}>
       <FlatList
         ref={flatListRef}
         scrollEnabled={true}
@@ -68,7 +68,7 @@ export const ImageSlider: FC<ImageSliderProps> = ({
         )}
         keyExtractor={(item, index) => index.toString()}
       />
-    </>
+     </View>
   )
 }
 
