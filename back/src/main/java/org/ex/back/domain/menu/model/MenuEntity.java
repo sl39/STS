@@ -43,4 +43,7 @@ public class MenuEntity {
 	
 	@Column
 	private Boolean isBestMenu = false;
+
+	@Column
+	private Boolean isAlcohol;
 }

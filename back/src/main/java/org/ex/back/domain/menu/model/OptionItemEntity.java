@@ -23,4 +23,7 @@ public class OptionItemEntity {
 	
 	@Column
 	private String name;
+
+	@Column
+	private Integer extraPrice;
 }

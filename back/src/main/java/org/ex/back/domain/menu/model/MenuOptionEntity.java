@@ -22,7 +22,10 @@ public class MenuOptionEntity {
 	
 	@Column
 	private String subject;
-	
+
 	@Column
-	private Boolean isEssential = true;
+	private Integer minCount; //최소 선택 개수
+
+	@Column
+	private Integer maxCount; //최대 선택 개수
 }

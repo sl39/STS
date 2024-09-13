@@ -23,8 +23,14 @@ public class CartItemEntity {
     private MenuEntity menu;
 
     @Column
+    private String optionItemList;
+
+    @Column
+    private Integer totalExtraPrice; //옵션으로 인해 추가된 금액
+
+    @Column
     private Integer menuCount;
 
     @Column
-    private Integer totalPrice;
+    private Integer totalPrice; //(메뉴금액+옵션추가금액)X수량
 }

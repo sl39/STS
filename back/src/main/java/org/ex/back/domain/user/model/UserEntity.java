@@ -13,6 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 @Entity
 @Table(name="user_entity")
 public class UserEntity {
@@ -26,9 +27,6 @@ public class UserEntity {
 	
 	@Column
 	private String email;
-	
-	@Column
-	private String userState;
 	
 	@Column
 	private String socialId;

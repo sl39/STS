@@ -13,6 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 @Entity
 @Table(name="owner_entity")
 public class OwnerEntity {
@@ -38,9 +39,9 @@ public class OwnerEntity {
 	
 	@Column
 	private String phone;
-	
+
 	@Column
-	private String ownerState;
+	private String bankName;
 
 	@Column
 	private String bankAccount;
