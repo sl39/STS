@@ -30,21 +30,6 @@ public class UserStoreService {
         return storeRepository.findByStoreNameContaining(name);
     }
 
-    // 특정 메뉴 이름을 포함하는 매장을 검색하는 메소드
-    public List<StoreEntity> searchStoresByMenuName(String menuName) {
-        return storeRepository.findStoresByMenuName(menuName);
-    }
-
-    // 특정 카테고리와 이름을 기준으로 매장을 검색하는 메소드
-    public List<StoreEntity> searchStoresByCategoryAndName(Integer categoryId, String storeName) {
-        return storeRepository.findStoresByCategoryAndName(categoryId, storeName);
-    }
-
-    // 주어진 위도와 경도를 기준으로 1000미터 이내의 매장을 검색하는 메소드
-    public List<StoreEntity> searchStoresWithinDistance(double userLng, double userLat) {
-        return storeRepository.findStoresWithinDistance(userLng, userLat);
-    }
-
     // 매장 ID로 매장을 찾는 메소드
     public StoreEntity findStoreById(Integer storeId) {
         return storeRepository.findById(storeId)

@@ -2,7 +2,9 @@ package org.ex.back.domain.store.controller;
 
 import org.ex.back.domain.store.model.StoreEntity;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.ex.back.domain.store.model.StoreCategoryEntity;
 import org.ex.back.domain.store.service.OwnerStoreService;
@@ -19,48 +21,67 @@ public class OwnerStoreController {
 
     // 매장 조회 API
     @GetMapping("/{store_pk}")
-    public ResponseEntity<StoreEntity> getStoreById(@PathVariable("store_pk") Integer storePk) {
+    public ResponseEntity<Map<String, Object>> getStoreById(@PathVariable("store_pk") Integer storePk) {
         StoreEntity store = storeService.findStoreById(storePk);
         if (store != null) {
-            return ResponseEntity.ok(store);
+            // 연결된 카테고리 ID 리스트 가져오기
+            List<Integer> categoryPks = storeService.findCategoryPksByStoreId(storePk);
+            
+            // 응답에 매장 정보와 카테고리 ID 포함
+            Map<String, Object> response = new HashMap<>();
+            response.put("store", store);
+            response.put("store_category_pks", categoryPks);
+            
+            return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
+
     // 매장 업데이트 API
     @PutMapping("/{store_pk}")
-    public ResponseEntity<StoreEntity> updateStore(@PathVariable("store_pk") Integer storePk, @RequestBody StoreEntity updatedStore) {
+    public ResponseEntity<StoreEntity> updateStore(
+            @PathVariable("store_pk") Integer storePk,
+            @RequestBody Map<String, Object> updatedStoreData) {
+        
         StoreEntity existingStore = storeService.findStoreById(storePk);
         if (existingStore != null) {
             // ID 유지
-            updatedStore.setStore_pk(storePk);
+            existingStore.setStore_pk(storePk);
             
             // 기존 정보에서 필요한 값만 업데이트
-            if (updatedStore.getStoreName() != null) {
-                existingStore.setStoreName(updatedStore.getStoreName());
+            if (updatedStoreData.containsKey("storeName")) {
+                existingStore.setStoreName((String) updatedStoreData.get("storeName"));
             }
-            if (updatedStore.getAddress() != null) {
-                existingStore.setAddress(updatedStore.getAddress());
+            if (updatedStoreData.containsKey("address")) {
+                existingStore.setAddress((String) updatedStoreData.get("address"));
             }
-            if (updatedStore.getPhone() != null) {
-                existingStore.setPhone(updatedStore.getPhone());
+            if (updatedStoreData.containsKey("phone")) {
+                existingStore.setPhone((String) updatedStoreData.get("phone"));
             }
-            if (updatedStore.getOperatingHours() != null) {
-                existingStore.setOperatingHours(updatedStore.getOperatingHours());
+            if (updatedStoreData.containsKey("operatingHours")) {
+                existingStore.setOperatingHours((String) updatedStoreData.get("operatingHours"));
             }
-            if (updatedStore.getStoreState() != null) {
-                existingStore.setStoreState(updatedStore.getStoreState());
+            if (updatedStoreData.containsKey("storeState")) {
+                existingStore.setStoreState((String) updatedStoreData.get("storeState"));
             }
-            if (updatedStore.getIsOpen() != null) {
-                existingStore.setIsOpen(updatedStore.getIsOpen());
+            if (updatedStoreData.containsKey("isOpen")) {
+                existingStore.setIsOpen((Boolean) updatedStoreData.get("isOpen"));
             }
-            if (updatedStore.getLat() != null) {
-                existingStore.setLat(updatedStore.getLat());
+            if (updatedStoreData.containsKey("lat")) {
+                existingStore.setLat((Double) updatedStoreData.get("lat"));
             }
-            if (updatedStore.getLng() != null) {
-                existingStore.setLng(updatedStore.getLng());
+            if (updatedStoreData.containsKey("lng")) {
+                existingStore.setLng((Double) updatedStoreData.get("lng"));
             }
+
+            // 카테고리 업데이트
+            if (updatedStoreData.containsKey("categoryPks")) {
+                List<Integer> newCategoryPks = (List<Integer>) updatedStoreData.get("categoryPks");
+                storeService.updateStoreCategories(storePk, newCategoryPks);
+            }
+
             StoreEntity savedStore = storeService.saveStore(existingStore);
             return ResponseEntity.ok(savedStore);
         } else {
@@ -68,29 +89,11 @@ public class OwnerStoreController {
         }
     }
 
+
     // 매장 영업 상태 전환 API
     @PutMapping("/{store_pk}/toggleStatus")
     public ResponseEntity<StoreEntity> toggleStoreStatus(@PathVariable("store_pk") Integer storePk) {
         StoreEntity updatedStore = storeService.toggleStoreOpenStatus(storePk);
         return ResponseEntity.ok(updatedStore);
-    }
-
- // 매장에 여러 카테고리 추가 API
-    @PostMapping("/{store_pk}/categories")
-    public ResponseEntity<String> addCategoriesToStore(@PathVariable("store_pk") Integer storePk, @RequestBody List<Integer> categoryPks) {
-        StoreEntity store = storeService.findStoreById(storePk);
-        if (store != null) {
-            for (Integer categoryPk : categoryPks) {
-                StoreCategoryEntity category = storeService.findCategoryById(categoryPk);
-                if (category != null) {
-                    storeService.addCategoryToStore(storePk, categoryPk);  // 카테고리 추가 메소드 호출
-                } else {
-                    return ResponseEntity.status(404).body("카테고리 ID " + categoryPk + "를 찾을 수 없습니다.");
-                }
-            }
-            return ResponseEntity.ok("카테고리가 매장에 추가되었습니다.");
-        } else {
-            return ResponseEntity.status(404).body("매장을 찾을 수 없습니다.");
-        }
     }
 }
