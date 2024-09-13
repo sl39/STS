@@ -6,13 +6,19 @@ export default function index() {
   return (
     <View style={{ alignItems: "center" }}>
       <View style={{ height: "7%", backgroundColor: "#F2F2F2", width: "100%" }}>
-        <TopTab />
+        <TopTab title="가게등록" />
       </View>
-      <View style={{ width: "100%" }}>
-        <View style={{ backgroundColor: "#F2F2F2", width: "100%" }}>
-          <LeftTab />
+      <View style={{ width: "100%", flexDirection: "row" }}>
+        <View
+          style={{
+            backgroundColor: "#F2F2F2",
+            width: "15%",
+            marginTop: 3,
+          }}
+        >
+          <LeftTab tabs={[]} />
         </View>
-        <View style={{ width: "100%" }}>
+        <View style={{ width: "85%" }}>
           <StoreTaps />
         </View>
       </View>

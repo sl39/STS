@@ -1,9 +1,18 @@
 import { StyleSheet, Text, View } from "react-native";
 
-export const LeftTab = () => {
+type LeftTabProp = {
+  title: string;
+  component: React.JSX.Element;
+};
+
+interface LeftTabProps {
+  tabs: Array<LeftTabProp>;
+}
+
+export const LeftTab: React.FC<LeftTabProps> = ({ tabs }) => {
   return (
     <View style={styles.container}>
-      <Text>Left</Text>
+      {tabs.length == 0 ? <Text>Left</Text> : null}
     </View>
   );
 };
