@@ -2,16 +2,9 @@ package org.ex.back.domain.cart.model;
 
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+import org.ex.back.domain.store.model.StoreEntity;
 import org.ex.back.domain.user.model.UserEntity;
 import org.ex.back.domain.menu.model.MenuEntity;
 
@@ -34,11 +27,12 @@ public class CartEntity {
 	@JoinColumn(name="cart_item_pk")
 	private List<CartItemEntity> cartItems;
 
-	@Column
-	private String tableNumber;
+	@ManyToOne
+	@JoinColumn(name="store_pk")
+	private StoreEntity store;
 
 	@Column
-	private String guestPhone;
+	private String tableNumber;
 
 	@Column
 	private Integer totalPrice;

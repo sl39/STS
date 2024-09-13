@@ -25,4 +25,7 @@ public class MenuOptionEntity {
 	
 	@Column
 	private Boolean isEssential = true;
+	
+	@Column
+	private Boolean isSelected = false;
 }
