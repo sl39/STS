@@ -1,11 +1,15 @@
 import React from "react";
-import { SafeAreaView } from "react-native";
+import { SafeAreaView, Text, View } from "react-native";
 import { Login } from "../src/components/login";
+import { FireBaseImage } from "../src/components/common";
 
 export default function index() {
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ height: "100%" }}>
       <Login />
+      <View>
+        <FireBaseImage />
+      </View>
     </SafeAreaView>
   );
 }
