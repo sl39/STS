@@ -1,6 +1,7 @@
 import { Text, View } from "react-native";
 import StoreTaps from "../../../src/navigation/storeNavigation";
 import { LeftTab, TopTab } from "../../../src/components/common";
+import StoreCreateTaps from "../../../src/navigation/storeCreateNavigation";
 
 export default function index() {
   return (
@@ -19,7 +20,7 @@ export default function index() {
           <LeftTab tabs={[]} />
         </View>
         <View style={{ width: "85%" }}>
-          <StoreTaps />
+          <StoreCreateTaps />
         </View>
       </View>
     </View>
