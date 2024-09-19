@@ -13,7 +13,7 @@ import java.util.List;
 public interface UserStoreRepository extends JpaRepository<StoreEntity, Integer> {
 
     // 매장 이름에 특정 문자열이 포함된 매장을 검색하는 메소드
-    List<StoreEntity> findByStoreNameContaining(String storeName);
+    List<StoreEntity> findByStoreNameContaining(String name);
 
     // 특정 카테고리(subject)를 기준으로 매장을 검색하는 메소드
     @Query(value = "SELECT s.* " +
@@ -24,9 +24,9 @@ public interface UserStoreRepository extends JpaRepository<StoreEntity, Integer>
     List<StoreEntity> findStoresByCategory(@Param("subject") Integer storeCategoryPk);
 
     // 특정 store_pk에 해당하는 category_pk를 검색하는 메소드
-    @Query(value = "SELECT sc.store_category_pk " +
+    /*@Query(value = "SELECT sc.store_category_pk " +
                    "FROM store_category_connector_entity sc " +
                    "WHERE sc.store_pk = :storePk",
            nativeQuery = true)
-    List<Integer> findCategoryByStores(@Param("storePk") Integer storePk);
+    List<Integer> findCategoryByStores(@Param("storePk") Integer storePk);*/
 }

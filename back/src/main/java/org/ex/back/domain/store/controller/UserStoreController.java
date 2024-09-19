@@ -1,8 +1,6 @@
 package org.ex.back.domain.store.controller;
 
-import org.ex.back.domain.store.model.StoreEntity;
-import org.ex.back.domain.store.model.StoreCategoryConnectorEntity;
-import org.ex.back.domain.store.model.StoreCategoryEntity;
+import org.ex.back.domain.store.dto.StoreDTO;
 import org.ex.back.domain.store.service.UserStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,44 +17,39 @@ public class UserStoreController {
 
     // 모든 매장 조회 API
     @GetMapping
-    public ResponseEntity<List<StoreEntity>> getAllStores() {
-        List<StoreEntity> stores = storeService.findAllStores();
+    public ResponseEntity<List<StoreDTO>> getAllStores() {
+        List<StoreDTO> stores = storeService.findAllStores();
         return ResponseEntity.ok(stores);
     }
 
-    // 매장 이름 검색 API
+ // 매장 이름 검색 API
     @GetMapping("/search")
-    public ResponseEntity<List<StoreEntity>> searchStores(@RequestParam String query) {
-        List<StoreEntity> stores = storeService.searchStoresByName(query);
+    public ResponseEntity<List<StoreDTO>> searchStores(
+            @RequestParam("query") String query,
+            @RequestParam("lat") double userLat,  // 위치 정보 추가
+            @RequestParam("lng") double userLng) { // 위치 정보 추가
+        List<StoreDTO> stores = storeService.searchStoresByName(query, userLat, userLng);
         return ResponseEntity.ok(stores);
     }
 
     // 특정 매장 정보 조회 API
     @GetMapping("/{store_id}")
-    public ResponseEntity<StoreEntity> getStoreById(@PathVariable("store_id") Integer storeId) {
+    public ResponseEntity<StoreDTO> getStoreById(@PathVariable("store_id") Integer storeId) {
         try {
-            StoreEntity store = storeService.findStoreById(storeId);
+            StoreDTO store = storeService.findStoreById(storeId);
             return ResponseEntity.ok(store);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
-    // 특정 카테고리에 해당하는 매장 조회 API
+ // 특정 카테고리에 해당하는 매장 조회 API
     @GetMapping("/category/{store_category_pk}")
-    public ResponseEntity<List<StoreEntity>> getStoresByCategory(@PathVariable("store_category_pk") Integer storeCategoryPk) {
-        List<StoreEntity> stores = storeService.findStoresByCategory(storeCategoryPk);
+    public ResponseEntity<List<StoreDTO>> getStoresByCategory(
+            @PathVariable("store_category_pk") Integer storeCategoryPk,
+            @RequestParam("lat") double userLat,  // 위치 정보 추가
+            @RequestParam("lng") double userLng) { // 위치 정보 추가
+        List<StoreDTO> stores = storeService.findStoresByCategory(storeCategoryPk, userLat, userLng);
         return ResponseEntity.ok(stores);
     }
-
-    // 특정 매장의 카테고리 조회 API
-    @GetMapping("/{store_id}/categories") // 경로 변경
-    public ResponseEntity<List<Integer>> getCategoriesByStoreId(@PathVariable("store_id") Integer storePk) {
-        List<Integer> categories = storeService.findCategoriesByStoreId(storePk);
-        if (categories.isEmpty()) {
-            return ResponseEntity.noContent().build(); // 204 No Content
-        }
-        return ResponseEntity.ok(categories);
-    }
 }
-
