@@ -4,20 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ex.back.domain.cart.model.CartEntity;
 import org.ex.back.domain.cart.repository.CartRepository;
-import org.ex.back.domain.owner.dto.TokenResponseDto;
 import org.ex.back.domain.user.model.UserEntity;
 import org.ex.back.domain.user.repository.UserRepository;
-import org.ex.back.global.enumclass.Role;
-import org.ex.back.global.jwt.JwtTokenProvider;
-import org.ex.back.global.jwt.RefreshTokenEntity;
-import org.ex.back.global.jwt.RefreshTokenRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Slf4j

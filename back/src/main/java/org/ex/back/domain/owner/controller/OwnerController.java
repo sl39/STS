@@ -5,10 +5,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ex.back.domain.owner.dto.*;
 import org.ex.back.domain.owner.service.OwnerService;
+import org.ex.back.global.jwt.TokenResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -98,8 +100,27 @@ public class OwnerController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<TokenResponseDto> login(@RequestBody OwnerLoginRequestDto request) throws Exception {
-        return new ResponseEntity<>(ownerService.login(request), HttpStatus.OK);
+    public ResponseEntity<?> login(
+            @RequestBody OwnerLoginRequestDto request
+    ) throws Exception
+    {
+        TokenResponseDto tokenDto = ownerService.login(request);
+        log.info(tokenDto.getAccessToken());
+        log.info(tokenDto.getRefreshToken());
+
+        // 헤더에 token 정보 추가
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Set-Cookie", createCookie("accessToken", tokenDto.getAccessToken()).toString());
+        headers.add("Set-Cookie", createCookie("refreshToken", tokenDto.getRefreshToken()).toString());
+
+        return new ResponseEntity<>(headers, HttpStatus.OK);
+    }
+
+    private ResponseCookie createCookie(String key, String value) {
+        return ResponseCookie.from(key, value)
+                .sameSite("")
+                .path("/")
+                .build();
     }
 
     /*

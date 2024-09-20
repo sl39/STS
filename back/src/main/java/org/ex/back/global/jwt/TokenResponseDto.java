@@ -1,4 +1,4 @@
-package org.ex.back.domain.owner.dto;
+package org.ex.back.global.jwt;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,39 +1,57 @@
 package org.ex.back.global.config;
 
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseException;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 
 @Configuration
 public class FirebaseConfig {
 
-    // 초기화?
-//    FileInputStream serviceAccount =
-//            new FileInputStream("path/to/serviceAccountKey.json");
-//
-//    FirebaseOptions options = new FirebaseOptions.Builder()
-//            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-//            .build();
-//
-//    FirebaseApp.initializeApp(options);
+    @Value("${firebase.config.path}")
+    private String firebaseConfigPath;
 
-    // 요청 전송
-    // This registration token comes from the client FCM SDKs.
+    @Bean
+    public FirebaseApp firebaseApp() throws IOException {
+
+        FileInputStream serviceAccount = new FileInputStream(firebaseConfigPath);
+
+        FirebaseOptions options = FirebaseOptions.builder()
+            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+            .build();
+
+        return FirebaseApp.initializeApp(options);
+    }
+
+    @Bean
+    public FirebaseAuth firebaseAuth() {
+        try {
+            return FirebaseAuth.getInstance(firebaseApp());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /*
+            fcm 서버로 요청 전송
+     */
+
 //    String registrationToken = "YOUR_REGISTRATION_TOKEN";
 //
-//    // See documentation on defining a message payload.
 //    Message message = Message.builder()
 //            .putData("score", "850")
 //            .putData("time", "2:45")
 //            .setToken(registrationToken)
 //            .build();
-//
-//    // Send a message to the device corresponding to the provided
-//// registration token.
-//    String response = FirebaseMessaging.getInstance().send(message);
-//// Response is a message ID string.
-//System.out.println("Successfully sent message: " + response);
 
-    // -> projects/{project_id}/messages/{message_id} 으로 SDK가 반환해줌
+//    String response = FirebaseMessaging.getInstance().send(message);
+//    System.out.println("Successfully sent message: " + response);
+
 }

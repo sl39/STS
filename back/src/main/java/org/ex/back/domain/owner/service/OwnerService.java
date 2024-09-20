@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ex.back.domain.owner.dto.OwnerLoginRequestDto;
 import org.ex.back.domain.owner.dto.OwnerSignUpRequestDto;
-import org.ex.back.domain.owner.dto.TokenResponseDto;
+import org.ex.back.global.jwt.TokenResponseDto;
 import org.ex.back.domain.owner.model.OwnerEntity;
 import org.ex.back.domain.owner.repository.OwnerRepository;
 import org.ex.back.global.enumclass.Role;

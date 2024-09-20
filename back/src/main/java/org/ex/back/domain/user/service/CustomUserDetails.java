@@ -1,7 +1,6 @@
 package org.ex.back.domain.user.service;
 
 import lombok.Builder;
-import org.ex.back.domain.owner.dto.TokenResponseDto;
 import org.ex.back.domain.user.model.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
