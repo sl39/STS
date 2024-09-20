@@ -13,6 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 @Entity
 @Table(name="store_image_entity")
 public class StoreImageEntity {
@@ -23,4 +24,5 @@ public class StoreImageEntity {
 	
 	@Column
 	private String imageUrl;
+	
 }

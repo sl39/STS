@@ -22,8 +22,7 @@ public class StoreEntity {
 	@JoinColumn(name="owner_pk")
 	private OwnerEntity owner;
 
-	@OneToMany
-	@JoinColumn(name="store_image_pk")
+	@OneToMany(cascade=CascadeType.ALL)
 	private List<StoreImageEntity> storeImages;
 	
 	@Column

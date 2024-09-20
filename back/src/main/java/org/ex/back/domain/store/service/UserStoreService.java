@@ -3,11 +3,13 @@ package org.ex.back.domain.store.service;
 import org.ex.back.domain.store.dto.StoreDTO;
 import org.ex.back.domain.store.model.StoreCategoryConnectorEntity;
 import org.ex.back.domain.store.model.StoreEntity;
+import org.ex.back.domain.store.model.StoreImageEntity;
 import org.ex.back.domain.store.repository.StoreCategoryConnectorRepository;
 import org.ex.back.domain.store.repository.UserStoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,7 +38,6 @@ public class UserStoreService {
 
         return findNearestStores(stores, userLat, userLng);
     }
-
 
 	// 매장 ID로 매장을 찾는 메소드
     public StoreDTO findStoreById(Integer storeId) {
@@ -75,18 +76,18 @@ public class UserStoreService {
 
  // 사용자 위치를 기반으로 가까운 매장을 검색하는 메소드
     public List<StoreDTO> findNearestStores(List<StoreDTO> stores, double userLat, double userLng) {
-        List<StoreDTO> allStores = findAllStores();
-
-        return allStores.stream()
-                .map(store -> {
-                    double distance = calculateDistance(userLat, userLng, store.getLat(), store.getLng());
-                    store.setDistance(distance);
-                    return store;
-                })
-                .sorted(Comparator.comparingDouble(StoreDTO::getDistance))
-                .limit(50)
-                .collect(Collectors.toList());
+        return stores.stream()
+            .filter(store -> store.getLat() != null && store.getLng() != null) // null 체크 추가
+            .map(store -> {
+                double distance = calculateDistance(userLat, userLng, store.getLat(), store.getLng());
+                store.setDistance(distance);
+                return store;
+            })
+            .sorted(Comparator.comparingDouble(StoreDTO::getDistance))
+            .limit(50)
+            .collect(Collectors.toList());
     }
+
 
     // 두 지점 간의 거리 계산 (Haversine 공식을 사용)
     private double calculateDistance(double lat1, double lng1, double lat2, double lng2) {
@@ -99,9 +100,17 @@ public class UserStoreService {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c; // 거리 반환 (킬로미터)
     }
-    // Entity를 DTO로 변환하는 메소드
+ // Entity를 DTO로 변환하는 메소드
     private StoreDTO convertToDTO(StoreEntity storeEntity) {
         StoreDTO storeDTO = new StoreDTO();
+        
+        // Entity -> String
+        List<String> list = new ArrayList<String>();
+        for(StoreImageEntity entity : storeEntity.getStoreImages()) {
+        	list.add(entity.getImageUrl().toString());
+        }
+        
+        storeDTO.setStoreImages(list);
         storeDTO.setStorePk(storeEntity.getStore_pk());
         storeDTO.setStoreName(storeEntity.getStoreName());
         storeDTO.setAddress(storeEntity.getAddress());
@@ -111,7 +120,10 @@ public class UserStoreService {
         storeDTO.setIsOpen(storeEntity.getIsOpen());
         storeDTO.setLat(storeEntity.getLat());
         storeDTO.setLng(storeEntity.getLng());
-        // 카테고리 PK를 설정하는 부분은 필요에 따라 추가
+        if (storeEntity.getOwner() != null) {
+            storeDTO.setOwnerPk(storeEntity.getOwner().getOwner_pk());
+        }
+        
         return storeDTO;
     }
 }

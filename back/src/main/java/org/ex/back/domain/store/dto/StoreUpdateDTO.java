@@ -19,5 +19,5 @@ public class StoreUpdateDTO {
     private Double lat;        // 위도
     private Double lng;        // 경도
     private List<Integer> categoryPks; // 카테고리 ID 리스트
-    private List<String> storeImageUrls; // 이미지 URL 리스트로 변경
+    private List<String> storeImages; // 이미지 URL 리스트
 }
