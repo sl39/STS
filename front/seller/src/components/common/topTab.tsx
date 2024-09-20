@@ -15,21 +15,23 @@ export const TopTab: React.FC<Toptab> = ({ title }) => {
     <View style={styles.container}>
       <View style={styles.row}>
         <Text style={styles.title}>{title}</Text>
-        <View style={{ flexDirection: "row", gap: 5 }}>
-          <View style={styles.switchContainer}>
-            <Switch
-              trackColor={{ false: "#767577", true: "#81b0ff" }}
-              thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-              ios_backgroundColor="#3e3e3e"
-              onValueChange={toggleSwitch}
-              value={isEnabled}
-            />
+        {title !== "가게등록" ? (
+          <View style={{ flexDirection: "row", gap: 5 }}>
+            <View style={styles.switchContainer}>
+              <Switch
+                trackColor={{ false: "#767577", true: "#81b0ff" }}
+                thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={toggleSwitch}
+                value={isEnabled}
+              />
+            </View>
+            {isEnabled && (
+              <Text style={{ fontSize: 20 }}>대기팀 : {ready}명</Text>
+            )}
+            {isEnabled && <Button title="다음팀 입장" />}
           </View>
-          {isEnabled && (
-            <Text style={{ fontSize: 20 }}>대기팀 : {ready}명</Text>
-          )}
-          {isEnabled && <Button title="다음팀 입장" />}
-        </View>
+        ) : null}
       </View>
     </View>
   );

@@ -8,3 +8,4 @@ export * from "./type";
 export * from "./optionCategory";
 export * from "./optionDetail";
 export * from "./storeCreateDeatil";
+export * from "./address";

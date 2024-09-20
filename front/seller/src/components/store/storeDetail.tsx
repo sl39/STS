@@ -3,18 +3,42 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   useWindowDimensions,
   View,
 } from "react-native";
 import { DayComponent } from "./dayComponent";
 import { CategoryList } from "./storeCategory";
+import { Button } from "@rneui/themed/dist/Button";
+import { useRouter } from "expo-router";
+import { FireBaseImage } from "../common";
 
 export const StoreDetail = () => {
-  const [storeName, SetStoreName] = useState<string>("");
-  const [storeAddress, SetStoreAddress] = useState<string>("");
-  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const router = useRouter();
+
+  const [storeName, SetStoreName] = useState<string>(""); // 스토어 이름
+  const [storeAddress, SetStoreAddress] = useState<string>(""); // 스토어 주소
+  const [phoneNumber, setPhoneNumber] = useState<string>(""); // 스토어 전화번호
+  const [open, setOpen] = useState<object>({
+    월: "",
+    화: "",
+    수: "",
+    목: "",
+    금: "",
+    토: "",
+    일: "",
+    브레이크타임: "",
+  }); // 스토어 open 시간
+  const [getImage, setGetImage] = useState<Array<string>>([]); // storeImages 이미지들
+  const [getCategory, setGetCategory] = useState<Array<string>>([]); // 카테고리들
+
   const { height, width } = useWindowDimensions();
+  const handleOpen = (date: object) => {
+    setOpen(date);
+  };
+
+  const handleImages = (imgs: Array<string>) => {
+    setGetImage(imgs);
+  };
 
   const checkPhoneNumber = (e: string) => {
     const onlyNumber = e.replace(/[^0-9]/g, "");
@@ -35,6 +59,10 @@ export const StoreDetail = () => {
 
     setPhoneNumber(num);
   };
+
+  const handleCategory = (cate: Array<string>) => {
+    setGetCategory(cate);
+  };
   return (
     <View style={{ height: height, padding: 10, flexDirection: "row" }}>
       <View style={{ width: "50%" }}>
@@ -48,9 +76,6 @@ export const StoreDetail = () => {
               value={storeName}
               onChangeText={SetStoreName}
             />
-            {/* <TouchableOpacity style={styles.specBtn}>
-          <Text style={{ color: "#3498db", fontWeight: "bold" }}>인증하기</Text>
-        </TouchableOpacity> */}
           </View>
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
@@ -73,12 +98,29 @@ export const StoreDetail = () => {
             />
           </View>
           <Text>요일 설정</Text>
-          <DayComponent />
+          <DayComponent handleOpen={handleOpen} open={open} />
         </View>
+        <Button
+          title="가게 등록"
+          onPress={() => {
+            router.push("/main");
+          }}
+        />
       </View>
       <View style={{ width: "50%" }}>
         <Text>가게 카테고리 설정</Text>
-        <CategoryList />
+        <CategoryList
+          handleCategory={handleCategory}
+          getCategory={getCategory}
+        />
+        <Text>가게 이미지</Text>
+        <View>
+          <FireBaseImage
+            count={5}
+            handleImages={handleImages}
+            imgs={getImage}
+          />
+        </View>
       </View>
     </View>
   );

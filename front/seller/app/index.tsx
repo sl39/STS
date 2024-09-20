@@ -7,9 +7,6 @@ export default function index() {
   return (
     <SafeAreaView style={{ height: "100%" }}>
       <Login />
-      <View>
-        <FireBaseImage />
-      </View>
     </SafeAreaView>
   );
 }

@@ -8,21 +8,26 @@ import {
   SafeAreaView,
 } from "react-native";
 
-interface TopbarProps {}
+interface TopbarProps {
+  getCategory: Array<string>;
+  handleCategory: (cate: Array<string>) => void;
+}
 
-export const CategoryList: FC<TopbarProps> = ({}) => {
+export const CategoryList: FC<TopbarProps> = ({
+  getCategory,
+  handleCategory,
+}) => {
   const { height, width } = useWindowDimensions();
 
-  const [selectedId, setSelectedId] = useState<string[]>([]);
+  const [selectedId, setSelectedId] = useState<string[]>(getCategory);
   useEffect(() => {
-    console.log(selectedId);
+    handleCategory(selectedId);
   }, [selectedId]);
 
   const renderItem = ({ item }: { item: ItemData }) => {
     const backgroundColor = selectedId.includes(item.id) ? "black" : "#D9D9D9";
     const color = selectedId.includes(item.id) ? "white" : "black";
     const categoryClick = (category: string) => {
-      console.log(category + "가121231232");
       if (selectedId.includes(category)) {
         // 이미 선택된 항목이면 배열에서 제거
         setSelectedId((prevSelectedId) =>

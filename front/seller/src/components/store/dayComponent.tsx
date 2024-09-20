@@ -12,6 +12,11 @@ type timeProps = {
   setTime: (val: string) => void;
 };
 
+interface DayProps {
+  handleOpen: (date: object) => void;
+  open: object;
+}
+
 const day: string[] = [
   "월",
   "화",
@@ -22,23 +27,14 @@ const day: string[] = [
   "일",
   "브레이크타임",
 ];
-export const DayComponent = () => {
-  const [date, setDate] = useState<object>({
-    월: "",
-    화: "",
-    수: "",
-    목: "",
-    금: "",
-    토: "",
-    일: "",
-    브레이크타임: "",
-  });
+export const DayComponent: React.FC<DayProps> = ({ handleOpen, open }) => {
+  const [date, setDate] = useState<object>(open);
   const setDateObject = (day: string, time: string) => {
     ///// 이쪽 파트 필요함
     setDate({ ...date, [day]: time });
   };
   useEffect(() => {
-    console.log(date);
+    handleOpen(date);
   }, [date]);
   return (
     <View style={{ gap: 15 }}>
