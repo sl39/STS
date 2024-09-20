@@ -5,45 +5,26 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONObject;
-import org.ex.back.domain.owner.dto.CheckBRNRequestDto;
-import org.ex.back.domain.owner.dto.CheckBRNResponseDto;
-import org.ex.back.domain.owner.dto.OwnerLoginRequestDto;
-import org.ex.back.domain.owner.dto.OwnerSignUpRequestDto;
-import org.ex.back.domain.owner.model.OwnerEntity;
+import org.ex.back.domain.owner.dto.*;
 import org.ex.back.domain.owner.service.OwnerService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
-import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
 @Slf4j
-@RequestMapping("/api/auth/seller")
+@RequestMapping("/api/auth/owner")
 public class OwnerController {
 
     @Value("${openApi.serviceKey}")
     private String serviceKey;
 
     private final OwnerService ownerService;
-
 
     // 사업자 번호 조회
     @PostMapping("/brn")
@@ -74,7 +55,7 @@ public class OwnerController {
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, entity, String.class);
 
         if(!responseEntity.getStatusCode().is2xxSuccessful()) {
-            throw new Exception(responseEntity.getStatusCode() + ": 사업자등록번호를 조회할 수 없습니다.");
+            throw new Exception(responseEntity.getStatusCode() + ": 사업자등록번호를 조회할 수 없습니다."); //TODO noh 예외처리
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -84,6 +65,7 @@ public class OwnerController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    // 사업자 번호 유효성 검사
     private CheckBRNResponseDto validateBRN(JsonNode jsonNode) {
         String tax_type = jsonNode.get("tax_type").asText();
         String b_stt = jsonNode.get("b_stt").asText();
@@ -109,17 +91,21 @@ public class OwnerController {
 
     // 회원가입
     @PostMapping("/join")
-    public ResponseEntity join(@RequestBody OwnerSignUpRequestDto request) throws Exception {
+    public ResponseEntity<?> join(@RequestBody OwnerSignUpRequestDto request) {
         ownerService.signUp(request);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
-    /*
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody OwnerLoginRequestDto request) throws Exception {
+    public ResponseEntity<TokenResponseDto> login(@RequestBody OwnerLoginRequestDto request) throws Exception {
         return new ResponseEntity<>(ownerService.login(request), HttpStatus.OK);
+    }
+
+    /*
+    // 토큰 재발급
+    @PostMapping("/reissue")
+    public ResponseEntity<TokenResponseDto> reissueToken( ) throws Exception {
     }
 
     // 로그아웃
@@ -129,10 +115,5 @@ public class OwnerController {
         ownerService.logout(token, owner);
 
         return new ResponseEntity(HttpStatus.OK);
-    }
-    */
-
-    // 추후에...
-//    @PostMapping("/sendTempPw")
-//    @PostMapping("/resetPw")
+    } */
 }

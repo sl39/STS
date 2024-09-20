@@ -11,6 +11,7 @@ import org.ex.back.domain.menu.model.MenuEntity;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 @Entity
 @Table(name="cart_entity")
 public class CartEntity {

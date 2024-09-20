@@ -39,6 +39,14 @@ dependencies {
 
 	// JSON 변환
 	implementation("com.google.code.gson:gson:2.10.1")
+
+	// jjwt
+	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+
+	// Firebase Admin SDK (FCM)
+	implementation("com.google.firebase:firebase-admin:9.3.0")
 }
 
 tasks.withType<Test> {

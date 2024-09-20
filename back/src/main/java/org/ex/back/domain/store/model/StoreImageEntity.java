@@ -21,6 +21,6 @@ public class StoreImageEntity {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer store_image_pk;
 	
-	@Column
+	@Column(length = 1000)
 	private String imageUrl;
 }

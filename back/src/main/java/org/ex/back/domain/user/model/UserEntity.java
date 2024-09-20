@@ -27,6 +27,12 @@ public class UserEntity {
 	
 	@Column
 	private String email;
+
+	@Column
+	private String phone;
+
+	@Column
+	private String kakaoToken;
 	
 	@Column
 	private String socialId;
