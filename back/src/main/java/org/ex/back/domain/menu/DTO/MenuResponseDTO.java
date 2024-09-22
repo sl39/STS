@@ -1,13 +1,17 @@
 package org.ex.back.domain.menu.DTO;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.ex.back.domain.menu.model.MenuOptionEntity;
+import org.ex.back.domain.menu.model.OptionItemEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
-//리턴해줄 데이터 타입 정의
+@Setter
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 //메뉴 응답 값
 public class MenuResponseDTO {
     // 카테고리 값
@@ -37,18 +41,19 @@ public class MenuResponseDTO {
     //주류 여부
     private Boolean isAlcohol;
 
-    //메뉴 옵션 기본키
-    private Integer menu_option_pk;
+    //모든 옵션 리스트(제목, 최대, 최소, 아이템 리스트)
+    private List<OptionsDTO> options;
 
-    //옵션 제목
-    private String opSubject;
-
-    //옵션 최소 선택 수
-    private Integer minCount;
-
-    //옵션 최대 선택수
-    private Integer maxCount;
-
-    //옵션 리스트
-    private List<OptionItemList> optionItem;
+    //메뉴 리스트 조회시 옵션 제외
+    public MenuResponseDTO(Integer menuPk, Integer menuCategoryPk, String subject, String name, Integer price, String description, String imageUrl, Boolean isBestMenu, Boolean isAlcohol) {
+        this.menu_pk = menuPk;
+        this.category_pk = menuCategoryPk;
+        this.subject = subject;
+        this.name = name;
+        this.price = price;
+        this.description = description;
+        this.imageURL = imageUrl;
+        this.isBestMenu = isBestMenu;
+        this.isAlcohol = isAlcohol;
+    }
 }

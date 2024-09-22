@@ -9,6 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 @Entity
 @Table(name="menu_entity")
 public class MenuEntity {
@@ -25,10 +26,10 @@ public class MenuEntity {
 	@JoinColumn(name="menu_category_pk")
 	private MenuCategoryEntity menuCategory;
 
-	@OneToMany
-	@JoinColumn(name="menu_option_pk")
+	@OneToMany(cascade = CascadeType.ALL)
 	private List<MenuOptionEntity> menuOptions;
-	
+
+	//메뉴 생성
 	@Column
 	private String name;
 	

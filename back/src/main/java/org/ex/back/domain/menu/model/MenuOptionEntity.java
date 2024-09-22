@@ -8,18 +8,17 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 @Entity
 @Table(name="menu_option_entity")
 public class MenuOptionEntity {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer menu_option_pk;
-	
-	@OneToMany
-	@JoinColumn(name="option_item_pk")
+
+	@OneToMany(cascade = CascadeType.ALL)
 	private List<OptionItemEntity> optionItems;
-	
+
 	@Column
 	private String subject;
 

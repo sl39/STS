@@ -32,7 +32,7 @@ public class OwnerEntity {
 	private String email;
 	
 	@Column
-	private String BRN; //사업자등록번호
+	private String businessNumber; //사업자등록번호
 	
 	@Column
 	private String name;

@@ -1,8 +1,11 @@
 package org.ex.back.domain.menu.DTO;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Getter
 @NoArgsConstructor
 //카테고리 응답 값

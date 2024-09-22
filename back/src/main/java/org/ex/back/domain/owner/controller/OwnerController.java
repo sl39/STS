@@ -39,7 +39,7 @@ import java.util.Map;
 @RequestMapping("/api/auth/seller")
 public class OwnerController {
 
-    @Value("${openApi.serviceKey}")
+  /*  @Value("${openApi.serviceKey}")
     private String serviceKey;
 
     private final OwnerService ownerService;

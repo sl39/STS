@@ -1,12 +1,64 @@
 package org.ex.back.domain.menu.Controller;
 
 import lombok.RequiredArgsConstructor;
+import org.ex.back.domain.menu.DTO.MenuRequestDTO;
+import org.ex.back.domain.menu.DTO.MenuResponseDTO;
 import org.ex.back.domain.menu.Service.MenuService;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-// 요청 API에 따라(사용자, 판매자) 판매자 입장에서의 CRUD, 사용자 입장에서의 R 로직 작성
+import java.util.List;
+
+// 요청 API에 따라(사용자, 판매자) CRUD
 @RequiredArgsConstructor
 @RestController
 public class MenuController {
+    //Menu별 서비스 연결
     private final MenuService menuService;
+
+    //판매자
+    //메뉴 생성
+    @PostMapping("api/store/{id}/menu")
+    public ResponseEntity<MenuResponseDTO> addCategory(@PathVariable int id, @RequestBody MenuRequestDTO request) {
+        MenuResponseDTO response = menuService.createdMenu(id, request);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    //메뉴리스트 조회
+    @GetMapping("api/store/{id}/menu")
+    public ResponseEntity<List<MenuResponseDTO>> getMenuList(@PathVariable int id) {
+        List<MenuResponseDTO> response = menuService.getMenuList(id);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
+
+    //메뉴 상세 조회
+    @GetMapping("api/menu/{menuid}/menu")
+    public ResponseEntity<MenuResponseDTO> getMenu(@PathVariable int menuid) {
+        MenuResponseDTO response = menuService.getMenu(menuid);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
+
+
+    //메뉴 수정
+    //@PutMapping("api/store/{id}/menu/{menuid}")
+    //public MenuResponseDTO putMenu(@PathVariable int id, @PathVariable int menuid, @RequestBody MenuRequestDTO request) {
+    //}
+
+    //메뉴 삭제
+    @DeleteMapping("api/store/{id}/menu")
+    public void deleteMenu(@PathVariable int id, @RequestBody MenuRequestDTO request) {
+        //삭제 쿼리
+    }
 }
