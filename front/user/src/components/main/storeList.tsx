@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import React, { FC, useEffect, useState } from "react";
 import {
   FlatList,
@@ -17,6 +18,10 @@ export const StoreList: React.FC<InputDateProps> = ({ inputData }) => {
   const { type, val } = inputData;
   const [storeList, setStoreList] = useState<itemData[]>([]);
   const [numColumns, setNumColumns] = useState<number>(1);
+  const router = useRouter();
+  const handleEnter = (storepk : number) => {
+    router.push(`/store/${storepk}`);
+  };
   useEffect(() => {
     if (width >= 768) {
       setNumColumns(2);
@@ -48,7 +53,7 @@ export const StoreList: React.FC<InputDateProps> = ({ inputData }) => {
       <Item
         item={item}
         onPress={() => {
-          console.log(item.storePk);
+          handleEnter(item.storePk)
         }}
         backgroundColor={"#FFFFFF"}
         width={width >= 768 ? 384 : width}
