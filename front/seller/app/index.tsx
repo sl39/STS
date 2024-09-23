@@ -1,15 +1,12 @@
-import { Link, useRouter } from "expo-router";
-import { Text, View } from "react-native";
+import React from "react";
+import { SafeAreaView, Text, View } from "react-native";
+import { Login } from "../src/components/login";
+import { FireBaseImage } from "../src/components/common";
 
 export default function index() {
-  const router = useRouter();
-  const handleEnter = () => {
-    router.push("/main");
-  };
   return (
-    <View>
-      <Text> Login 화면 입니다</Text>
-      <button onClick={handleEnter}> main 화면으로 이동</button>
-    </View>
+    <SafeAreaView style={{ height: "100%" }}>
+      <Login />
+    </SafeAreaView>
   );
 }
