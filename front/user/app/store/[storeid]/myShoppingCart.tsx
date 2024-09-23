@@ -9,6 +9,14 @@ import MenuItem from "react-native-paper/lib/typescript/components/Menu/MenuItem
 
 function myShoppingCart() {
   
+  type ShoppingCartProps = {
+    imageUrls: string;
+    MenuCategory: string;
+    MenuOptions: string;
+    MenuPrice: number;
+    numColumns: number;  // 여기에 numColumns 추가
+  };
+
   const { height, width } = useWindowDimensions();
 
   const param = useGlobalSearchParams();
@@ -74,19 +82,24 @@ const MySCLists = [
     setNumber(Number + 1);
   };
 
+  const [numColumns, setNumColumns] = useState<number>(1);
+  useEffect(() => {
+    if (width >= 768) {
+      setNumColumns(2);
+    } else {
+      setNumColumns(1);
+    }
+  }, [width]);
+
 return (
-  <ScrollView>
-    <View style={{backgroundColor: '#F2F2F2', flex: 1, alignItems:'center'}}>
-      <View style={{backgroundColor: '#FFFFFF', width: width >= 786 ? 786 : width, flexShrink: 0}}>
-        <View style={{height:'15%'}}>
-      <div>
-        <h3 style={{textAlign:'center'}}>{storeName}</h3>
-      </div>
-      {MySCLists.map(Menu => <ShoppingCart key={Menu.id} imageUrls={Menu.imageUrls} MenuCategory={Menu.MenuCategory} MenuOptions={Menu.MenuOptions} MenuPrice={Menu.MenuPrice}/> )}
+  <ScrollView showsVerticalScrollIndicator={false}>
+      <View style={{backgroundColor: '#F2F2F2',  alignItems:'center'}}>
+      <View style={{backgroundColor: '#FFFFFF', width: width >= 786 ? 786 : width}}>
+        <Text style={{fontSize: 40, textAlign:'center', margin: 10}}>{storeName}</Text>
+      {MySCLists.map(Menu => <ShoppingCart key={Menu.id} imageUrls={Menu.imageUrls} MenuCategory={Menu.MenuCategory} MenuOptions={Menu.MenuOptions} MenuPrice={Menu.MenuPrice} />)}
     <Button style={[styles.button]} onPress={handleEnter}>
       <Text style={[styles.text]}>{MenuPrice*Number}원 결제하기</Text>
     </Button>
-    </View>
     </View>
     </View>
   </ScrollView>
@@ -102,7 +115,7 @@ const styles = StyleSheet.create({
     text_medium: {fontSize: 20, color:Colors.grey900},
     text_large: {fontSize: 30, color:Colors.grey900},
     button: {backgroundColor:Colors.grey300},
-    text: {color:Colors.black}
+    text: {color:Colors.black, margin:10}
 })
 
 export default myShoppingCart;

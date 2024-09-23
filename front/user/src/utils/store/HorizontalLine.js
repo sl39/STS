@@ -1,16 +1,17 @@
 import React from "react";
+import { View } from "react-native";
 
 const HorizonLine = () => {
   return (
-    <div
-      style={{
-        width: "100%",
-        borderBottom: "1px solid #aaa",
-        lineHeight: "0.1em",
-      }}
-    >
-      <span style={{ background: "#000"}}></span>
-    </div>
+    <View
+    style={{
+      width: "100%",
+      borderBottomWidth: 1,
+      borderBottomColor: "#aaa",
+      lineHeight: 1
+    }}
+  >
+  </View>
   );
 };
 
