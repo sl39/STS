@@ -22,6 +22,9 @@ export const styles = StyleSheet.create({
     paddingHorizontal: "5%",
     marginStart: "5%",
   },
+  spacer: {
+    height: 20,
+  },
   title: {
     fontSize: 20,
     fontWeight: "bold",
@@ -38,6 +41,22 @@ export const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 10,
     alignItems: "center",
+  },
+  cardorcashContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cardorcash: {
+    display: "flex",
+    backgroundColor: "#D9D9D9",
+    justifyContent: "center", // 가로 방향 중앙 정렬
+    alignItems: "center", // 세로 방향 중앙 정렬
+    padding: 70,
+    borderRadius: 5,
+    margin: 10,
+
+    alignSelf: "center", // 부모 컨테이너 내에서 중앙 정렬
   },
   buttonText: {
     color: "white",
@@ -116,6 +135,10 @@ export const styles = StyleSheet.create({
   },
   selectedButton: {
     backgroundColor: "#007AFF",
+    padding: 15,
+    borderRadius: 5,
+    marginBottom: 10,
+    alignItems: "center",
   },
   disabledButton: {
     opacity: 0.5,
@@ -127,10 +150,19 @@ export const styles = StyleSheet.create({
   },
   menuButton: {
     backgroundColor: "#000",
-    padding: 15,
-    borderRadius: 5,
-    marginBottom: 10,
     alignItems: "center",
+    margin: 5,
+    padding: 8,
+  },
+  menuButtonsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  lineBreak: {
+    height: 1,
+    width: "100%",
+    backgroundColor: "#D9D9D9",
+    marginBottom: 10,
   },
 });
 

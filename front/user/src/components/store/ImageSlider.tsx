@@ -9,7 +9,7 @@ const { width: screenWidth } = Dimensions.get('window');
 
 export type ImageSliderProps = {
   imageUrls: string[];
-  imageWidth?: number;   // 이미지 너비를 받음 (기본값은 화면 너비)
+  imageWidth?: number;
   showThumbnails?: boolean;
 };
 
@@ -17,7 +17,7 @@ const circleWidth = 10, circleMarginRight = 5, thumbnailsSize = 30;
 
 export const ImageSlider: React.FC<ImageSliderProps> = ({
   imageUrls,
-  imageWidth = screenWidth,  // 기본 이미지 너비를 화면 너비로 설정
+  imageWidth = screenWidth,
   showThumbnails
 }) => {
   const flatListRef = useRef<FlatList | null>(null);
@@ -29,7 +29,7 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({
   const limitedImageUrls = useMemo(() => imageUrls.slice(0, 5), [imageUrls]);
 
   const viewabilityConfig = useMemo(() => ({
-    itemVisiblePercentThreshold: 50, // 화면의 50% 이상 보이는 항목을 viewableItems로 간주
+    itemVisiblePercentThreshold: 50,
   }), []);
 
   const onViewableItemsChanged = useCallback(({ viewableItems }: { viewableItems: any[] }) => {
@@ -74,7 +74,7 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({
   });
 
   return (
-    <View style={{ width: imageWidth }}> 
+    <View style={{ width: imageWidth }}>
       <FlatList
         ref={flatListRef}
         horizontal
@@ -96,7 +96,7 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({
       <View style={styles.iconBar}>
         <View style={{ flexDirection: 'row' }}>
           {circles}
-          <Animated.View style={[styles.circle, styles.selectedCircle, translateX]} />
+          <Animated.View style={[styles.circle, styles.selectedCircle, translateX]}/>
         </View>
       </View>
       {showThumbnails && (
