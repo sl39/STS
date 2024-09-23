@@ -1,10 +1,8 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
-import { useWindowDimensions, View, Text, Image, ScrollView, LayoutChangeEvent, findNodeHandle, InteractionManager, TouchableOpacity, SafeAreaView } from 'react-native'
+import  React, { forwardRef } from 'react'
+import { Image, SafeAreaView, ScrollView, Text, useWindowDimensions, View } from 'react-native'
 import { MD2Colors as Colors} from 'react-native-paper'
 import HorizonLine from '../../utils/store/HorizontalLine';
-import useMoveScroll from '../../hooks/useMoveScroll';
 import {useGlobalSearchParams, useRouter } from 'expo-router';
-import { CategoryList } from '../main';
 
 type MenuItem = {
     id: number;
@@ -28,7 +26,7 @@ type MenuItem = {
     scrollToCategory: (categoryName: string) => void;
   }
 
-const RepresentativeMenu = forwardRef<RepresentativeMenuHandle, RepresentativeMenuProps>(({ inputData,onLayout  }, ref) => {
+const RepresentativeMenu = forwardRef<RepresentativeMenuHandle, RepresentativeMenuProps>(({ inputData, onLayout  }, ref) => {
 
   const param = useGlobalSearchParams();
   const router = useRouter();
