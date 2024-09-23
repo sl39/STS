@@ -17,7 +17,7 @@ function App(): React.JSX.Element {
 
   const handlePaymentRequest = () => {
     if (!phoneNumber.trim()) {      
-      
+      alert('휴대폰 번호를 입력해주세요');
     } else {
       router.push(`/store/${storeid}/table/${tableid}/payments/pay`);
     }
@@ -25,11 +25,14 @@ function App(): React.JSX.Element {
   const handlePhoneNumberInput = (text: string) => {
     setPhoneNumber(text);
   }
-  const handlesocketRequest = () => {
-    router.push(`/store/${storeid}/table/${tableid}/payments/pay/soket`);
+  const handlepayRequest = () => {
+    router.push(`/store/${storeid}/table/${tableid}/payments/pay`);
   };
   const handleDutchpayRequest = () => {
     router.push(`/store/${storeid}/table/${tableid}/payments/dutchpay`);
+  };
+  const handleDirectpayRequest = () => {
+    router.push(`/store/${storeid}/table/${tableid}/payments/directpay`);
   };
  
   const handleInput = (text: string) => {
@@ -44,19 +47,19 @@ function App(): React.JSX.Element {
         >
         <Text style={styles.title}>결제 방법</Text>
         <View style={styles.buttonContainer}>      
-          <TouchableOpacity style={styles.button} onPress={handlesocketRequest}>
+          <TouchableOpacity style={ styles.button && styles.selectedButton} >
             <Text style={styles.buttonText}>간편 결제</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleDutchpayRequest}>
             <Text style={styles.buttonText}>더치페이</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleDutchpayRequest}>
-            <Text style={styles.buttonText}>결제</Text>
+          <TouchableOpacity style={styles.button} onPress={handleDirectpayRequest}>
+            <Text style={styles.buttonText}>현장 결제</Text>
           </TouchableOpacity>          
         </View>
         <View style={[styles.inputContainer]}>
         <TouchableOpacity style={styles.inputtext}>
-            <Text style={styles.orderTitle}>주문 요청 사항</Text>
+            <Text style={styles.orderTitle}>주문 요청 사항</Text> 
           </TouchableOpacity>
           <TextInput
             style={styles.input}

@@ -25,7 +25,7 @@
     },
     "plugins": [
       "expo-router"
-    ]
-  },
-  "scheme": "your-app-scheme"
+    ],
+    "scheme": "myapp"
+  }
 }

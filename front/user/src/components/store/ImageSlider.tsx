@@ -6,33 +6,45 @@ import { MD2Colors as Colors } from 'react-native-paper'
 import { useAnimatedValue, useMonitorAnimatedValue } from '../../hooks'
 
 export type ImageSliderProps = {
-  imageUrls: string[]
-  imageWidth: number
-  imageHeight: number
-  showThumbnails?: boolean
-  autoSlideInterval?: number // 자동슬라이드 간격(ms)
-}
+  imageUrls: string[];
+  imageWidth?: number;   // 이미지 너비를 받음 (기본값은 화면 너비)
+  showThumbnails?: boolean;
+};
+
+const circleWidth = 10, circleMarginRight = 5, thumbnailsSize = 30;
 
 export const ImageSlider: FC<ImageSliderProps> = ({
   imageUrls,
-  imageWidth,
-  imageHeight,
-  showThumbnails,
-  autoSlideInterval = 3000,
+  imageWidth = screenWidth,  // 기본 이미지 너비를 화면 너비로 설정
+  showThumbnails
 }) => {
-  const flatListRef = useRef<FlatList | null>(null)
-  const selectedIndexAnimValue = useAnimatedValue(0)
-  const selectedIndex = useMonitorAnimatedValue(selectedIndexAnimValue)
+  const flatListRef = useRef<FlatList | null>(null);
+  const selectedIndexAnimValue = useAnimatedValue(0);
+  const selectedIndex = useMonitorAnimatedValue(selectedIndexAnimValue);
+  const circleWidthAnimValue = useAnimatedValue(circleWidth);
+  const circleMarginRightAnimValue = useAnimatedValue(circleMarginRight);
 
-  const onScroll = useCallback(
-    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      if (imageWidth == 0) return
-      const { contentOffset } = event.nativeEvent
-      const index = Math.round(contentOffset.x / imageWidth)
-      selectedIndexAnimValue.setValue(index)
-    },
-    [imageWidth]
-  )
+  const limitedImageUrls = useMemo(() => imageUrls.slice(0, 5), [imageUrls]);
+
+  const viewabilityConfig = useMemo(() => ({
+    itemVisiblePercentThreshold: 50, // 화면의 50% 이상 보이는 항목을 viewableItems로 간주
+  }), []);
+
+  const onViewableItemsChanged = useCallback(({ viewableItems }: { viewableItems: any[] }) => {
+    if (viewableItems.length > 0) {
+      const index = viewableItems[0].index ?? 0;
+      selectedIndexAnimValue.setValue(index);
+    }
+  }, [selectedIndexAnimValue]);
+
+  const onScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (imageWidth === 0) return;
+    const { contentOffset } = event.nativeEvent;
+    const index = Math.round(contentOffset.x / imageWidth);
+    if (index !== selectedIndex) {
+      selectedIndexAnimValue.setValue(index);
+    }
+  }, [imageWidth, selectedIndex, selectedIndexAnimValue]);
 
   const selectImage = useCallback(
     (index: number) => () => {
@@ -68,9 +80,20 @@ export const ImageSlider: FC<ImageSliderProps> = ({
         )}
         keyExtractor={(item, index) => index.toString()}
       />
-     </View>
-  )
-}
+      <View style={styles.iconBar}>
+        <View style={{ flexDirection: 'row' }}>
+          {circles}
+          <Animated.View style={[styles.circle, styles.selectedCircle, translateX]} />
+        </View>
+      </View>
+      {showThumbnails && (
+        <View style={[styles.iconBar, { justifyContent: 'space-between' }]}>
+          {thumbnails}
+        </View>
+      )}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   image: { height: 150, resizeMode: 'cover' },
