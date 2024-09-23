@@ -135,9 +135,7 @@ const Main = () => {
 
       const [categoryPositions, setCategoryPositions] = useState<{ [key: string]: number }>({});
 
-      useEffect(() => {
-        console.log("scrollRef.current:", scrollRef.current);
-      }, []);
+      
 
       const handleCategoryClick = (categoryName: string) => {
         const yPosition = categoryPositions[categoryName];
