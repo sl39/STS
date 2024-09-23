@@ -32,7 +32,7 @@ public class OwnerSignUpRequestDto {
                 .id(id)
                 .password(password)
                 .email(email)
-                .BRN(BRN)
+                .businessNumber(BRN)
                 .name(ownerName)
                 .phone(ownerPhone)
                 .bankAccount(bankAccount)
