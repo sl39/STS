@@ -1,8 +1,10 @@
-import react from 'react'
-import { View, Text, ScrollView, useWindowDimensions } from 'react-native';
+import React from 'react'
+import { View, Text, ScrollView, useWindowDimensions, Image, TouchableOpacity, Button } from 'react-native';
 import HorizonLine from '../../../src/utils/store/HorizontalLine';
 import OrderList from '../../../src/components/store/OrderList'
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useGlobalSearchParams, useRouter } from 'expo-router';
+import {MD2Colors as Colors} from 'react-native-paper'
 
 const imageUrl='https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20240730_266%2F1722342582932jnQFn_JPEG%2FKakaoTalk_20240730_212808944_01.jpg'
 const nickname='STS'
@@ -40,38 +42,48 @@ const OrderLists = [
       },
 ]
 
-// 해야 할 것 1. 로그아웃 버튼 기능 및 로그아웃 했을 때 보여줄 화면 2. 주문내역 리스트 컴포넌트 불러오기
-// 주문내역 보여주고 끝? 내역 클릭하면 다른 화면이 나온다거나 영수증이 출력된다거나 하는 기능 없이?
+
+
 function myOrderList() {
   
   const { height, width } = useWindowDimensions();
 
+  const param = useGlobalSearchParams();
+  const router = useRouter();
+
+  const handlePaymentRequest = () => {
+    router.push(`store/${param.storeid}/myDetailOrderList`);
+  };
+
 return (  
-  <ScrollView>
+  <ScrollView showsVerticalScrollIndicator={false}>
     <View style={{backgroundColor: '#F2F2F2', flex: 1, alignItems:'center'}}>
       <View style={{backgroundColor: '#FFFFFF', width: width >= 786 ? 786 : width}}>
         <View style={{height:'10%', margin:10, flexDirection:'row'}}>
           <View style={{flex: 1, justifyContent:'space-between'}}>
-            <h2>내 정보</h2>
-            <img src={imageUrl} width={120} height={80} style={{marginRight:10}}/>
+            <Text style={{fontSize: 20}}>내 정보</Text>
+            <Image source={{uri : imageUrl}} style={{width:120, height:80, marginRight:10}}/>
           </View>
-            <View style={{flex: 3, marginTop:55}}>
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-start' }}>
-          <Text style={{ marginLeft: 10 }}>{nickname}</Text>
+            <View style={{flex: 2, marginTop:55}}>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start' }}>
+          <Text >{nickname}</Text>
         </View>
         <View style={{ justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-          <button style={{ width: 85, height: 30, margin: 10 }}>로그아웃</button>
+          <TouchableOpacity style={{width: 85, height : 30, marginRight : 10, backgroundColor:Colors.grey300}}>
+            <Text style={{textAlign:'center', justifyContent:'center', alignContent:'center'}}>로그아웃</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
         <HorizonLine/>
-        <View>
-            <h2 style={{marginLeft: 15}}>주문 내역 리스트</h2>
+        <View style={{marginTop: 20}}>
+            <Text style={{fontSize: 20, marginLeft: 15}}>주문 내역 리스트</Text>
             {OrderLists.map(Order => 
             <OrderList key={Order.id}orderedAt={Order.orderedAt} imageUrl={Order.imageUrl} storeName={Order.storeName} address={Order.address}/>
             )}
           </View>
       </View>
+      <Button onPress={handlePaymentRequest} title='주문내역 디테일창 가기'/>
     </View>
   </ScrollView>
 )

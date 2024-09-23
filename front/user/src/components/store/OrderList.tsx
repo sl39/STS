@@ -1,5 +1,5 @@
 import react from 'react'
-import { StyleSheet, ScrollView, useWindowDimensions, View } from 'react-native'
+import { StyleSheet, ScrollView, useWindowDimensions, View, Text, Image } from 'react-native'
 import HorizonLine from "../../../src/utils/store/HorizontalLine";
 
 //이거 나중에 전부 string만 남겨야 하려나
@@ -10,16 +10,16 @@ function OrderList(Order: { orderedAt: string | number | boolean | react.ReactEl
   return (
     <View style={{backgroundColor: '#F2F2F2', alignItems:'center'}}>
       <View style={{backgroundColor: '#FFFFFF', width: width >= 786 ? 786 : width}}>
-    <section style={styles.home}>
-      <div style={styles.box}>
-        <h5>{Order.orderedAt}</h5>
-        <img src={Order.imageUrl} style={{width: 100, height:100}}></img>
-      </div>
-      <div style={{marginTop:35}}>
-        <h2>{Order.storeName}</h2>
-        <h3>{Order.address}</h3>
-      </div>
-    </section>
+    <View style={styles.home} >
+      <View style={styles.box}>
+        <Text style={{fontSize:14}}>{Order.orderedAt}</Text>
+        <Image source={{uri : Order.imageUrl}} style={{width: 100, height:100, marginTop: 10}}></Image>
+      </View>
+      <View style={{marginTop:35, marginLeft: 30}}>
+        <Text style={{fontSize: 20}}>{Order.storeName}</Text>
+        <Text style={{fontSize: 18}}>{Order.address}</Text>
+      </View>
+    </View>
     <HorizonLine />
     </View>
     </View>
@@ -27,8 +27,8 @@ function OrderList(Order: { orderedAt: string | number | boolean | react.ReactEl
 }
 
 const styles= StyleSheet.create({
-home: {width:'100%', display:'flex', flexDirection:'row'},
+home: {width:'100%', display:'flex', flexDirection:'row', marginTop:20, marginBottom:20},
 container: {flex: 1, display: 'flex'},
-box: {flexBasis: '20%', height: 250, marginLeft: 25},
+box: {flexBasis: '20%', marginLeft: 25},
 })
 export default OrderList
