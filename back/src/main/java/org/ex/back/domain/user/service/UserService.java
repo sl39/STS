@@ -45,7 +45,7 @@ public class UserService {
 
         // 2. DB에 저장된 refreshToken과 요청으로 온 refreshToken이 동일한지 확인
         log.info("token 정보 DB와 비교 시작");
-        Integer userPk = Integer.parseInt(jwtTokenProvider.getPkFromJwtToken(refreshToken));
+        Integer userPk = jwtTokenProvider.getPkFromJwtToken(refreshToken);
         Optional<RefreshTokenEntity> opToken = tokenRepository.findByUserPk(userPk);
         if(opToken.isPresent()){
             RefreshTokenEntity refreshTokenEntity = opToken.get();

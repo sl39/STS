@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.ex.back.global.enumclass.Role;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -61,8 +62,12 @@ public class JwtTokenProvider {
      *       토큰 -> 정보
      * */
 
-    public String getPkFromJwtToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+    public Integer getPkFromJwtToken(String token) {
+        return Integer.parseInt(Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject());
+    }
+
+    public String getRoleFromJwtToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("role", String.class);
     }
 
     public boolean validateJwtToken(String token) {

@@ -8,6 +8,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ex.back.domain.owner.service.CustomOwnerDetailsService;
+import org.ex.back.global.error.CustomException;
+import org.ex.back.global.error.ErrorCode;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -25,6 +28,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomOwnerDetailsService userDetailsService;
+    private final BlacklistRepository blacklistRepository;
 
     @Override
     protected void doFilterInternal(
@@ -50,7 +54,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if (jwtTokenProvider.validateJwtToken(jwt)) {
                 log.info("jwt 검증 통과");
 
-                Integer ownerPk = Integer.parseInt(jwtTokenProvider.getPkFromJwtToken(jwt));
+                // BlackList 확인
+                Optional<BlacklistEntity> entity = blacklistRepository.findByToken(jwt);
+                if (entity.isPresent()) {
+                    throw new CustomException(ErrorCode.RELOGIN_REQUIRED);
+                }
+
+                Integer ownerPk = jwtTokenProvider.getPkFromJwtToken(jwt);
                 log.info("ownerPk 추출 : {}", ownerPk);
 
                 UserDetails userDetails = userDetailsService.loadUserByPk(ownerPk);
@@ -65,7 +75,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         } catch (Exception ex) {
             throw new RuntimeException("문제가 발생했습니다 : " + ex.getMessage());
         }
-
 
         filterChain.doFilter(request, response);
     }
