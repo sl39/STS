@@ -14,7 +14,6 @@ const PaymentPage: React.FC = () => {
     // 새로고침 로직 구현
     console.log('페이지 새로고침');
   };
-
   return <OrderInProgress onClose={handleClose} onRefresh={handleRefresh} />;
 };
 

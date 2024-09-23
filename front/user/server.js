@@ -10,7 +10,6 @@ app.use(express.json());
 
 try {
   require('dotenv').config({ path: './key.env' });
-  console.log('환경 변수가 성공적으로 로드되었습니다.');
 } catch (error) {
   console.error('환경 변수 로드 중 오류 발생:', error);
 }
@@ -22,8 +21,6 @@ if (!IAMPORT_API_KEY || !IAMPORT_API_SECRET) {
   console.error('IAMPORT_API_KEY 또는 IAMPORT_API_SECRET이 설정되지 않았습니다.');
   process.exit(1);
 }
-
-console.log('IAMPORT_API_KEY와 IAMPORT_API_SECRET이 정상적으로 설정되었습니다.');
 
 const server = http.createServer(app);
 const io = socketIo(server, {
