@@ -30,6 +30,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	compileOnly("org.projectlombok:lombok")
 
+
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 
 	annotationProcessor("org.projectlombok:lombok")
@@ -39,6 +40,12 @@ dependencies {
 
 	// JSON 변환
 	implementation("com.google.code.gson:gson:2.10.1")
+	//firebase연결
+	implementation("com.google.firebase:firebase-admin:9.3.0")
+
+	//coolsms
+	implementation("net.nurigo:sdk:4.3.0")
+	implementation ("org.springframework.boot:spring-boot-starter-validation")
 }
 
 tasks.withType<Test> {
