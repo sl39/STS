@@ -12,5 +12,6 @@ public interface SmsRepository extends JpaRepository<SMSEntity, String> {
     
     //5분마다 삭제
     void deleteByExpirationTimeBefore(LocalDateTime expirationTime);
-    
+
+    SMSEntity findByPhoneNum(String phoneNum);
 }
