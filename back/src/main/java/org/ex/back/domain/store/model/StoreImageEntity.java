@@ -23,6 +23,5 @@ public class StoreImageEntity {
 	private Integer store_image_pk;
 	
 	@Column
-	private String imageUrl;
-	
+	private String imageUrl; 
 }

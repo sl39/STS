@@ -5,8 +5,8 @@ import java.util.List;
 
 @Data
 public class GeocodingResponse {
-    private List<Result> results;
     private String status;
+    private List<Result> results;
 
     @Data
     public static class Result {
@@ -18,8 +18,8 @@ public class GeocodingResponse {
 
             @Data
             public static class Location {
-                private double lat;
-                private double lng;
+                private Double lat;
+                private Double lng;
             }
         }
     }

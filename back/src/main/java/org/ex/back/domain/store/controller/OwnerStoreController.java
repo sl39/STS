@@ -1,14 +1,15 @@
 package org.ex.back.domain.store.controller;
 
 import org.ex.back.domain.store.dto.ImageUrlsDTO;
+import org.ex.back.domain.store.dto.ResponseDTO;
 import org.ex.back.domain.store.dto.StoreDTO;
 import org.ex.back.domain.store.dto.StoreUpdateDTO;
-import org.ex.back.domain.store.model.StoreImageEntity;
 import org.ex.back.domain.store.service.GeocodingService;
 import org.ex.back.domain.store.service.OwnerStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -23,7 +24,7 @@ public class OwnerStoreController {
 
     @Autowired
     private OwnerStoreService storeService;
-    
+
     @Autowired
     private GeocodingService geocodingService;
 
@@ -32,26 +33,32 @@ public class OwnerStoreController {
     public ResponseEntity<Map<String, Object>> getStoreById(@PathVariable("store_pk") Integer storePk) {
         try {
             StoreDTO store = storeService.findStoreById(storePk);
-            if (store != null) {
-                List<Integer> categoryPks = storeService.findCategoryPksByStoreId(storePk);
-                Map<String, Object> response = new HashMap<>();
-                response.put("store", store);
-                response.put("store_category_pks", categoryPks);
-
-                return ResponseEntity.ok(response);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
+            List<Integer> categoryPks = storeService.findCategoryPksByStoreId(storePk);
+            Map<String, Object> response = new HashMap<>();
+            response.put("store", store);
+            response.put("categoryPks", categoryPks);
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(500).body(Map.of("error", "매장 조회 중 오류가 발생했습니다."));
         }
     }
 
     // 매장 등록 API
-    @PostMapping
-    public ResponseEntity<StoreDTO> createStore(@RequestBody StoreDTO newStore) {
+    @PostMapping("/{owner_pk}")
+    public ResponseEntity<StoreDTO> createStore(
+            @PathVariable("owner_pk") Integer ownerPk, // owner_pk를 PathVariable로 받음
+            @RequestBody StoreDTO newStore) {
         try {
+            // 소유자가 매장을 가지고 있는지 확인
+            boolean hasStore = storeService.doesOwnerHaveStore(ownerPk);
+            if (hasStore) {
+                return ResponseEntity.badRequest().body(null); // 이미 매장이 있을 경우 등록 실패
+            }
+
+            // owner_pk 설정
+            newStore.setOwnerPk(ownerPk); // ownerPk 설정
+
             // 기본값 설정
             if (newStore.getIsOpen() == null) {
                 newStore.setIsOpen(false);
@@ -60,103 +67,126 @@ public class OwnerStoreController {
                 newStore.setStoreImages(new ArrayList<>()); // 빈 리스트 초기화
             }
 
+            // 주소를 좌표로 변환
+            if (newStore.getAddress() != null && !newStore.getAddress().isEmpty()) {
+                Double[] coordinates = geocodingService.getCoordinates(newStore.getAddress());
+                if (coordinates != null) {
+                    newStore.setLat(coordinates[0]); // 위도 설정
+                    newStore.setLng(coordinates[1]); // 경도 설정
+                    System.out.println("저장할 좌표: 위도 = " + newStore.getLat() + ", 경도 = " + newStore.getLng());
+                } else {
+                    return ResponseEntity.badRequest().body(null); // 좌표 찾기 실패
+                }
+            }
+
             // 매장 저장
             StoreDTO savedStore = storeService.saveStore(newStore);
-
-            // 이미지 저장을 위한 DTO 생성
-            ImageUrlsDTO imageUrlsDTO = new ImageUrlsDTO(savedStore.getStorePk(), null, savedStore.getStoreImages());
-            storeService.saveStoreImages(imageUrlsDTO); // 이미지 저장 메소드에서 처리
-
-            return ResponseEntity.status(201).body(savedStore); // 201 Created
-
+            return ResponseEntity.status(201).body(savedStore); // 201 Created와 함께 저장된 매장 정보 반환
         } catch (DataIntegrityViolationException e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().body(null); // 400 Bad Request
+            return ResponseEntity.badRequest().body(null); // 데이터 무결성 오류
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body(null); // 500 Internal Server Error
+            return ResponseEntity.status(500).body(null); // 일반 오류
         }
     }
-
     @PutMapping("/{store_pk}")
-    public ResponseEntity<StoreDTO> updateStore(
+    public ResponseEntity<Map<String, Object>> updateStore(
             @PathVariable("store_pk") Integer storePk,
             @RequestBody StoreUpdateDTO updatedStoreData) {
-        
+
         try {
             StoreDTO existingStore = storeService.findStoreById(storePk);
             if (existingStore == null) {
                 return ResponseEntity.notFound().build(); // 매장이 존재하지 않을 경우
             }
 
-            // 기존 createdAt 값을 유지
-            LocalDateTime createdAt = existingStore.getCreatedAt();
+            // 업데이트된 정보 설정
+            existingStore.setStoreName(updatedStoreData.getStoreName());
+            existingStore.setPhone(updatedStoreData.getPhone());
+            existingStore.setOperatingHours(updatedStoreData.getOperatingHours());
+            existingStore.setStoreState(updatedStoreData.getStoreState());
 
-            // 기존 정보에서 필요한 값만 업데이트
-            if (updatedStoreData.getStoreName() != null) {
-                existingStore.setStoreName(updatedStoreData.getStoreName());
+            // 이미지 업데이트
+            if (updatedStoreData.getStoreImages() != null) {
+                existingStore.setStoreImages(updatedStoreData.getStoreImages()); // 이미지 업데이트
             }
-            
-            if (updatedStoreData.getPhone() != null) {
-                existingStore.setPhone(updatedStoreData.getPhone());
-            }
-            if (updatedStoreData.getOperatingHours() != null) {
-                existingStore.setOperatingHours(updatedStoreData.getOperatingHours());
-            }
-            if (updatedStoreData.getStoreState() != null) {
-                existingStore.setStoreState(updatedStoreData.getStoreState());
-            }
+
+            // isOpen 값 유지
             if (updatedStoreData.getIsOpen() != null) {
                 existingStore.setIsOpen(updatedStoreData.getIsOpen());
             }
-            // 이미지 업데이트
-            List<String> updatedImages = new ArrayList<>();
-            if (updatedStoreData.getStoreImages() != null) {
-                for (String imageUrl : updatedStoreData.getStoreImages()) {
-                    // URL 로그 추가
-                    System.out.println("Received image URL: " + imageUrl);
-                    imageUrl = imageUrl.trim(); // 앞뒤 공백 제거
 
-                    if (!imageUrl.isEmpty()) {
-                        updatedImages.add(imageUrl);
+            // 주소가 업데이트되었을 경우 좌표 재계산
+            if (updatedStoreData.getAddress() != null && !updatedStoreData.getAddress().isEmpty()) {
+                if (!existingStore.getAddress().equals(updatedStoreData.getAddress())) { 
+                    existingStore.setAddress(updatedStoreData.getAddress()); // 주소 업데이트
+                    Double[] coordinates = geocodingService.getCoordinates(updatedStoreData.getAddress());
+                    if (coordinates != null) {
+                        existingStore.setLat(coordinates[0]);
+                        existingStore.setLng(coordinates[1]);
                     } else {
-                        System.out.println("Image URL is null or empty for store ID: " + storePk);
+                        return ResponseEntity.badRequest().body(Map.of("error", "좌표 계산 실패")); // 좌표 계산 실패 시 오류 메시지 반환
                     }
                 }
             }
 
-            // 기존 이미지와 새 이미지를 합치기
-            List<String> existingImages = existingStore.getStoreImages();
-            if (existingImages != null) {
-                updatedImages.addAll(existingImages);
+            // 카테고리 업데이트
+            if (updatedStoreData.getCategoryPks() != null) {
+                storeService.updateStoreCategories(storePk, updatedStoreData.getCategoryPks());
             }
 
-            existingStore.setStoreImages(updatedImages);
-
-            // createdAt 값 다시 설정
-            existingStore.setCreatedAt(createdAt); // 기존 createdAt 값 유지
-
             // 매장 저장
-            StoreDTO savedStore = storeService.saveStore(existingStore);
-            return ResponseEntity.ok(savedStore);
+            StoreDTO updatedStore = storeService.updateStore(storePk, updatedStoreData); 
+
+            // 카테고리 정보 가져오기
+            List<Integer> categoryPks = storeService.findCategoryPksByStoreId(storePk);
+
+            // 응답 구성
+            Map<String, Object> response = new HashMap<>();
+            response.put("store", updatedStore);
+            response.put("categoryPks", categoryPks); // store_category_pks를 categoryPks로 변경
+
+            return ResponseEntity.ok(response); // 업데이트된 매장 정보와 카테고리 정보 반환
+        } catch (DataIntegrityViolationException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Map.of("error", "데이터 무결성 오류")); // 데이터 무결성 오류 처리
         } catch (RuntimeException e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body(null);
+            return ResponseEntity.status(500).body(Map.of("error", "서버 오류")); // 일반 오류 처리
         }
     }
 
-    // 매장 영업 상태 전환 API
     @PutMapping("/{store_pk}/toggleStatus")
-    public ResponseEntity<StoreDTO> toggleStoreStatus(@PathVariable("store_pk") Integer storePk) {
+    public ResponseEntity<Map<String, Object>> toggleStoreStatus(@PathVariable("store_pk") Integer storePk) {
         try {
+            // 매장 ID로 매장 조회
             StoreDTO existingStore = storeService.findStoreById(storePk);
+            if (existingStore == null) {
+                return ResponseEntity.notFound().build(); // 매장이 존재하지 않을 경우
+            }
+
+            // 영업 상태 전환
             existingStore.setIsOpen(!existingStore.getIsOpen());
-            StoreDTO updatedStore = storeService.saveStore(existingStore);
-            return ResponseEntity.ok(updatedStore);
+
+            // 매장 상태만 업데이트
+            storeService.updateStoreStatus(storePk, existingStore.getIsOpen());
+
+            // 응답 구성: 변경된 상태만 반환
+            Map<String, Object> response = new HashMap<>();
+            response.put("storePk", existingStore.getStorePk());
+            response.put("isOpen", existingStore.getIsOpen());
+
+            return ResponseEntity.ok(response); // 변경된 매장 상태를 응답으로 반환
         } catch (RuntimeException e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body(null);
+            return ResponseEntity.status(500).body(Map.of("error", "매장 상태 전환 중 오류가 발생했습니다."));
         }
     }
-    
+
+    @GetMapping("/{owner_pk}/hasStore")
+    public ResponseEntity<Boolean> hasStore(@PathVariable("owner_pk") Integer ownerPk) {
+        boolean hasStore = storeService.doesOwnerHaveStore(ownerPk);
+        return ResponseEntity.ok(hasStore);
+    }
 }

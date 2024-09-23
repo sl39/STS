@@ -1,6 +1,8 @@
 package org.ex.back.domain.store.repository;
 
 import org.ex.back.domain.store.model.StoreEntity;
+import org.ex.back.domain.owner.model.OwnerEntity;
+import org.ex.back.domain.store.model.StoreImageEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,5 +17,5 @@ public interface OwnerStoreRepository extends JpaRepository<StoreEntity, Integer
                    "FROM store_category_connector_entity sc " +
                    "WHERE sc.store_pk = :storePk",
            nativeQuery = true)
-    List<Integer> findCategoryByStores(@Param("storePk") Integer storePk);
+    List<Integer> findCategoryPksByStorePk(@Param("storePk") Integer storePk);
 }
