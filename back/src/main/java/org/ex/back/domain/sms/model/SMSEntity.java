@@ -27,5 +27,8 @@ public class SMSEntity {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column
+    private LocalDateTime expirationTime;
+
+    @Column
     private Boolean certifiedState;
 }
