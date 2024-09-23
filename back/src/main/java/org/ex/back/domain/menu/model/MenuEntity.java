@@ -47,4 +47,20 @@ public class MenuEntity {
 
 	@Column
 	private Boolean isAlcohol;
+
+	//로그 찍기용 toString 메소드
+//	@Override
+//	public String toString() {
+//		return "MenuEntity{" +
+//				"menu_pk=" + menu_pk +
+//				", name='" + name + '\'' +
+//				", description='" + description + '\'' +
+//				", price=" + price +
+//				", imageUrl='" + imageUrl + '\'' +
+//				", isBestMenu=" + isBestMenu +
+//				", isAlcohol=" + isAlcohol +
+//				", menuCategory=" + (menuCategory != null ? menuCategory.getSubject() : "null") +
+//				", menuOptions=" + menuOptions +
+//				'}';
+//	}
 }

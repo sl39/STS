@@ -2,6 +2,7 @@ package org.ex.back.domain.menu.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.ex.back.domain.menu.DTO.OptionItemDTO;
 
 import java.util.List;
 
@@ -27,4 +28,13 @@ public class MenuOptionEntity {
 
 	@Column
 	private Integer maxCount; //최대 선택 개수
+
+	//옵션 DTO -> 옵션 엔티티 변환을 위한 생성자(stream)
+    public MenuOptionEntity(Integer id, String opSubject, Integer maxCount, Integer minCount, List<OptionItemEntity> optionItems) {
+    	this.menu_option_pk = id;
+		this.subject = opSubject;
+		this.maxCount = maxCount;
+		this.minCount = minCount;
+		this.optionItems = optionItems;
+	}
 }

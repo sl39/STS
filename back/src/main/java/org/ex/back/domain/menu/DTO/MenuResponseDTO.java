@@ -44,7 +44,7 @@ public class MenuResponseDTO {
     //모든 옵션 리스트(제목, 최대, 최소, 아이템 리스트)
     private List<OptionsDTO> options;
 
-    //메뉴 리스트 조회시 옵션 제외
+    //메뉴 엔티티 -> 메뉴리스폰스DTO 변환을 위한 생성자 (stream)
     public MenuResponseDTO(Integer menuPk, Integer menuCategoryPk, String subject, String name, Integer price, String description, String imageUrl, Boolean isBestMenu, Boolean isAlcohol) {
         this.menu_pk = menuPk;
         this.category_pk = menuCategoryPk;

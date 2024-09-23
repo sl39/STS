@@ -41,19 +41,13 @@ public class MenuCategoryController {
     }
 
     //메뉴 카테고리 삭제
-    @DeleteMapping("api/store/{id}/category/{ctid}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable int id, @PathVariable int ctid){
+    @DeleteMapping("api/category/{ctid}")
+    public ResponseEntity<?> deleteCategory(@PathVariable int ctid){
+        menuCategoryService.deleteCategory(ctid);
 
-        boolean isDeleted = menuCategoryService.deleteCategory(id, ctid);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
-        if(isDeleted){
-            //204 내용없음
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-        else{
-            //서버오류
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+
     }
 
 }

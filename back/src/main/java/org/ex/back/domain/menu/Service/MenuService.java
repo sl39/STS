@@ -71,6 +71,32 @@ public class MenuService {
         return optionDTO;
     }
 
+    //옵션 DTO -> 옵션 엔티티 변환
+    private List<MenuOptionEntity> convertMenuOptionEntity(List<OptionsDTO> optionDTO){
+      List<MenuOptionEntity> menuOptionEntity = optionDTO.stream()
+              .map(option -> new MenuOptionEntity(
+                      option.getId(),
+                      option.getOpSubject(),
+                      option.getMaxCount(),
+                      option.getMinCount(),
+                      convertOptionItemEntity(option.getOptionItems())
+              ))
+              .collect(Collectors.toList());
+     return menuOptionEntity;
+    }
+
+    //옵션 아이템 DTO -> 옵션 아이템 엔티티 변환
+    private List<OptionItemEntity> convertOptionItemEntity(List<OptionItemDTO> optionItemDTO){
+        List<OptionItemEntity> optionItemEntity = optionItemDTO.stream()
+                .map(item -> new OptionItemEntity(
+                        item.getId(),
+                        item.getName(),
+                        item.getExtraPrice()
+                ))
+                .collect(Collectors.toList());
+        return optionItemEntity;
+    }
+
     //메뉴 생성(request, 스토어 아이디)
     @Transactional
     public MenuResponseDTO createdMenu(int storeId, MenuRequestDTO request) {
@@ -102,8 +128,8 @@ public class MenuService {
                             .menuOptions(new ArrayList<>())
                             .build();
 
-                    //리포지 터리 저장으로 메뉴 기본키 생성
-                    menu = menuRepository.save(menu);
+                    //리포지 터리 저장으로 메뉴 기본키 생성 -> 나중에 한꺼번에 저장하는걸로
+                    //menu = menuRepository.save(menu);
                     log.info("menu 엔티티 : {}", menu);
 
                     //{이름, 최대최소, {아이템 리스트}}
@@ -131,18 +157,18 @@ public class MenuService {
                             // 저장된 옵션 아이템을 리스트에 추가
                             optionItemEntities.add(optionItemEntity);
                         }
-
                         log.info("optionItem : {}", optionItemEntities);
 
                         //메뉴 옵션 엔티티에 만들어진 아이템 리스트 저장
                         menuOptionEntity.setOptionItems(optionItemEntities);
+                        log.info("menuOptionEntity 개수 : {}", menuOptionEntity);
 
                         // 메뉴 옵션 엔티티 저장 후 PK 생성 (아이템 리스트도 Cascade 때문에 같이 저장됨 아이템 리스트 pk 생성)
-                        menuOptionEntity = menuOptionRepository.save(menuOptionEntity);
+                        //  -> 나중에 한꺼번에 저장(메뉴pk -> 메뉴 옵션 pk -> 옵션 아이템pk 순으로 cascade저장)
+                        //menuOptionEntity = menuOptionRepository.save(menuOptionEntity);
 
                         // 저장된 메뉴 옵션을 리스트에 추가
                         menuOptionEntities.add(menuOptionEntity);
-
                         log.info("menuOption 개수 : {}", menuOptionEntities);
                     }
 
@@ -161,9 +187,7 @@ public class MenuService {
 
                     //변경된 값을 repository에 저장
                     menu = menuRepository.save(menu);
-
                     log.info("Menu Options: {}", menu.getMenuOptions());
-                    //옵션 아이템 엔티티 -> 옵션 아이템 DTO
 
                     // response 값으로 변경
                     MenuResponseDTO response = MenuResponseDTO.builder()
@@ -183,9 +207,8 @@ public class MenuService {
                     return response;
 
                 } else {
-                    MenuEntity menu = new MenuEntity();
                     //엔티티값을 request 값으로 변경
-                    menu = MenuEntity.builder()
+                    MenuEntity menu = MenuEntity.builder()
                             .store(storeEntity)
                             .name(request.getName())
                             .description(request.getDescription())
@@ -278,7 +301,6 @@ public class MenuService {
                     .isAlcohol(menuEntity.getIsAlcohol())
                     .options(convertOptionsDTO(menuEntity.getMenuOptions()))
                     .build();
-
             return response;
         }
         else{
@@ -286,8 +308,73 @@ public class MenuService {
         }
     }
 
-    //메뉴 수정
+    //메뉴 수정(menuId받음, 스토어 내에서 이루어지기 때문에 스토어 Id 필요 X)
+    public MenuResponseDTO putMenu(int menuId, MenuRequestDTO request) {
+        //메뉴 id로 받아온 값 찾아서 넣기
+        Optional<MenuEntity> menu = menuRepository.findById(menuId);
 
-    //메뉴 삭제
+        if (menu.isPresent()) {
+            Optional<MenuCategoryEntity> menuCategory = menuCategoryRepository.findById(request.getCategory_pk());
 
+            if (menuCategory.isPresent()) {
+                //request의 카테고리pk와 일치하는 카테고리 객체 생성
+                MenuCategoryEntity categoryEntity = menuCategory.get();
+
+                MenuEntity menuEntity = menu.get();
+
+                log.info("menuEntity11111 : {}", menuEntity);
+
+                menuEntity = menuEntity.builder()
+                        //수정후 메뉴 pk를 유지하기 위해 새로 생성되지 않도록 기존 pk 로 설정
+                        .menu_pk(menuEntity.getMenu_pk())
+                        .menuCategory(categoryEntity)
+                        .name(request.getName())
+                        .isBestMenu(request.getIsBestMenu())
+                        .isAlcohol(request.getIsAlcohol())
+                        .price(request.getPrice())
+                        .imageUrl(request.getImageURL())
+                        .description(request.getDescription())
+                        .menuOptions(convertMenuOptionEntity(request.getOptions()))
+                        .build();
+                menuRepository.save(menuEntity);
+
+                log.info("menuEntity2222 : {}", menuEntity);
+
+                //ResponseDTO로 변환
+                MenuResponseDTO response = MenuResponseDTO.builder()
+                        .category_pk(menuEntity.getMenuCategory().getMenu_category_pk())
+                        .subject(menuEntity.getMenuCategory().getSubject())
+                        .menu_pk(menuEntity.getMenu_pk())
+                        .name(menuEntity.getName())
+                        .price(menuEntity.getPrice())
+                        .description(menuEntity.getDescription())
+                        .imageURL(menuEntity.getImageUrl())
+                        .isBestMenu(menuEntity.getIsBestMenu())
+                        .isAlcohol(menuEntity.getIsAlcohol())
+                        //메뉴 옵션 엔티티 타입 리스트 -> 옵션DTO 타입 리스트 로 변환
+                        .options(convertOptionsDTO(menuEntity.getMenuOptions()))
+                        .build();
+
+                return response;
+            }
+            else {
+                throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND_EXCEPTION);
+            }
+        }else {
+            throw new CustomException(ErrorCode.MenuNotFoundException);
+        }
+    }
+
+    //메뉴 삭제 (스토어 안에서 이루어지므로 storeID 필요 X)
+    public void deleteMenu(int menuId) {
+        //메뉴 id로 받아온 값 찾아서 넣기
+        Optional<MenuEntity> menu = menuRepository.findById(menuId);
+        if(menu.isPresent()){
+            MenuEntity menuEntity = menu.get();
+            menuRepository.delete(menuEntity);
+        }
+        else{
+            throw new CustomException(ErrorCode.MenuNotFoundException);
+        }
+    }
 }

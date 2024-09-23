@@ -97,18 +97,16 @@ public class MenuCategoryService {
         }
 
 
-    //카테고리 삭제 로직
-    public boolean deleteCategory(int id, int ctid) {
-        Optional<StoreEntity> store = storeRepository.findById(id);
-
-        if (store.isPresent()) {
+    //카테고리 삭제 로직 (가게 내에서 이루어지기 때문에 스토어 아이티 필요 X)
+    public void deleteCategory(int ctid) {
             Optional<MenuCategoryEntity> menuCategoryEntity = menuCategoryRepository.findById(ctid);
+
             if (menuCategoryEntity.isPresent()) {
                 MenuCategoryEntity menuCategory = menuCategoryEntity.get();
                 menuCategoryRepository.delete(menuCategory);
-                return true;
-            }
         }
-        return false;
+            else {
+                throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND_EXCEPTION);
+            }
     }
 }

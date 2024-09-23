@@ -38,7 +38,6 @@ public class MenuController {
                 .body(response);
     }
 
-
     //메뉴 상세 조회
     @GetMapping("api/menu/{menuid}/menu")
     public ResponseEntity<MenuResponseDTO> getMenu(@PathVariable int menuid) {
@@ -49,16 +48,21 @@ public class MenuController {
                 .body(response);
     }
 
-
-
     //메뉴 수정
-    //@PutMapping("api/store/{id}/menu/{menuid}")
-    //public MenuResponseDTO putMenu(@PathVariable int id, @PathVariable int menuid, @RequestBody MenuRequestDTO request) {
-    //}
+    @PutMapping("api/menu/{menuid}/menu")
+    public ResponseEntity<MenuResponseDTO> putMenu(@PathVariable int menuid, @RequestBody MenuRequestDTO request) {
+        MenuResponseDTO response = menuService.putMenu( menuid, request);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
 
     //메뉴 삭제
-    @DeleteMapping("api/store/{id}/menu")
-    public void deleteMenu(@PathVariable int id, @RequestBody MenuRequestDTO request) {
-        //삭제 쿼리
+    @DeleteMapping("api/menu/{menuId}")
+    public ResponseEntity<?> deleteMenu(@PathVariable int menuId) {
+        menuService.deleteMenu(menuId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
