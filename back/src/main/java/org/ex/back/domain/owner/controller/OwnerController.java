@@ -9,12 +9,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ex.back.domain.owner.dto.*;
+import org.ex.back.domain.owner.dto.CheckBRNRequestDto;
+import org.ex.back.domain.owner.dto.CheckBRNResponseDto;
+import org.ex.back.domain.owner.dto.OwnerLoginRequestDto;
+import org.ex.back.domain.owner.dto.OwnerSignUpRequestDto;
+import org.ex.back.domain.owner.model.OwnerEntity;
 import org.ex.back.domain.owner.service.OwnerService;
 import org.ex.back.global.error.CustomException;
 import org.ex.back.global.error.ErrorCode;
 import org.ex.back.global.jwt.TokenResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 

@@ -45,8 +45,12 @@ dependencies {
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
-	// Firebase Admin SDK (FCM)
+	//firebase연결
 	implementation("com.google.firebase:firebase-admin:9.3.0")
+
+	//coolsms
+	implementation("net.nurigo:sdk:4.3.0")
+	implementation ("org.springframework.boot:spring-boot-starter-validation")
 }
 
 tasks.withType<Test> {
