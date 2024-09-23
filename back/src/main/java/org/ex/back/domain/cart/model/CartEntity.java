@@ -24,8 +24,7 @@ public class CartEntity {
 	@JoinColumn(name="user_pk")
 	private UserEntity user;
 
-	@OneToMany
-	@JoinColumn(name="cart_item_pk")
+	@OneToMany(cascade = CascadeType.ALL)
 	private List<CartItemEntity> cartItems;
 
 	@ManyToOne

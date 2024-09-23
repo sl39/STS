@@ -23,10 +23,10 @@ public class MenuEntity {
 	
 	@ManyToOne
 	@JoinColumn(name="menu_category_pk")
+
 	private MenuCategoryEntity menuCategory;
 
-	@OneToMany
-	@JoinColumn(name="menu_option_pk")
+	@OneToMany(cascade = CascadeType.ALL)
 	private List<MenuOptionEntity> menuOptions;
 	
 	@Column

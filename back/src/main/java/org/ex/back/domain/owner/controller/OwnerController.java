@@ -5,16 +5,20 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ex.back.domain.owner.dto.*;
 import org.ex.back.domain.owner.service.OwnerService;
+import org.ex.back.global.error.CustomException;
+import org.ex.back.global.error.ErrorCode;
 import org.ex.back.global.jwt.TokenResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Objects;
 
 
 @RequiredArgsConstructor
@@ -123,18 +127,26 @@ public class OwnerController {
                 .build();
     }
 
-    /*
     // 토큰 재발급
     @PostMapping("/reissue")
-    public ResponseEntity<TokenResponseDto> reissueToken( ) throws Exception {
+    public ResponseEntity<?> reissueToken(HttpServletRequest request) throws Exception {
+
+        // Header에 Token 있는지 검사
+        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION); //Bearer 2fsd5...
+        String refreshTokenHeader = request.getHeader("Refresh-Token"); //2fsd5...
+        if (Objects.isNull(authorizationHeader) || Objects.isNull(refreshTokenHeader)) {
+            throw new CustomException(ErrorCode.TOKEN_NOT_FOUND);
+        }
+
+        // Token 검증 후 새로운 토큰 발급
+        String accessToken = authorizationHeader.substring(7);
+        TokenResponseDto tokenDto = ownerService.reissueToken(accessToken, refreshTokenHeader);
+
+        // 헤더에 생성한 token 정보 추가
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Set-Cookie", createCookie("accessToken", tokenDto.getAccessToken()).toString());
+        headers.add("Set-Cookie", createCookie("refreshToken", tokenDto.getRefreshToken()).toString());
+
+        return new ResponseEntity<>(headers, HttpStatus.OK);
     }
-
-    // 로그아웃
-    @PostMapping("/logout")
-    public ResponseEntity logout(HttpServletRequest request, @AuthenticationPrincipal OwnerEntity owner){
-        String token = jwtTokenProvider.resolveAccessToken(request);
-        ownerService.logout(token, owner);
-
-        return new ResponseEntity(HttpStatus.OK);
-    } */
 }

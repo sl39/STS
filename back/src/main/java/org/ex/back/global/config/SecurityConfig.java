@@ -5,6 +5,7 @@ import org.ex.back.domain.user.service.CustomOAuth2UserService;
 import org.ex.back.global.jwt.JwtAccessDeniedHandler;
 import org.ex.back.global.jwt.JwtAuthFilter;
 import org.ex.back.global.jwt.JwtAuthenticationEntryPoint;
+import org.ex.back.global.jwt.LogoutService;
 import org.ex.back.global.oauth.OAuth2SuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -32,6 +34,7 @@ public class SecurityConfig {
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final LogoutService logoutService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -58,6 +61,14 @@ public class SecurityConfig {
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint) //401
                         .accessDeniedHandler(jwtAccessDeniedHandler) //403
+                )
+
+                // 로그아웃 처리
+                .logout(logoutConfig -> logoutConfig
+                        .logoutUrl("/api/auth/logout")
+                        .addLogoutHandler(logoutService)
+                        .logoutSuccessHandler((((request, response, authentication) ->
+                                SecurityContextHolder.clearContext())))
                 )
 
                 .authorizeHttpRequests(request -> request

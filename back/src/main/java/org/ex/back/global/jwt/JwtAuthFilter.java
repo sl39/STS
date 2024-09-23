@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.ex.back.domain.owner.service.CustomOwnerDetailsService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -34,6 +36,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (header == null || !header.startsWith("Bearer ")) {
+            log.info("헤더에 Authorization가 없거나 키값이 Bearer 로 시작하지 않습니다.");
             filterChain.doFilter(request, response);
             return;
         }
@@ -42,11 +45,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         try {
             String jwt = authElements[1];
+            log.info("jwt 추출 : {}", jwt);
 
             if (jwtTokenProvider.validateJwtToken(jwt)) {
-                String ownerPk = jwtTokenProvider.getOwnerPkFromJwtToken(jwt);
+                log.info("jwt 검증 통과");
 
-                UserDetails userDetails = userDetailsService.loadUserByUsername(ownerPk);
+                Integer ownerPk = Integer.parseInt(jwtTokenProvider.getPkFromJwtToken(jwt));
+                log.info("ownerPk 추출 : {}", ownerPk);
+
+                UserDetails userDetails = userDetailsService.loadUserByPk(ownerPk);
+                log.info("UserDetails 추출 : {}", userDetails);
+
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -54,7 +63,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception ex) {
-            throw new RuntimeException("JWT 형식이 잘못되었습니다 : " + ex.getMessage());
+            throw new RuntimeException("문제가 발생했습니다 : " + ex.getMessage());
         }
 
 

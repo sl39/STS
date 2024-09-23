@@ -33,10 +33,12 @@ public class JwtTokenProvider {
     // payload "role" : "ROLE_OWNER"
     // payload "exp" : 149283812
 
-    public String createAccessToken(Integer owner_pk, String role) {
-        Claims claims = Jwts.claims().setSubject(owner_pk.toString());
+    public String createAccessToken(Integer pk, String role) {
+        Claims claims = Jwts.claims().setSubject(pk.toString());
         claims.put("role", role);
         Date now = new Date();
+        log.info("현재 시간 : {}", now);
+        log.info("토큰 만료 시간 : {}", new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME));
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME))
@@ -44,8 +46,8 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String createRefreshToken(Integer owner_pk, String role) {
-        Claims claims = Jwts.claims().setSubject(owner_pk.toString());
+    public String createRefreshToken(Integer pk, String role) {
+        Claims claims = Jwts.claims().setSubject(pk.toString());
         claims.put("role", role);
         Date now = new Date();
         return Jwts.builder()
@@ -59,13 +61,14 @@ public class JwtTokenProvider {
      *       토큰 -> 정보
      * */
 
-    public String getOwnerPkFromJwtToken(String token) {
+    public String getPkFromJwtToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
     }
 
     public boolean validateJwtToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            // parseClaimsJws() 부분에서 유효기간 검증 알아서 해준다
+            Jwts.parserBuilder().setSigningKey(key.getEncoded()).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException e) {
             log.error("Invalid JWT signature: {}", e.getMessage());
