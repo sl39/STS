@@ -30,5 +30,4 @@ public class SmsController {
         return ResponseEntity.ok("문자를 전송했습니다.");
     }
 
-
 }
