@@ -67,6 +67,7 @@ function Pay(): React.JSX.Element {
       requestPayment();
     }
   }, [impInitialized, requestPayment]);
+
   const cancelPayment = useCallback(async () => {
     try {
       const response = await fetch('http://localhost:3000/api/cancel-payment', {
@@ -90,6 +91,7 @@ function Pay(): React.JSX.Element {
       console.error('결제 취소 중 오류 발생:', error);      
     }
   }, [MERCHANT_UID]);
+
 
   return (
     <View style={styles.container}>   
