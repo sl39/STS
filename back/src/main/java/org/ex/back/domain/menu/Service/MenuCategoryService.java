@@ -6,7 +6,7 @@ import org.ex.back.domain.menu.DTO.MenuCategoryRequestDTO;
 import org.ex.back.domain.menu.DTO.MenuCategoryResponseDTO;
 import org.ex.back.domain.menu.Repository.MenuCategoryRepository;
 import org.ex.back.domain.menu.model.MenuCategoryEntity;
-import org.ex.back.domain.store.Repository.StoreRepository;
+import org.ex.back.domain.store.repository.StoreRepository;
 import org.ex.back.domain.store.model.StoreEntity;
 import org.ex.back.global.error.CustomException;
 import org.ex.back.global.error.ErrorCode;
