@@ -31,6 +31,15 @@ public class UserStoreController {
         List<StoreDTO> stores = storeService.searchStoresByName(query, userLat, userLng);
         return ResponseEntity.ok(stores);
     }
+ // 메뉴 이름으로 매장 검색 API
+    @GetMapping("/searchByMenu")
+    public ResponseEntity<List<StoreDTO>> searchStoresByMenuName(
+            @RequestParam("menuName") String menuName,
+            @RequestParam("lat") double userLat,  // 위치 정보 추가
+            @RequestParam("lng") double userLng) { // 위치 정보 추가
+        List<StoreDTO> stores = storeService.findStoresByMenuName(menuName, userLat, userLng);
+        return ResponseEntity.ok(stores);
+    }
     // 특정 매장 정보 조회 API
     @GetMapping("/{store_id}")
     public ResponseEntity<StoreDTO> getStoreById(@PathVariable("store_id") Integer storeId) {

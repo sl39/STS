@@ -1,5 +1,6 @@
 package org.ex.back.domain.store.repository;
 
+import org.ex.back.domain.menu.model.MenuEntity;
 import org.ex.back.domain.store.model.StoreCategoryEntity;
 import org.ex.back.domain.store.model.StoreEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
