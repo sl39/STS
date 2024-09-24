@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.ex.back.global.enumclass.Role;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -61,14 +62,18 @@ public class JwtTokenProvider {
      *       토큰 -> 정보
      * */
 
-    public String getPkFromJwtToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+    public Integer getPkFromJwtToken(String token) {
+        return Integer.parseInt(Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject());
+    }
+
+    public String getRoleFromJwtToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("role", String.class);
     }
 
     public boolean validateJwtToken(String token) {
         try {
             // parseClaimsJws() 부분에서 유효기간 검증 알아서 해준다
-            Jwts.parserBuilder().setSigningKey(key.getEncoded()).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException e) {
             log.error("Invalid JWT signature: {}", e.getMessage());

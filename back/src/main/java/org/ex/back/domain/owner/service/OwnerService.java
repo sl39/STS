@@ -76,7 +76,7 @@ public class OwnerService {
 
         // 2. DB에 저장된 refreshToken과 요청으로 온 refreshToken이 동일한지 확인
         log.info("token 정보 DB와 비교 시작");
-        Integer ownerPk = Integer.parseInt(jwtTokenProvider.getPkFromJwtToken(refreshToken));
+        Integer ownerPk = jwtTokenProvider.getPkFromJwtToken(refreshToken);
         Optional<RefreshTokenEntity> opToken = tokenRepository.findByOwnerPk(ownerPk);
         if(opToken.isPresent()){
             RefreshTokenEntity refreshTokenEntity = opToken.get();

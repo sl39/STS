@@ -1,7 +1,5 @@
 package org.ex.back.domain.store.controller;
 
-import org.ex.back.domain.store.dto.ImageUrlsDTO;
-import org.ex.back.domain.store.dto.ResponseDTO;
 import org.ex.back.domain.store.dto.StoreDTO;
 import org.ex.back.domain.store.dto.StoreUpdateDTO;
 import org.ex.back.domain.store.service.GeocodingService;
@@ -9,10 +7,8 @@ import org.ex.back.domain.store.service.OwnerStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

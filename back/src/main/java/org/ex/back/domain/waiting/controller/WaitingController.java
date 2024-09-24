@@ -16,12 +16,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/waiting")
 @RestController
-public class WaitingContoller {
+public class WaitingController {
 
     private final WaitingService waitingService;
 
     // 구매자 api - 웨이팅 접수
-    @PostMapping("/{storeId}")
+    @PostMapping("/store/{storeId}")
     public ResponseEntity<WaitingResponseDto> create(
             @PathVariable("storeId") Integer storeId,
             @RequestBody WaitingCreateRequestDto request
@@ -30,19 +30,19 @@ public class WaitingContoller {
     }
 
     // 판매자 api - 웨이팅 리스트 조회
-    @GetMapping("/{storeId}")
+    @GetMapping("/store/{storeId}")
     public ResponseEntity<List<WaitingResponseDto>> getList(
             @PathVariable("storeId") Integer storeId
     ) {
-        return new ResponseEntity<List<WaitingResponseDto>>(waitingService.getList(storeId), HttpStatus.OK);
+        return new ResponseEntity<>(waitingService.getList(storeId), HttpStatus.OK);
     }
 
     // 판매자 api - 웨이팅 상태변경 (대기/입장/취소)
-    @PatchMapping("/{storeId}/")
+    @PatchMapping("/{waitingId}")
     public ResponseEntity<WaitingResponseDto> changeState(
-            @PathVariable("storeId") Integer storeId,
+            @PathVariable("waitingId") Integer waitingId,
             @RequestBody WaitingUpdateRequestDto request
     ) {
-        return new ResponseEntity<WaitingResponseDto>(waitingService.changeState(storeId), HttpStatus.OK);
+        return new ResponseEntity<>(waitingService.changeState(waitingId, request), HttpStatus.OK);
     }
 }
