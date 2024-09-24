@@ -3,7 +3,7 @@ package org.ex.back.domain.waiting.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ex.back.domain.store.model.StoreEntity;
-import org.ex.back.domain.store.model.StoreRepository;
+import org.ex.back.domain.store.repository.StoreRepository;
 import org.ex.back.domain.waiting.dto.WaitingCreateRequestDto;
 import org.ex.back.domain.waiting.dto.WaitingResponseDto;
 import org.ex.back.domain.waiting.dto.WaitingUpdateRequestDto;

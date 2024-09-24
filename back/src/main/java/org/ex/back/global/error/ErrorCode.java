@@ -21,8 +21,6 @@ public enum ErrorCode {
 
     StoreNotFoundException(HttpStatus.NOT_FOUND, "STORE-001", "가게를 찾을 수 없습니다."),
 
-    PHONE_NUMBER_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "ACCOUNT-006", "인증된 전화번호를 가지고 있지 않습니다."),
-
     WAITING_NOT_FOUND(HttpStatus.NOT_FOUND, "WAITING-001", "예약건을 찾을 수 없습니다."),
     WAITING_BAD_REQUEST(HttpStatus.BAD_REQUEST, "WAITING-002", "예약건을 대기 상태로 변경할 수 없습니다."),
 
