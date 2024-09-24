@@ -30,8 +30,8 @@ public class OwnerController {
     @Value("${openApi.serviceKey}")
     private String openApiKey;
 
-    //@Value("${portone.api.key}")
-    //private String portoneApiKey;
+    @Value("${portone.api.key}")
+    private String portoneApiKey;
 
     @Value("${portone.api.secret}")
     private String portoneApiSecret;
