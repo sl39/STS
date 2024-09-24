@@ -42,6 +42,9 @@ public class OrderEntity {
 	private List<OrderItemEntity> OrderItems;
 
 	@Column
+	private String payNumber; //거래 번호
+
+	@Column
 	private String tableNumber; //테이블 번호
 	
 	@Column

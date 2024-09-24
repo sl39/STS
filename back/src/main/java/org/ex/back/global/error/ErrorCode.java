@@ -13,7 +13,13 @@ public enum ErrorCode {
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "ACCOUNT-003", "비밀번호가 일치하지 않습니다."),
     RELOGIN_REQUIRED(HttpStatus.BAD_REQUEST, "ACCOUNT-004", "재로그인이 필요합니다."),
     TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "ACCOUNT-005", "헤더에 토큰이 없습니다."),
-    PHONE_NUMBER_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "ACCOUNT-006", "인증된 전화번호를 가지고 있지 않습니다.");
+    PHONE_NUMBER_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "ACCOUNT-006", "인증된 전화번호를 가지고 있지 않습니다."),
+
+    WAITING_NOT_FOUND(HttpStatus.NOT_FOUND, "WAITING-001", "예약건을 찾을 수 없습니다."),
+    WAITING_BAD_REQUEST(HttpStatus.BAD_REQUEST, "WAITING-002", "예약건을 대기 상태로 변경할 수 없습니다."),
+
+    STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "STORE-001", "가게 정보를 찾을 수 없습니다.");
+
 
     private final HttpStatus httpStatus;
     private final String code;

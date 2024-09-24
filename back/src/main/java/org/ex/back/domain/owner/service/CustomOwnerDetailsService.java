@@ -21,7 +21,6 @@ public class CustomOwnerDetailsService implements UserDetailsService {
         return null;
     }
 
-    @Transactional
     public UserDetails loadUserByPk(Integer userPk) {
         OwnerEntity owner = ownerRepository.findById(userPk).orElseThrow(
                 () -> new UsernameNotFoundException("id에 해당하는 Owner 없음")
@@ -29,6 +28,4 @@ public class CustomOwnerDetailsService implements UserDetailsService {
 
         return OwnerPrincipal.create(owner);
     }
-
-
 }

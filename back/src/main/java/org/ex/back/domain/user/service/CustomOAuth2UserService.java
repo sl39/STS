@@ -4,8 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ex.back.domain.cart.model.CartEntity;
 import org.ex.back.domain.cart.repository.CartRepository;
+import org.ex.back.domain.owner.model.OwnerEntity;
+import org.ex.back.domain.owner.service.OwnerPrincipal;
 import org.ex.back.domain.user.model.UserEntity;
 import org.ex.back.domain.user.repository.UserRepository;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -53,6 +57,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         cartRepository.findByUser(userEntity).orElseGet(() ->
                         cartRepository.save(CartEntity.builder().user(userEntity).build()));
 
-        return new CustomUserDetails(userEntity, oAuth2User.getAttributes());
+        return new UserPrincipal(userEntity, oAuth2User.getAttributes());
+    }
+
+    public UserDetails loadUserByPk(Integer userPk) {
+        UserEntity user = userRepository.findById(userPk).orElseThrow(
+                () -> new UsernameNotFoundException("id에 해당하는 User 없음")
+        );
+
+        return UserPrincipal.create(user);
     }
 }

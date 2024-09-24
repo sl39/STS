@@ -4,12 +4,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ex.back.domain.user.dto.UserPhoneDto;
-import org.ex.back.domain.user.repository.UserRepository;
+import org.ex.back.domain.user.service.UserPrincipal;
 import org.ex.back.domain.user.service.UserService;
 import org.ex.back.global.error.CustomException;
 import org.ex.back.global.error.ErrorCode;
-import org.ex.back.global.jwt.JwtTokenProvider;
-import org.ex.back.global.jwt.RefreshTokenRepository;
 import org.ex.back.global.jwt.TokenResponseDto;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,7 +15,6 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,13 +34,14 @@ public class UserController {
     @GetMapping("/phone")
     public ResponseEntity<UserPhoneDto> getPhone(@AuthenticationPrincipal UserDetails userDetails) {
 
-        Integer userPk = Integer.parseInt(userDetails.getUsername());
+        UserPrincipal userPrincipal = (UserPrincipal) userDetails;
+        Integer userPk = userPrincipal.getUserPk();
         return new ResponseEntity<>(userService.getPhone(userPk), HttpStatus.OK);
     }
 
     // 토큰 재발급
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissueToken(HttpServletRequest request) throws Exception {
+    public ResponseEntity<?> reissueToken(HttpServletRequest request) {
 
         // Header에 Token 있는지 검사
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION); //Bearer 2fsd5...

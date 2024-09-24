@@ -1,28 +1,37 @@
 package org.ex.back.domain.user.service;
 
 import lombok.Builder;
+import org.ex.back.domain.owner.model.OwnerEntity;
+import org.ex.back.domain.owner.service.OwnerPrincipal;
 import org.ex.back.domain.user.model.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Builder
-public class CustomUserDetails implements UserDetails, OAuth2User {
+public class UserPrincipal implements UserDetails, OAuth2User {
 
     private UserEntity userEntity;
     private Map<String, Object> attributes;
 
-    public CustomUserDetails(
+    public UserPrincipal(
             UserEntity userEntity,
             Map<String, Object> attributes
     ) {
         this.userEntity = userEntity;
         this.attributes = attributes;
+    }
+
+    public static UserPrincipal create(UserEntity user) {
+
+        return new UserPrincipal(user, new HashMap<>());
+    }
+
+    public Integer getUserPk() {
+        return userEntity.getUser_pk();
     }
 
     // UserDetails method override

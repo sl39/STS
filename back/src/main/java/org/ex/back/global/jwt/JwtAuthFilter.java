@@ -8,6 +8,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ex.back.domain.owner.service.CustomOwnerDetailsService;
+import org.ex.back.domain.user.service.CustomOAuth2UserService;
 import org.ex.back.global.error.CustomException;
 import org.ex.back.global.error.ErrorCode;
 import org.springframework.http.HttpHeaders;
@@ -27,7 +28,8 @@ import java.util.Optional;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final CustomOwnerDetailsService userDetailsService;
+    private final CustomOwnerDetailsService ownerDetailsService;
+    private final CustomOAuth2UserService userDetailsService;
     private final BlacklistRepository blacklistRepository;
 
     @Override
@@ -60,11 +62,28 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     throw new CustomException(ErrorCode.RELOGIN_REQUIRED);
                 }
 
-                Integer ownerPk = jwtTokenProvider.getPkFromJwtToken(jwt);
-                log.info("ownerPk 추출 : {}", ownerPk);
+                //User, Owner 두 가지 Role 고려
+                UserDetails userDetails;
 
-                UserDetails userDetails = userDetailsService.loadUserByPk(ownerPk);
-                log.info("UserDetails 추출 : {}", userDetails);
+                String role = jwtTokenProvider.getRoleFromJwtToken(jwt);
+                if (role.equals("ROLE_OWNER")) {
+
+                    Integer ownerPk = jwtTokenProvider.getPkFromJwtToken(jwt);
+                    log.info("ownerPk 추출 : {}", ownerPk);
+                    userDetails = ownerDetailsService.loadUserByPk(ownerPk);
+                    log.info("UserDetails 추출 : {}", userDetails);
+
+                } else if (role.equals("ROLE_USER")) {
+
+                    Integer userPk = jwtTokenProvider.getPkFromJwtToken(jwt);
+                    log.info("userPk 추출 : {}", userPk);
+                    userDetails = userDetailsService.loadUserByPk(userPk);
+                    log.info("UserDetails 추출");
+                } else {
+
+                    log.error("Role에 대한 정보가 없습니다.");
+                    throw new CustomException(ErrorCode.RELOGIN_REQUIRED);
+                }
 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());

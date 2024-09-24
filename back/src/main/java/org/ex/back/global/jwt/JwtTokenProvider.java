@@ -73,7 +73,7 @@ public class JwtTokenProvider {
     public boolean validateJwtToken(String token) {
         try {
             // parseClaimsJws() 부분에서 유효기간 검증 알아서 해준다
-            Jwts.parserBuilder().setSigningKey(key.getEncoded()).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException e) {
             log.error("Invalid JWT signature: {}", e.getMessage());
