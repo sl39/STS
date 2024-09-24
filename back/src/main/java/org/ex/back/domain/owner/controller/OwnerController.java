@@ -8,19 +8,16 @@ import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ex.back.domain.owner.dto.*;
 import org.ex.back.domain.owner.dto.CheckBRNRequestDto;
 import org.ex.back.domain.owner.dto.CheckBRNResponseDto;
 import org.ex.back.domain.owner.dto.OwnerLoginRequestDto;
 import org.ex.back.domain.owner.dto.OwnerSignUpRequestDto;
-import org.ex.back.domain.owner.model.OwnerEntity;
 import org.ex.back.domain.owner.service.OwnerService;
 import org.ex.back.global.error.CustomException;
 import org.ex.back.global.error.ErrorCode;
 import org.ex.back.global.jwt.TokenResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -34,7 +31,10 @@ import java.util.Objects;
 public class OwnerController {
 
     @Value("${openApi.serviceKey}")
-    private String serviceKey;
+    private String openApiKey;
+
+    @Value("${portone.api.key}")
+    private String portoneApiKey;
 
     private final OwnerService ownerService;
 
@@ -46,7 +46,7 @@ public class OwnerController {
         log.info(BRN);
 
         String url = "https://api.odcloud.kr/api/nts-businessman/v1/status?" +
-                "serviceKey=" + serviceKey +
+                "serviceKey=" + openApiKey +
                 "&returnType=" + "json";
 
         // JsonObject 생성
@@ -76,6 +76,8 @@ public class OwnerController {
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
+
+    // 계좌번호 본인
 
     // 사업자 번호 유효성 검사
     private CheckBRNResponseDto validateBRN(JsonNode jsonNode) {
