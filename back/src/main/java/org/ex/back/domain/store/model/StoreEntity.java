@@ -10,6 +10,7 @@ import org.ex.back.domain.owner.model.OwnerEntity;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 @Entity
 @Table(name="store_entity")
 public class StoreEntity {
@@ -38,7 +39,7 @@ public class StoreEntity {
 	@Column
 	private String phone;
 	
-	@Column
+	@Column(length = 1000)
 	private String operatingHours; //영업시간(브레이크타임)
 
 	@Column
