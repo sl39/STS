@@ -92,6 +92,8 @@ public class WaitingService {
 
         if(standbyTeamList.size() >= 3) {
             WaitingEntity thirdTeam = standbyTeamList.get(2);
+            log.info("standby thirdTeam : {}", thirdTeam.toString());
+
             /*
 
              */

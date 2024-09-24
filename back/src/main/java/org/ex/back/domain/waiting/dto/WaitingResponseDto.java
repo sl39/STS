@@ -1,12 +1,11 @@
 package org.ex.back.domain.waiting.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class WaitingResponseDto {
 
     private Integer waitingPk;

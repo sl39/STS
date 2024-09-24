@@ -34,7 +34,7 @@ public class WaitingController {
     public ResponseEntity<List<WaitingResponseDto>> getList(
             @PathVariable("storeId") Integer storeId
     ) {
-        return new ResponseEntity<List<WaitingResponseDto>>(waitingService.getList(storeId), HttpStatus.OK);
+        return new ResponseEntity<>(waitingService.getList(storeId), HttpStatus.OK);
     }
 
     // 판매자 api - 웨이팅 상태변경 (대기/입장/취소)
@@ -43,6 +43,6 @@ public class WaitingController {
             @PathVariable("waitingId") Integer waitingId,
             @RequestBody WaitingUpdateRequestDto request
     ) {
-        return new ResponseEntity<WaitingResponseDto>(waitingService.changeState(waitingId, request), HttpStatus.OK);
+        return new ResponseEntity<>(waitingService.changeState(waitingId, request), HttpStatus.OK);
     }
 }
