@@ -1,7 +1,9 @@
-package org.ex.back.domain.sms;
+package org.ex.back.domain.sms.Controller;
 
 
 import jakarta.validation.Valid;
+import org.ex.back.domain.sms.DTO.SmsRequestDTO;
+import org.ex.back.domain.sms.Service.SmsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

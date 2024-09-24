@@ -1,6 +1,8 @@
-package org.ex.back.domain.order.model;
+package org.ex.back.domain.order.Service;
 
-import org.ex.back.domain.store.model.StoreDTO;
+import org.ex.back.domain.order.DTO.StoreOrderListResponseDTO;
+import org.ex.back.domain.order.Repository.OrderRepository;
+import org.ex.back.domain.order.model.OrderEntity;
 import org.ex.back.domain.store.model.StoreEntity;
 import org.ex.back.domain.store.repository.StoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;

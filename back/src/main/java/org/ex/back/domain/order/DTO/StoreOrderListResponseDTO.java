@@ -1,4 +1,4 @@
-package org.ex.back.domain.order.model;
+package org.ex.back.domain.order.DTO;
 
 
 import lombok.Builder;

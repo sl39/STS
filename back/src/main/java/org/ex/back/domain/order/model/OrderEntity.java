@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.ex.back.domain.user.model.UserEntity;
-import org.ex.back.domain.menu.model.MenuEntity;
 import org.ex.back.domain.store.model.StoreEntity;
 
 @NoArgsConstructor
