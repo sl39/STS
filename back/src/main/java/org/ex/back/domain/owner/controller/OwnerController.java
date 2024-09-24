@@ -77,49 +77,6 @@ public class OwnerController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-    /*
-    // 계좌번호 본인
-    @PostMapping("/bank")
-    public ResponseEntity<BankHolderResponseDto> checkBank(@RequestBody BankHolderRequestDto request) throws Exception {
-
-        String imp_key = request.getImp_key();
-        String imp_secret = request.getImp_secret();
-        log.info("imp_key : {}, imp_secret : {}", imp_key, imp_secret);
-
-        // 1. access token 받아오기
-        String url = "https://api.odcloud.kr/api/nts-businessman/v1/status?" +
-                "serviceKey=" + openApiKey +
-                "&returnType=" + "json";
-
-        // JsonObject 생성
-        JsonObject jsonObject = new JsonObject();
-        JsonArray jsonArray = new JsonArray();
-        jsonArray.add(BRN);
-        jsonObject.add("b_no", jsonArray);
-
-        // 헤더 설정
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        // HttpEntity 생성
-        HttpEntity<String> entity = new HttpEntity<>(jsonObject.toString(), headers);
-
-        // POST 요청
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, entity, String.class);
-
-        if(!responseEntity.getStatusCode().is2xxSuccessful()) {
-            throw new Exception(responseEntity.getStatusCode() + ": 사업자등록번호를 조회할 수 없습니다."); //TODO noh 예외처리
-        }
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody()).get("data").get(0);
-        CheckBRNResponseDto dto = validateBRN(jsonNode);
-
-        return new ResponseEntity<>(dto, HttpStatus.OK);
-    }
-*/
-
     // 사업자 번호 유효성 검사
     private CheckBRNResponseDto validateBRN(JsonNode jsonNode) {
         String tax_type = jsonNode.get("tax_type").asText();
@@ -142,6 +99,73 @@ public class OwnerController {
         }
 
         return CheckBRNResponseDto.builder().isValid(isValid).info(info).build();
+    }
+
+    // 계좌번호 본인 확인
+    @PostMapping("/bank")
+    public ResponseEntity<BankHolderResponseDto> checkBank(@RequestBody BankHolderRequestDto request) throws Exception {
+
+        /*
+            1. access token 받아오기
+        */
+
+        String accessTokenUrl = "https://api.iamport.kr/users/getToken";
+
+        // JsonObject 생성
+        JsonObject jsonObject1 = new JsonObject();
+        jsonObject1.addProperty("imp_key", portoneApiKey);
+        jsonObject1.addProperty("imp_secret", portoneApiSecret);
+
+        // 헤더 설정
+        HttpHeaders headers1 = new HttpHeaders();
+        headers1.setContentType(MediaType.APPLICATION_JSON);
+
+        // HttpEntity 생성
+        HttpEntity<String> entity1 = new HttpEntity<>(jsonObject1.toString(), headers1);
+
+        // POST 요청
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> responseEntity1 = restTemplate.postForEntity(accessTokenUrl, entity1, String.class);
+
+        if(!responseEntity1.getStatusCode().is2xxSuccessful()) {
+            log.error("계좌번호 조회 API - access token을 발급받지 못했습니다.");
+            throw new CustomException(ErrorCode.BANK_NOT_FOUND);
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode1 = objectMapper.readTree(responseEntity1.getBody()).get("response");
+        String accessToken = jsonNode1.get("access_token").asText();
+
+        /*
+            2. 계좌 정보 받아오기
+        */
+
+        String bankInfoUrl = "https://api.iamport.kr/vbanks/holder"
+                + "?bank_code=" + request.getBank_code()
+                + "&bank_num=" + request.getBank_num();
+
+        // header 설정
+        HttpHeaders headers2 = new HttpHeaders();
+        headers2.setContentType(MediaType.APPLICATION_JSON);
+        headers2.set("Authorization", "Bearer " + accessToken);
+
+        // HttpEntity 생성
+        HttpEntity<String> entity2 = new HttpEntity<>(headers2);
+
+        // GET 요청
+        ResponseEntity<String> responseEntity2;
+
+        try {
+            responseEntity2 = restTemplate.exchange(bankInfoUrl, HttpMethod.GET, entity2, String.class);
+        } catch (Exception e) {
+            log.error("계좌번호 조회 API - 계좌 정보를 조회하지 못했습니다.");
+            throw new CustomException(ErrorCode.BANK_NOT_FOUND);
+        }
+
+        JsonNode jsonNode = objectMapper.readTree(responseEntity2.getBody());
+        String holderName = jsonNode.get("response").get("bank_holder").asText();
+
+        return new ResponseEntity<>(BankHolderResponseDto.builder().name(holderName).build(), HttpStatus.OK);
     }
 
     // 회원가입

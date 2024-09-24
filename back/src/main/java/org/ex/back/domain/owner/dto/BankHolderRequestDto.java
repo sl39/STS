@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BankHolderRequestDto {
 
-    private String imp_key;
-    private String imp_secret;
+    private String bank_code;
+    private String bank_num;
 }
