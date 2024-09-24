@@ -8,10 +8,7 @@ import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ex.back.domain.owner.dto.CheckBRNRequestDto;
-import org.ex.back.domain.owner.dto.CheckBRNResponseDto;
-import org.ex.back.domain.owner.dto.OwnerLoginRequestDto;
-import org.ex.back.domain.owner.dto.OwnerSignUpRequestDto;
+import org.ex.back.domain.owner.dto.*;
 import org.ex.back.domain.owner.service.OwnerService;
 import org.ex.back.global.error.CustomException;
 import org.ex.back.global.error.ErrorCode;
@@ -35,6 +32,9 @@ public class OwnerController {
 
     //@Value("${portone.api.key}")
     //private String portoneApiKey;
+
+    @Value("${portone.api.secret}")
+    private String portoneApiSecret;
 
     private final OwnerService ownerService;
 
@@ -77,8 +77,6 @@ public class OwnerController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-    // 계좌번호 본인
-
     // 사업자 번호 유효성 검사
     private CheckBRNResponseDto validateBRN(JsonNode jsonNode) {
         String tax_type = jsonNode.get("tax_type").asText();
@@ -101,6 +99,73 @@ public class OwnerController {
         }
 
         return CheckBRNResponseDto.builder().isValid(isValid).info(info).build();
+    }
+
+    // 계좌번호 본인 확인
+    @PostMapping("/bank")
+    public ResponseEntity<BankHolderResponseDto> checkBank(@RequestBody BankHolderRequestDto request) throws Exception {
+
+        /*
+            1. access token 받아오기
+        */
+
+        String accessTokenUrl = "https://api.iamport.kr/users/getToken";
+
+        // JsonObject 생성
+        JsonObject jsonObject1 = new JsonObject();
+        jsonObject1.addProperty("imp_key", portoneApiKey);
+        jsonObject1.addProperty("imp_secret", portoneApiSecret);
+
+        // 헤더 설정
+        HttpHeaders headers1 = new HttpHeaders();
+        headers1.setContentType(MediaType.APPLICATION_JSON);
+
+        // HttpEntity 생성
+        HttpEntity<String> entity1 = new HttpEntity<>(jsonObject1.toString(), headers1);
+
+        // POST 요청
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> responseEntity1 = restTemplate.postForEntity(accessTokenUrl, entity1, String.class);
+
+        if(!responseEntity1.getStatusCode().is2xxSuccessful()) {
+            log.error("계좌번호 조회 API - access token을 발급받지 못했습니다.");
+            throw new CustomException(ErrorCode.BANK_NOT_FOUND);
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode1 = objectMapper.readTree(responseEntity1.getBody()).get("response");
+        String accessToken = jsonNode1.get("access_token").asText();
+
+        /*
+            2. 계좌 정보 받아오기
+        */
+
+        String bankInfoUrl = "https://api.iamport.kr/vbanks/holder"
+                + "?bank_code=" + request.getBank_code()
+                + "&bank_num=" + request.getBank_num();
+
+        // header 설정
+        HttpHeaders headers2 = new HttpHeaders();
+        headers2.setContentType(MediaType.APPLICATION_JSON);
+        headers2.set("Authorization", "Bearer " + accessToken);
+
+        // HttpEntity 생성
+        HttpEntity<String> entity2 = new HttpEntity<>(headers2);
+
+        // GET 요청
+        ResponseEntity<String> responseEntity2;
+
+        try {
+            responseEntity2 = restTemplate.exchange(bankInfoUrl, HttpMethod.GET, entity2, String.class);
+        } catch (Exception e) {
+            log.error("계좌번호 조회 API - 계좌 정보를 조회하지 못했습니다.");
+            throw new CustomException(ErrorCode.BANK_NOT_FOUND);
+        }
+
+        JsonNode jsonNode = objectMapper.readTree(responseEntity2.getBody());
+        String holderName = jsonNode.get("response").get("bank_holder").asText();
+
+        return new ResponseEntity<>(BankHolderResponseDto.builder().name(holderName).build(), HttpStatus.OK);
     }
 
     // 회원가입
