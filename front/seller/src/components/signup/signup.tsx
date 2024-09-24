@@ -9,24 +9,33 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { API_URL } from "@env";
 import axios from "axios";
 import BankListScreen from "./bankListScreen";
-
 type bankType = {
   label: string;
   value: string;
 };
 
+type signup = {
+  id: String;
+  password: String;
+  email: String;
+  businessNumber: String;
+  ownerName: String;
+  ownerPhone: String;
+  bankName: String;
+  bankAccount: String;
+};
+
 export function Signup() {
-  const [email, setSellerId] = useState("");
+  const [id, setSellerId] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [bankAccount, setBankAccount] = useState("");
   const [businessNumber, setBusinessNumber] = useState("");
   const [ownerPhone, setStorePhone] = useState("");
   const [ownerName, setSellerName] = useState("");
-  const [confirmOwnerPhone, setConfirmOwnerPhone] = useState<boolean>(true);
   const [confirmBusinessNumber, setConfirmBusinessNumber] =
     useState<boolean>(true);
   const [bankName, setBankName] = useState<bankType | null>(null);
@@ -34,8 +43,17 @@ export function Signup() {
     setBankName(value);
   };
   const router = useRouter();
+  const API_URL = process.env.API_URL;
+  const [checkPhoneNumber, setCheckPhoneNumber] = useState<boolean>(false);
+  const [checkCert, setCheckCert] = useState<string>("");
+  const [validPhoneNumber, setValidPhoneNumber] = useState<boolean>(false);
+  const [checkNumberBtn, setCheckNumberBtn] = useState<boolean>(true);
 
   const handleSignup = () => {
+    if (id == "") {
+      alert("id를 입력해 주세요");
+      return;
+    }
     if (email === "") {
       alert("이메일을 입력해 주세요");
       return;
@@ -52,7 +70,7 @@ export function Signup() {
       alert("계좌번호를 입력해 주세요");
       return;
     }
-    if (ownerPhone === "" || !confirmOwnerPhone) {
+    if (ownerPhone === "" || !validPhoneNumber) {
       alert("전화번호를 인증해주세요");
       return;
     }
@@ -70,11 +88,31 @@ export function Signup() {
       return;
     }
     // router.push("/signup/store");
+    signupApi();
+  };
+  const signupApi = async () => {
+    const data: signup = {
+      id: id,
+      password: password,
+      email: email,
+      businessNumber: businessNumber,
+      ownerName: ownerName,
+      ownerPhone: ownerPhone,
+      bankName: bankName ? bankName.label : "",
+      bankAccount: bankAccount,
+    };
+    console.log(data);
+    try {
+      const response = await axios.post(API_URL + "/api/auth/owner/join", data);
+      console.log(response.data);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   // 판매자 id
   const idConfirm = () => {
-    console.log(email);
+    console.log(id);
   };
 
   // 정산 입금 계좌번호
@@ -86,7 +124,6 @@ export function Signup() {
   const bnConfirm = () => {
     console.log(businessNumber);
     const validBusinessNumber = async () => {
-      // const header = { "Content-Type": "application/json" };
       const url = API_URL + "/api/auth/owner/brn";
       const val = {
         brn: businessNumber,
@@ -107,8 +144,40 @@ export function Signup() {
     validBusinessNumber();
   };
 
-  const storePhoneConfirm = () => {
-    console.log(ownerPhone);
+  // 전화번호 보내기
+  const storePhoneConfirm = async () => {
+    console.log("버튼 버튼 버튼");
+    try {
+      await axios.post(API_URL + "/api/sms/send", { phoneNum: ownerPhone });
+      setCheckPhoneNumber(true);
+      setCheckNumberBtn(false);
+      setTimeout(function () {
+        setCheckNumberBtn(true);
+      }, 30000);
+    } catch (e) {
+      console.log(e);
+      alert("서버 에러");
+    }
+    setTimeout(() => {});
+  };
+
+  // 인증번호 보내기
+  const checkCertNumber = async () => {
+    try {
+      await axios.post(
+        API_URL +
+          `/api/sms/verify?phoneNum=${ownerPhone}&inputCode=${checkCert}`
+      );
+      setCheckPhoneNumber(false);
+      setValidPhoneNumber(true);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const detailPhone = (val: string) => {
+    setStorePhone(val);
+    setCheckPhoneNumber(false);
+    setValidPhoneNumber(false);
   };
 
   return (
@@ -119,15 +188,22 @@ export function Signup() {
           <TextInput
             style={styles.specInput}
             placeholder="판매자 아이디"
-            value={email}
+            value={id}
             onChangeText={setSellerId}
-            keyboardType="number-pad"
           />
           <TouchableOpacity style={styles.specBtn} onPress={idConfirm}>
             <Text style={{ color: "#3498db", fontWeight: "bold" }}>
               중복확인
             </Text>
           </TouchableOpacity>
+        </View>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <TextInput
+            style={styles.specInput}
+            placeholder="판매자 이메일"
+            value={email}
+            onChangeText={setEmail}
+          />
         </View>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <TextInput
@@ -150,15 +226,36 @@ export function Signup() {
             style={styles.specInput}
             placeholder="판매자 전화번호"
             value={ownerPhone}
-            onChangeText={setStorePhone}
+            onChangeText={(text: string) => detailPhone(text)}
             keyboardType="number-pad"
           />
-          <TouchableOpacity style={styles.specBtn} onPress={storePhoneConfirm}>
+          <TouchableOpacity
+            style={styles.specBtn}
+            onPress={storePhoneConfirm}
+            disabled={!checkNumberBtn}
+          >
             <Text style={{ color: "#3498db", fontWeight: "bold" }}>
               인증하기
             </Text>
           </TouchableOpacity>
         </View>
+        {checkPhoneNumber && (
+          <View style={{ flexDirection: "row", gap: 5, alignItems: "center" }}>
+            <TextInput
+              style={styles.certBtn}
+              placeholder="인증번호 4자리 입력"
+              value={checkCert}
+              onChangeText={setCheckCert}
+              keyboardType="number-pad"
+            />
+            <TouchableOpacity style={styles.certBtn} onPress={checkCertNumber}>
+              <Text style={{ color: "#3498db", fontWeight: "bold" }}>
+                인증하기
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
         <TextInput
           style={styles.input}
           placeholder="판매자 이름"
@@ -263,6 +360,16 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     height: 50,
+    borderColor: "#3498db",
+    borderWidth: 1,
+  },
+  certBtn: {
+    backgroundColor: "white",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+    borderRadius: 10,
+    height: 30,
     borderColor: "#3498db",
     borderWidth: 1,
   },

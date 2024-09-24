@@ -1,9 +1,11 @@
+import axios from "axios";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
   Button,
   Image,
+  Platform,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -13,18 +15,38 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
 // contact me :)
 // instagram: must_ait6
 // email : mustapha.aitigunaoun@gmail.com
 
+type Login = {
+  id: string;
+  password: string;
+};
+
 export function Login() {
-  const [click, setClick] = useState(false);
+  const API_URL = process.env.API_URL;
+  document.cookie = "safeCookie1=foo;SameSite=Lax";
+
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-  const handleMain = () => {
-    router.push("/main");
+
+  const handleMain = async () => {
+    const data: Login = {
+      id: username,
+      password: password,
+    };
+    try {
+      const res = await axios.post(API_URL + "/api/auth/owner/login", data, {
+        withCredentials: true,
+      });
+      console.log(res.headers);
+
+      // router.push("/main");
+    } catch (e) {
+      console.log(e);
+    }
   };
   const handleSignup = () => {
     router.push("/signup");
