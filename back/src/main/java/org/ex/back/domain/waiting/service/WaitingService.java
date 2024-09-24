@@ -72,7 +72,7 @@ public class WaitingService {
     public WaitingResponseDto changeState(Integer waitingId, WaitingUpdateRequestDto request) {
 
         // 1. 대기, 입장, 취소 (다시 대기로 수정하는 경우 에러 발생)
-        if(request.getWaitingState().equals(WaitingState.STANDBY.name()))
+        if(!request.getWaitingState().equals(WaitingState.ENTRANCE.name()) && !request.getWaitingState().equals(WaitingState.CANCEL.name()))
             throw new CustomException(ErrorCode.WAITING_BAD_REQUEST);
 
         // 2. waitingId 로 조회한 후에 상태 변경
