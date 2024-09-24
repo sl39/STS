@@ -88,11 +88,22 @@ public StoreDTO updateStore(Integer storePk, StoreUpdateDTO storeUpdateDTO) {
     StoreEntity storeEntity = storeRepository.findById(storePk)
             .orElseThrow(() -> new RuntimeException("매장을 찾을 수 없습니다. ID: " + storePk));
 
-    // 업데이트된 정보 설정
-    storeEntity.setStoreName(storeUpdateDTO.getStoreName());
-    storeEntity.setPhone(storeUpdateDTO.getPhone());
-    storeEntity.setOperatingHours(storeUpdateDTO.getOperatingHours());
-    storeEntity.setStoreState(storeUpdateDTO.getStoreState());
+    // 업데이트된 정보 설정 (null 체크 및 기존 값 유지)
+    if (storeUpdateDTO.getStoreName() != null && !storeUpdateDTO.getStoreName().isEmpty()) {
+        storeEntity.setStoreName(storeUpdateDTO.getStoreName());
+    }
+
+    if (storeUpdateDTO.getPhone() != null && !storeUpdateDTO.getPhone().isEmpty()) {
+        storeEntity.setPhone(storeUpdateDTO.getPhone());
+    }
+
+    if (storeUpdateDTO.getOperatingHours() != null && !storeUpdateDTO.getOperatingHours().isEmpty()) {
+        storeEntity.setOperatingHours(storeUpdateDTO.getOperatingHours());
+    }
+
+    if (storeUpdateDTO.getStoreState() != null) {
+        storeEntity.setStoreState(storeUpdateDTO.getStoreState());
+    }
 
     // 이미지 업데이트
     if (storeUpdateDTO.getStoreImages() != null) {
@@ -136,6 +147,7 @@ public StoreDTO updateStore(Integer storePk, StoreUpdateDTO storeUpdateDTO) {
     StoreEntity updatedStore = storeRepository.save(storeEntity);
     return convertToDTO(updatedStore); // DTO로 변환하여 반환
 }
+
 
 public void updateStoreStatus(Integer storePk, boolean isOpen) {
     // 매장 상태 업데이트 로직

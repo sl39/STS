@@ -101,10 +101,19 @@ public class OwnerStoreController {
                 return ResponseEntity.notFound().build(); // 매장이 존재하지 않을 경우
             }
 
-            // 업데이트된 정보 설정
-            existingStore.setStoreName(updatedStoreData.getStoreName());
-            existingStore.setPhone(updatedStoreData.getPhone());
-            existingStore.setOperatingHours(updatedStoreData.getOperatingHours());
+            // 업데이트된 정보 설정 (이름, 전화번호, 운영시간이 없으면 기존 값 유지)
+            if (updatedStoreData.getStoreName() != null && !updatedStoreData.getStoreName().isEmpty()) {
+                existingStore.setStoreName(updatedStoreData.getStoreName());
+            }
+
+            if (updatedStoreData.getPhone() != null && !updatedStoreData.getPhone().isEmpty()) {
+                existingStore.setPhone(updatedStoreData.getPhone());
+            }
+
+            if (updatedStoreData.getOperatingHours() != null && !updatedStoreData.getOperatingHours().isEmpty()) {
+                existingStore.setOperatingHours(updatedStoreData.getOperatingHours());
+            }
+
             existingStore.setStoreState(updatedStoreData.getStoreState());
 
             // 이미지 업데이트
