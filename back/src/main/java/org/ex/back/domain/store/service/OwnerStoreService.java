@@ -20,12 +20,9 @@ import jakarta.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 public class OwnerStoreService {
@@ -51,7 +48,7 @@ private GeocodingService geocodingService; // GeocodingService 주입
 public StoreDTO findStoreById(Integer storePk) {
     StoreEntity storeEntity = storeRepository.findById(storePk)
             .orElseThrow(() -> new RuntimeException("매장을 찾을 수 없습니다. ID: " + storePk));
-
+    
     return convertToDTO(storeEntity);
 }
 
@@ -90,11 +87,22 @@ public StoreDTO updateStore(Integer storePk, StoreUpdateDTO storeUpdateDTO) {
     StoreEntity storeEntity = storeRepository.findById(storePk)
             .orElseThrow(() -> new RuntimeException("매장을 찾을 수 없습니다. ID: " + storePk));
 
-    // 업데이트된 정보 설정
-    storeEntity.setStoreName(storeUpdateDTO.getStoreName());
-    storeEntity.setPhone(storeUpdateDTO.getPhone());
-    storeEntity.setOperatingHours(storeUpdateDTO.getOperatingHours());
-    storeEntity.setStoreState(storeUpdateDTO.getStoreState());
+    // 업데이트된 정보 설정 (null 체크 및 기존 값 유지)
+    if (storeUpdateDTO.getStoreName() != null && !storeUpdateDTO.getStoreName().isEmpty()) {
+        storeEntity.setStoreName(storeUpdateDTO.getStoreName());
+    }
+
+    if (storeUpdateDTO.getPhone() != null && !storeUpdateDTO.getPhone().isEmpty()) {
+        storeEntity.setPhone(storeUpdateDTO.getPhone());
+    }
+
+    if (storeUpdateDTO.getOperatingHours() != null && !storeUpdateDTO.getOperatingHours().isEmpty()) {
+        storeEntity.setOperatingHours(storeUpdateDTO.getOperatingHours());
+    }
+
+    if (storeUpdateDTO.getStoreState() != null) {
+        storeEntity.setStoreState(storeUpdateDTO.getStoreState());
+    }
 
     // 이미지 업데이트
     if (storeUpdateDTO.getStoreImages() != null) {
@@ -139,6 +147,7 @@ public StoreDTO updateStore(Integer storePk, StoreUpdateDTO storeUpdateDTO) {
     return convertToDTO(updatedStore); // DTO로 변환하여 반환
 }
 
+
 public void updateStoreStatus(Integer storePk, boolean isOpen) {
     // 매장 상태 업데이트 로직
     StoreEntity storeEntity = storeRepository.findById(storePk)
@@ -150,7 +159,7 @@ public void updateStoreStatus(Integer storePk, boolean isOpen) {
 // Entity를 DTO로 변환하는 메소드
 private StoreDTO convertToDTO(StoreEntity storeEntity) {
     StoreDTO storeDTO = new StoreDTO();
-
+    
     storeDTO.setStorePk(storeEntity.getStore_pk());
     storeDTO.setStoreName(storeEntity.getStoreName());
     storeDTO.setAddress(storeEntity.getAddress());
@@ -166,19 +175,19 @@ private StoreDTO convertToDTO(StoreEntity storeEntity) {
         storeDTO.setOwnerPk(storeEntity.getOwner().getOwner_pk()); // owner_pk 설정
     }
     // 이미지 URL 리스트 변환
-    List<String> imageUrls = storeEntity.getStoreImages() != null ?
-        storeEntity.getStoreImages().stream().map(StoreImageEntity::getImageUrl).toList() :
+    List<String> imageUrls = storeEntity.getStoreImages() != null ? 
+        storeEntity.getStoreImages().stream().map(StoreImageEntity::getImageUrl).toList() : 
         new ArrayList<>();
     storeDTO.setStoreImages(imageUrls);
-
+    
     return storeDTO;
 }
 
 // DTO를 Entity로 변환하는 메소드
 private StoreEntity convertToEntity(StoreDTO storeDTO) {
-
+	
     StoreEntity storeEntity = new StoreEntity();
-
+ 
     storeEntity.setStore_pk(storeDTO.getStorePk());
     storeEntity.setStoreName(storeDTO.getStoreName());
     storeEntity.setAddress(storeDTO.getAddress());
@@ -188,7 +197,7 @@ private StoreEntity convertToEntity(StoreDTO storeDTO) {
     storeEntity.setIsOpen(storeDTO.getIsOpen());
     storeEntity.setLat(storeDTO.getLat());
     storeEntity.setLng(storeDTO.getLng());
-
+    
 
     // OwnerEntity 설정
     OwnerEntity owner = new OwnerEntity();
@@ -202,11 +211,11 @@ private StoreEntity convertToEntity(StoreDTO storeDTO) {
             StoreImageEntity storeImage = StoreImageEntity.builder()
                     .imageUrl(imageUrl)
                     .build();
-
+            
             images.add(storeImage);
         }
     }
-    storeEntity.setStoreImages(images);
+    storeEntity.setStoreImages(images); 
 
     return storeEntity;
 }
@@ -271,7 +280,7 @@ public boolean doesOwnerHaveStore(Integer ownerPk) {
     String jpql = "SELECT COUNT(s) FROM StoreEntity s WHERE s.owner.owner_pk = :ownerPk";
     Query query = entityManager.createQuery(jpql);
     query.setParameter("ownerPk", ownerPk);
-
+    
     Long count = (Long) query.getSingleResult();
     return count > 0;
 }
