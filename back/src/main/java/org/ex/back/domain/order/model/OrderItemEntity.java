@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ex.back.domain.menu.model.MenuEntity;
 
-import java.util.List;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Data

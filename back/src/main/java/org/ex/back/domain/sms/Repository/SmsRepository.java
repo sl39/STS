@@ -1,4 +1,4 @@
-package org.ex.back.domain.sms;
+package org.ex.back.domain.sms.Repository;
 
 import org.ex.back.domain.sms.model.SMSEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

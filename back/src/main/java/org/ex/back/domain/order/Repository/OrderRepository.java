@@ -1,10 +1,10 @@
-package org.ex.back.domain.order.model;
+package org.ex.back.domain.order.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
+import org.ex.back.domain.order.model.OrderEntity;
 import org.ex.back.domain.store.model.StoreEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
