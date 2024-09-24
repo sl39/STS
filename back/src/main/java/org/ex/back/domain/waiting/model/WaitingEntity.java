@@ -35,8 +35,16 @@ public class WaitingEntity {
 
     @Column
     private String waitingState;
-}
 
-//public WaitingResponseDto toDto() {
-//
-//}
+    public WaitingResponseDto toDto() {
+
+        return WaitingResponseDto.builder()
+                .waitingPk(waiting_pk)
+                .storePk(store.getStore_pk())
+                .phone(phone)
+                .headCount(headCount)
+                .waitingState(waitingState)
+                .waitingOrder(orderQueue)
+                .build();
+    }
+}
