@@ -58,4 +58,7 @@ public class OrderEntity {
 	
 	@Column
 	private LocalDateTime orderedAt = LocalDateTime.now(); //시간
+
+	@Column
+	private String payNumber; //거래 번호
 }

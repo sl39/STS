@@ -13,6 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 @Entity
 @Table(name="store_image_entity")
 public class StoreImageEntity {
@@ -21,6 +22,6 @@ public class StoreImageEntity {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer store_image_pk;
 	
-	@Column(length = 1000)
-	private String imageUrl;
+	@Column
+	private String imageUrl; 
 }

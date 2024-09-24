@@ -2,7 +2,7 @@ package org.ex.back.domain.order.model;
 
 import org.ex.back.domain.store.model.StoreDTO;
 import org.ex.back.domain.store.model.StoreEntity;
-import org.ex.back.domain.store.model.StoreRepository;
+import org.ex.back.domain.store.repository.StoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

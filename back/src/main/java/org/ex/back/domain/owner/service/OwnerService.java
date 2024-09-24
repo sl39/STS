@@ -120,5 +120,4 @@ public class OwnerService {
                 .refreshToken(refreshToken)
                 .build();
     }
-
 }

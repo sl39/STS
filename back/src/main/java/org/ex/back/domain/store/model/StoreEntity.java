@@ -14,6 +14,10 @@ import org.ex.back.domain.owner.model.OwnerEntity;
 @Entity
 @Table(name="store_entity")
 public class StoreEntity {
+	
+	public StoreEntity(Integer store_pk) {
+	    this.store_pk = store_pk;
+	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

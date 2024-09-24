@@ -1,6 +1,6 @@
-package org.ex.back.domain.store.model;
+package org.ex.back.domain.store.repository;
 
-import org.ex.back.domain.order.model.OrderEntity;
+import org.ex.back.domain.store.model.StoreEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

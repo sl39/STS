@@ -8,6 +8,7 @@ import org.ex.back.domain.store.model.StoreEntity;
 @AllArgsConstructor
 @Data
 @Entity
+@Builder
 @Table(name="menu_category_entity")
 public class MenuCategoryEntity {
 

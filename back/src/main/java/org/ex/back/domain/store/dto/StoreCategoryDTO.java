@@ -1,10 +1,13 @@
 package org.ex.back.domain.store.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class StoreCategoryDTO {
-    private Integer storeCategoryPk; // 카테고리 PK
-    private String categoryName; // 카테고리 이름
-    // 필요한 다른 필드 추가 가능
+    private Integer categoryPk; // 카테고리 ID
+    private String subject; // 카테고리 이름
 }
