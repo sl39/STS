@@ -1,4 +1,4 @@
-package org.ex.back.domain.owner.dto;
+package org.ex.back.domain.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TokenResponseDto {
+public class UserPhoneDto {
 
-    private String tokenType;
-    private String accessToken;
-    private String refreshToken;
+    private String phoneNumber;
 }

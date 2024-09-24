@@ -9,6 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 @Entity
 @Table(name="menu_entity")
 public class MenuEntity {
@@ -23,12 +24,13 @@ public class MenuEntity {
 	
 	@ManyToOne
 	@JoinColumn(name="menu_category_pk")
+
 	private MenuCategoryEntity menuCategory;
 
-	@OneToMany
-	@JoinColumn(name="menu_option_pk")
+	@OneToMany(cascade = CascadeType.ALL)
 	private List<MenuOptionEntity> menuOptions;
-	
+
+	//메뉴 생성
 	@Column
 	private String name;
 	
@@ -46,4 +48,20 @@ public class MenuEntity {
 
 	@Column
 	private Boolean isAlcohol;
+
+	//로그 찍기용 toString 메소드
+//	@Override
+//	public String toString() {
+//		return "MenuEntity{" +
+//				"menu_pk=" + menu_pk +
+//				", name='" + name + '\'' +
+//				", description='" + description + '\'' +
+//				", price=" + price +
+//				", imageUrl='" + imageUrl + '\'' +
+//				", isBestMenu=" + isBestMenu +
+//				", isAlcohol=" + isAlcohol +
+//				", menuCategory=" + (menuCategory != null ? menuCategory.getSubject() : "null") +
+//				", menuOptions=" + menuOptions +
+//				'}';
+//	}
 }

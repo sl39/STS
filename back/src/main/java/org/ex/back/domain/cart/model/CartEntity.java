@@ -6,11 +6,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.ex.back.domain.store.model.StoreEntity;
 import org.ex.back.domain.user.model.UserEntity;
-import org.ex.back.domain.menu.model.MenuEntity;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 @Entity
 @Table(name="cart_entity")
 public class CartEntity {
@@ -23,8 +23,7 @@ public class CartEntity {
 	@JoinColumn(name="user_pk")
 	private UserEntity user;
 
-	@OneToMany
-	@JoinColumn(name="cart_item_pk")
+	@OneToMany(cascade = CascadeType.ALL)
 	private List<CartItemEntity> cartItems;
 
 	@ManyToOne
