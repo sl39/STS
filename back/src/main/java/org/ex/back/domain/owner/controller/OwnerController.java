@@ -8,10 +8,7 @@ import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ex.back.domain.owner.dto.CheckBRNRequestDto;
-import org.ex.back.domain.owner.dto.CheckBRNResponseDto;
-import org.ex.back.domain.owner.dto.OwnerLoginRequestDto;
-import org.ex.back.domain.owner.dto.OwnerSignUpRequestDto;
+import org.ex.back.domain.owner.dto.*;
 import org.ex.back.domain.owner.service.OwnerService;
 import org.ex.back.global.error.CustomException;
 import org.ex.back.global.error.ErrorCode;
@@ -35,6 +32,9 @@ public class OwnerController {
 
     @Value("${portone.api.key}")
     private String portoneApiKey;
+
+    @Value("${portone.api.secret}")
+    private String portoneApiSecret;
 
     private final OwnerService ownerService;
 
@@ -77,7 +77,48 @@ public class OwnerController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    /*
     // 계좌번호 본인
+    @PostMapping("/bank")
+    public ResponseEntity<BankHolderResponseDto> checkBank(@RequestBody BankHolderRequestDto request) throws Exception {
+
+        String imp_key = request.getImp_key();
+        String imp_secret = request.getImp_secret();
+        log.info("imp_key : {}, imp_secret : {}", imp_key, imp_secret);
+
+        // 1. access token 받아오기
+        String url = "https://api.odcloud.kr/api/nts-businessman/v1/status?" +
+                "serviceKey=" + openApiKey +
+                "&returnType=" + "json";
+
+        // JsonObject 생성
+        JsonObject jsonObject = new JsonObject();
+        JsonArray jsonArray = new JsonArray();
+        jsonArray.add(BRN);
+        jsonObject.add("b_no", jsonArray);
+
+        // 헤더 설정
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // HttpEntity 생성
+        HttpEntity<String> entity = new HttpEntity<>(jsonObject.toString(), headers);
+
+        // POST 요청
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, entity, String.class);
+
+        if(!responseEntity.getStatusCode().is2xxSuccessful()) {
+            throw new Exception(responseEntity.getStatusCode() + ": 사업자등록번호를 조회할 수 없습니다."); //TODO noh 예외처리
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody()).get("data").get(0);
+        CheckBRNResponseDto dto = validateBRN(jsonNode);
+
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+*/
 
     // 사업자 번호 유효성 검사
     private CheckBRNResponseDto validateBRN(JsonNode jsonNode) {
