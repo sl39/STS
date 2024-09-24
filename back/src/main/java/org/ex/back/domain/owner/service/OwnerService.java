@@ -24,7 +24,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class OwnerService {
-
+/*
     private final OwnerRepository ownerRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;

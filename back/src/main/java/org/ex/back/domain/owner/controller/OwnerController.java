@@ -33,7 +33,7 @@ import java.util.Objects;
 @RequestMapping("/api/auth/owner")
 public class OwnerController {
 
-    @Value("${openApi.serviceKey}")
+  /*  @Value("${openApi.serviceKey}")
     private String serviceKey;
 
     private final OwnerService ownerService;
