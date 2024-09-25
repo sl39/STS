@@ -1,5 +1,6 @@
 package org.ex.back.domain.store.repository;
 
+import org.ex.back.domain.menu.model.MenuEntity;
 import org.ex.back.domain.store.model.StoreCategoryEntity;
 import org.ex.back.domain.store.model.StoreEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,9 +13,12 @@ import java.util.List;
 @Repository
 public interface UserStoreRepository extends JpaRepository<StoreEntity, Integer> {
 
-    // 매장 이름에 특정 문자열이 포함된 매장을 검색하는 메소드
+	 // 매장 이름에 특정 문자열이 포함된 매장을 검색하는 메소드 (부분 검색)
     List<StoreEntity> findByStoreNameContaining(String name);
 
+    // 매장 이름과 정확히 일치하는 매장을 검색하는 메소드 (전체 검색)
+    List<StoreEntity> findByStoreName(String name);
+    
     // 특정 카테고리(subject)를 기준으로 매장을 검색하는 메소드
     @Query(value = "SELECT s.* " +
                    "FROM store_entity s " +

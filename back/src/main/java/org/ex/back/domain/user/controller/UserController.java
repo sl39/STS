@@ -51,7 +51,13 @@ public class UserController {
         }
 
         // Token 검증 후 새로운 토큰 발급
-        String accessToken = authorizationHeader.substring(7);
+        String accessToken;
+        try {
+            accessToken = authorizationHeader.substring(7);
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.TOKEN_NOT_FOUND);
+        }
+
         TokenResponseDto tokenDto = userService.reissueToken(accessToken, refreshTokenHeader);
 
         // 헤더에 생성한 token 정보 추가

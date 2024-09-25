@@ -3,6 +3,8 @@ package org.ex.back.domain.store.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.ex.back.domain.store.model.StoreEntity;
+
 import lombok.*;
 
 @NoArgsConstructor
@@ -24,4 +26,5 @@ public class StoreDTO {
     private LocalDateTime createdAt; // 생성 시간
     private LocalDateTime deletedAt; // 삭제 시간
     private Double distance; // 거리 (선택적)
+    
 }
