@@ -1,18 +1,28 @@
 package org.ex.back.domain.store.controller;
 
-import org.ex.back.domain.store.dto.StoreDTO;
-import org.ex.back.domain.store.dto.StoreUpdateDTO;
-import org.ex.back.domain.store.service.GeocodingService;
-import org.ex.back.domain.store.service.OwnerStoreService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.ex.back.domain.owner.service.OwnerPrincipal;
+import org.ex.back.domain.store.dto.StoreDTO;
+import org.ex.back.domain.store.dto.StoreUpdateDTO;
+import org.ex.back.domain.store.service.GeocodingService;
+import org.ex.back.domain.store.service.OwnerStoreService;
+import org.ex.back.domain.user.service.UserPrincipal;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/store/owner")
@@ -41,10 +51,14 @@ public class OwnerStoreController {
     }
 
     // 매장 등록 API
-    @PostMapping("/{owner_pk}")
+    @PostMapping
     public ResponseEntity<StoreDTO> createStore(
-            @PathVariable("owner_pk") Integer ownerPk, // owner_pk를 PathVariable로 받음
-            @RequestBody StoreDTO newStore) {
+    		@AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody StoreDTO newStore
+    ) {	
+    	OwnerPrincipal ownerPrincipal = (OwnerPrincipal) userDetails;
+        Integer ownerPk = ownerPrincipal.getPk();
+    	
         try {
             // 소유자가 매장을 가지고 있는지 확인
             boolean hasStore = storeService.doesOwnerHaveStore(ownerPk);
@@ -86,6 +100,7 @@ public class OwnerStoreController {
             return ResponseEntity.status(500).body(null); // 일반 오류
         }
     }
+    
     @PutMapping("/{store_pk}")
     public ResponseEntity<Map<String, Object>> updateStore(
             @PathVariable("store_pk") Integer storePk,
@@ -189,8 +204,13 @@ public class OwnerStoreController {
         }
     }
 
-    @GetMapping("/{owner_pk}/hasStore")
-    public ResponseEntity<Boolean> hasStore(@PathVariable("owner_pk") Integer ownerPk) {
+    @GetMapping("/hasStore")
+    public ResponseEntity<Boolean> hasStore(
+    		@AuthenticationPrincipal UserDetails userDetails 
+    ) {	
+    	OwnerPrincipal ownerPrincipal = (OwnerPrincipal) userDetails;
+        Integer ownerPk = ownerPrincipal.getPk();
+        
         boolean hasStore = storeService.doesOwnerHaveStore(ownerPk);
         return ResponseEntity.ok(hasStore);
     }
