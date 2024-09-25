@@ -90,8 +90,8 @@ public class WaitingService {
         // 3. 대기 3번째 팀에게 카톡 메세지 전송
         List<WaitingEntity> standbyTeamList = waitingRepository.findStandbyTeamList(entity.getStore().getStore_pk());
 
-        if(standbyTeamList.size() >= 3) {
-            WaitingEntity thirdTeam = standbyTeamList.get(2);
+        if(standbyTeamList.size() >= 4) {
+            WaitingEntity thirdTeam = standbyTeamList.get(3);
             log.info("standby thirdTeam : {}", thirdTeam.toString());
 
             /*
