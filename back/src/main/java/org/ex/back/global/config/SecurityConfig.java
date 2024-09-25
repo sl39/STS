@@ -45,9 +45,10 @@ public class SecurityConfig {
 
         // HTTP 요청에 대한 보안 설정 구성
         http
+                // CORS 설정
                 .cors(Customizer.withDefaults())
 
-                // JWT 사용에 따른 설정
+                // JWT 사용에 따라 설정 Off
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(HttpBasicConfigurer::disable)
                 .formLogin(FormLoginConfigurer::disable)
@@ -75,15 +76,17 @@ public class SecurityConfig {
                         .addLogoutHandler(logoutService)
                         .logoutSuccessHandler((((request, response, authentication) ->
                                 SecurityContextHolder.clearContext())))
-                )
-
-                .authorizeHttpRequests(request -> request
-                        .anyRequest().permitAll()
-                        //.requestMatchers("/api/auth/**").permitAll()
-                        //.requestMatchers("/api/seller").hasRole("OWNER")
-                        //.requestMatchers("/api/user").hasRole("USER")
-                        //.anyRequest().authenticated() // 위에서 명시되지 않은 모든 요청은 인증된 사용자만 접근 가능
                 );
+
+                // API 접근
+                /*
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers("/api/auth/**").permitAll() // 인증 관련 api
+                        .requestMatchers("", "").permitAll() // 비회원 요청 가능 api
+                        .requestMatchers("/api/seller", "").hasRole("OWNER") // only owner api
+                        .requestMatchers("/api/user", "").hasRole("USER") // only user api
+                        .anyRequest().authenticated() // 위에서 명시되지 않은 모든 api 요청은 인증된 사용자만 접근 가능
+                );*/
 
         return http.build();
     }
