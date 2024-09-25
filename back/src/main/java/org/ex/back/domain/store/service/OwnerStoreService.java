@@ -4,6 +4,7 @@ import org.ex.back.domain.store.dto.StoreDTO;
 import org.ex.back.domain.store.dto.StoreUpdateDTO;
 import org.ex.back.domain.owner.model.OwnerEntity;
 import org.ex.back.domain.store.dto.ImageUrlsDTO; // DTO 추가
+import org.ex.back.domain.store.dto.ResponseDTO;
 import org.ex.back.domain.store.model.StoreEntity;
 import org.ex.back.domain.store.model.StoreImageEntity;
 import org.ex.back.domain.store.model.StoreCategoryConnectorEntity;
@@ -284,4 +285,9 @@ public boolean doesOwnerHaveStore(Integer ownerPk) {
     Long count = (Long) query.getSingleResult();
     return count > 0;
 }
+public ResponseDTO checkOwnerStore(Integer ownerPk) {
+    boolean hasStore = doesOwnerHaveStore(ownerPk);
+    return new ResponseDTO(ownerPk, hasStore);
+}
+
 }

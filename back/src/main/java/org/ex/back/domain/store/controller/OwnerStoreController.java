@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.ex.back.domain.owner.service.OwnerPrincipal;
+import org.ex.back.domain.store.dto.ResponseDTO;
 import org.ex.back.domain.store.dto.StoreDTO;
 import org.ex.back.domain.store.dto.StoreUpdateDTO;
 import org.ex.back.domain.store.service.GeocodingService;
@@ -205,13 +206,14 @@ public class OwnerStoreController {
     }
 
     @GetMapping("/hasStore")
-    public ResponseEntity<Boolean> hasStore(
-    		@AuthenticationPrincipal UserDetails userDetails 
+    public ResponseEntity<ResponseDTO> hasStore(
+            @AuthenticationPrincipal UserDetails userDetails 
     ) {	
-    	OwnerPrincipal ownerPrincipal = (OwnerPrincipal) userDetails;
+        OwnerPrincipal ownerPrincipal = (OwnerPrincipal) userDetails;
         Integer ownerPk = ownerPrincipal.getPk();
+
+        ResponseDTO responseDTO = storeService.checkOwnerStore(ownerPk);
         
-        boolean hasStore = storeService.doesOwnerHaveStore(ownerPk);
-        return ResponseEntity.ok(hasStore);
+        return ResponseEntity.ok(responseDTO);
     }
 }
