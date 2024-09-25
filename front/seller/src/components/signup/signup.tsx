@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   SafeAreaView,
@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import axios from "axios";
 import BankListScreen from "./bankListScreen";
+import { apiRequest } from "../../api/api";
 type bankType = {
   label: string;
   value: string;
@@ -25,6 +26,10 @@ type signup = {
   ownerPhone: String;
   bankName: String;
   bankAccount: String;
+};
+
+type getName = {
+  name: string;
 };
 
 export function Signup() {
@@ -48,6 +53,10 @@ export function Signup() {
   const [checkCert, setCheckCert] = useState<string>("");
   const [validPhoneNumber, setValidPhoneNumber] = useState<boolean>(false);
   const [checkNumberBtn, setCheckNumberBtn] = useState<boolean>(true);
+  const [checkBank, setChBank] = useState<boolean>(false);
+  useEffect(() => {
+    if (checkBank) setChBank(false);
+  }, [bankAccount, bankName]);
 
   const handleSignup = () => {
     if (id == "") {
@@ -87,7 +96,9 @@ export function Signup() {
       alert("은행을 선택해주세요");
       return;
     }
-    // router.push("/signup/store");
+    if (!checkBank) {
+      alert("계좌번호를 인증해주세요");
+    }
     signupApi();
   };
   const signupApi = async () => {
@@ -105,6 +116,7 @@ export function Signup() {
     try {
       const response = await axios.post(API_URL + "/api/auth/owner/join", data);
       console.log(response.data);
+      router.push("/signup/store");
     } catch (e) {
       console.log(e);
     }
@@ -116,8 +128,32 @@ export function Signup() {
   };
 
   // 정산 입금 계좌번호
-  const accountConfirm = () => {
-    console.log(bankAccount);
+  const accountConfirm = async () => {
+    if (bankAccount === "" || !bankName) {
+      alert("은행을 입력해 주세요");
+      return;
+    }
+    const data = {
+      bank_code: bankName.value,
+      bank_num: bankAccount,
+    };
+
+    try {
+      const res = await apiRequest<getName>(
+        API_URL + "/api/auth/owner/bank",
+        "POST",
+        data,
+        false
+      );
+      if (res.data?.name === ownerName) {
+        setChBank(true);
+        alert("계좌번호가 인증 되었습니다");
+      } else {
+        alert("판매지 이름과 은행계좌를 확인해 주세요");
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   // 사업자 번호 확인
@@ -151,6 +187,7 @@ export function Signup() {
       await axios.post(API_URL + "/api/sms/send", { phoneNum: ownerPhone });
       setCheckPhoneNumber(true);
       setCheckNumberBtn(false);
+      alert("인증번호를 발송하였습니다");
       setTimeout(function () {
         setCheckNumberBtn(true);
       }, 30000);
@@ -170,6 +207,7 @@ export function Signup() {
       );
       setCheckPhoneNumber(false);
       setValidPhoneNumber(true);
+      alert("전화번호가 인증되었습니다");
     } catch (e) {
       console.log(e);
     }

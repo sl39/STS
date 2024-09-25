@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { apiRequest } from "../../api/api";
 // contact me :)
 // instagram: must_ait6
 // email : mustapha.aitigunaoun@gmail.com
@@ -26,7 +27,6 @@ type Login = {
 
 export function Login() {
   const API_URL = process.env.API_URL;
-  document.cookie = "safeCookie1=foo;SameSite=Lax";
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState("");
@@ -38,14 +38,15 @@ export function Login() {
       password: password,
     };
     try {
-      const res = await axios.post(API_URL + "/api/auth/owner/login", data, {
-        withCredentials: true,
-      });
-      console.log(res.headers);
-
-      // router.push("/main");
+      const res = await apiRequest(
+        API_URL + "/api/auth/owner/login",
+        "POST",
+        data
+      );
+      // 가게가 있는지 체크 하는 부분
+      if (res.status === 200) router.push("/main");
     } catch (e) {
-      console.log(e);
+      alert("아이디와 비밀번호를 확인해 주세요");
     }
   };
   const handleSignup = () => {
