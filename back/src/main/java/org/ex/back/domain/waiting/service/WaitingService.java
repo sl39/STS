@@ -2,6 +2,7 @@ package org.ex.back.domain.waiting.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.ex.back.domain.sms.Service.KakaoService;
 import org.ex.back.domain.store.model.StoreEntity;
 import org.ex.back.domain.store.repository.StoreRepository;
 import org.ex.back.domain.waiting.dto.WaitingCreateRequestDto;
@@ -28,6 +29,7 @@ public class WaitingService {
 
     private final WaitingRepository waitingRepository;
     private final StoreRepository storeRepository;
+    private final KakaoService kakaoService;
 
     public WaitingResponseDto create(Integer storeId, WaitingCreateRequestDto request) {
 
@@ -94,9 +96,11 @@ public class WaitingService {
             WaitingEntity thirdTeam = standbyTeamList.get(3);
             log.info("standby thirdTeam : {}", thirdTeam.toString());
 
-            /*
-
-             */
+            try {
+                kakaoService.sendWaitKakaoMessage(thirdTeam.getPhone());
+            } catch (Exception e) {
+                log.error("kakao 알림 보내기 실패!");
+            }
         }
 
         return entity.toDto();
