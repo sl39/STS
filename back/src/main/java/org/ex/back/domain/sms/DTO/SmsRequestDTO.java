@@ -1,4 +1,4 @@
-package org.ex.back.domain.sms;
+package org.ex.back.domain.sms.DTO;
 
 
 import jakarta.validation.constraints.NotEmpty;

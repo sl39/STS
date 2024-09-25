@@ -1,4 +1,4 @@
-package org.ex.back.domain.sms;
+package org.ex.back.domain.sms.Util;
 
 import jakarta.annotation.PostConstruct;
 import net.nurigo.sdk.NurigoApp;
