@@ -204,16 +204,23 @@ public class OwnerStoreController {
             return ResponseEntity.status(500).body(Map.of("error", "매장 상태 전환 중 오류가 발생했습니다."));
         }
     }
-
     @GetMapping("/hasStore")
     public ResponseEntity<ResponseDTO> hasStore(
-            @AuthenticationPrincipal UserDetails userDetails 
-    ) {	
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
         OwnerPrincipal ownerPrincipal = (OwnerPrincipal) userDetails;
         Integer ownerPk = ownerPrincipal.getPk();
 
-        ResponseDTO responseDTO = storeService.checkOwnerStore(ownerPk);
-        
-        return ResponseEntity.ok(responseDTO);
+        boolean hasStore = storeService.doesOwnerHaveStore(ownerPk);
+        ResponseDTO response = new ResponseDTO();
+        response.setOwnerPk(ownerPk);
+        response.setHasStore(hasStore);
+
+        if (hasStore) {
+            StoreDTO store = storeService.findStoreByOwnerId(ownerPk); // 소유자의 매장 조회
+            response.setStorePk(store.getStorePk()); // storePk 설정
+        }
+
+        return ResponseEntity.ok(response);
     }
 }

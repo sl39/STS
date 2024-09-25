@@ -285,9 +285,15 @@ public boolean doesOwnerHaveStore(Integer ownerPk) {
     Long count = (Long) query.getSingleResult();
     return count > 0;
 }
-public ResponseDTO checkOwnerStore(Integer ownerPk) {
-    boolean hasStore = doesOwnerHaveStore(ownerPk);
-    return new ResponseDTO(ownerPk, hasStore);
-}
 
+//소유자가 가진 매장을 찾는 메소드
+public StoreDTO findStoreByOwnerId(Integer ownerPk) {
+    OwnerEntity ownerEntity = new OwnerEntity();
+    ownerEntity.setOwner_pk(ownerPk); // OwnerEntity 객체 생성 및 ID 설정
+
+    StoreEntity storeEntity = storeRepository.findByOwner(ownerEntity)
+            .orElseThrow(() -> new RuntimeException("매장을 찾을 수 없습니다. 소유자 ID: " + ownerPk));
+
+    return convertToDTO(storeEntity);
+}
 }

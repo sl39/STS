@@ -1,14 +1,14 @@
 package org.ex.back.domain.store.repository;
 
-import org.ex.back.domain.store.model.StoreEntity;
 import org.ex.back.domain.owner.model.OwnerEntity;
-import org.ex.back.domain.store.model.StoreImageEntity;
+import org.ex.back.domain.store.model.StoreEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OwnerStoreRepository extends JpaRepository<StoreEntity, Integer> {
@@ -18,4 +18,5 @@ public interface OwnerStoreRepository extends JpaRepository<StoreEntity, Integer
                    "WHERE sc.store_pk = :storePk",
            nativeQuery = true)
     List<Integer> findCategoryPksByStorePk(@Param("storePk") Integer storePk);
+    Optional<StoreEntity> findByOwner(OwnerEntity owner);
 }
