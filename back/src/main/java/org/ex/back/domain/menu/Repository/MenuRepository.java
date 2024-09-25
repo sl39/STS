@@ -10,4 +10,6 @@ public interface MenuRepository extends JpaRepository<MenuEntity, Integer> {
     //StoreId와 일치하는 메뉴엔티티 타입 리수투 불러오는 추상 메소드 정의
     List<MenuEntity> findByStore(StoreEntity store_pk);
     List<MenuEntity> findByNameContaining(String name);
+ // 메뉴 이름과 정확히 일치하는 항목 검색
+    List<MenuEntity> findByName(String name);
 }
