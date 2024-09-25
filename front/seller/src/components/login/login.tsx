@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { apiRequest } from "../../api/api";
+import { api, apiRequest, getCookie } from "../../api/api";
 // contact me :)
 // instagram: must_ait6
 // email : mustapha.aitigunaoun@gmail.com
@@ -41,11 +41,21 @@ export function Login() {
       const res = await apiRequest(
         API_URL + "/api/auth/owner/login",
         "POST",
-        data
+        data,
+        true
       );
       // 가게가 있는지 체크 하는 부분
-      if (res.status === 200) router.push("/main");
+      if (res.status === 200) {
+        // router.push("/main");
+        const checkStore = await api(
+          API_URL + "/api/store/owner/hasStore",
+          "GET",
+          null,
+          true
+        );
+      }
     } catch (e) {
+      console.log(e);
       alert("아이디와 비밀번호를 확인해 주세요");
     }
   };
