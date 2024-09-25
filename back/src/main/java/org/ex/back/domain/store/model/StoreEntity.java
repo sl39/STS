@@ -38,6 +38,9 @@ public class StoreEntity {
 	
 	@Column
 	private String phone;
+
+	@Column
+	private String fcmToken;
 	
 	@Column(length = 1000)
 	private String operatingHours; //영업시간(브레이크타임)

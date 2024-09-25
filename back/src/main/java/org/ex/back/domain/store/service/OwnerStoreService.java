@@ -12,6 +12,7 @@ import org.ex.back.domain.store.model.StoreCategoryEntity;
 import org.ex.back.domain.store.repository.OwnerStoreRepository;
 import org.ex.back.domain.store.repository.StoreCategoryConnectorRepository;
 import org.ex.back.domain.store.repository.StoreCategoryRepository;
+import org.ex.back.domain.store.repository.StoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +45,9 @@ private StoreCategoryRepository storeCategoryRepository;
 
 @Autowired
 private GeocodingService geocodingService; // GeocodingService 주입
+
+@Autowired
+private StoreRepository repository;
 
 // 매장 ID로 매장을 찾는 메소드
 public StoreDTO findStoreById(Integer storePk) {

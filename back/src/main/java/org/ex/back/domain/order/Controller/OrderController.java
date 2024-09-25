@@ -1,9 +1,13 @@
 package org.ex.back.domain.order.Controller;
 
 
+import org.ex.back.domain.fcm.FCMService;
+import org.ex.back.domain.order.DTO.OrderFcmTokenDTO;
 import org.ex.back.domain.order.model.OrderEntity;
 import org.ex.back.domain.order.Service.OrderService;
 import org.ex.back.domain.order.DTO.StoreOrderListResponseDTO;
+import org.ex.back.domain.store.dto.StoreFcmTokenDTO;
+import org.ex.back.domain.store.service.OwnerStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +24,20 @@ public class OrderController {
 
 	@Autowired
     private OrderService orderService;
+    @Autowired
+    private FCMService fcmService;
+    @Autowired
+    private OwnerStoreService ownerStoreService;
 
-    //주문내역 생성
+    //주문 생성
     @PostMapping
     public ResponseEntity<OrderEntity> createOrder(@RequestBody OrderEntity order) {
         OrderEntity createdOrder = orderService.createOrder(order);
+
+        // FCM 알림 전송 - 토큰 storeEntity에서 가져와야함
+        String token = "판매자 FCM 토큰"; // 실제 토큰으로 대체
+        fcmService.sendNotification(token, "새 주문 알림", "새 주문이 도착했습니다.");
+
         return ResponseEntity.ok(createdOrder);
     }
 
