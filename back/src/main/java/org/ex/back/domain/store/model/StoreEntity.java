@@ -62,7 +62,4 @@ public class StoreEntity {
 
 	@Column
 	private LocalDateTime deletedAt;
-
-	@Column
-	private String fcmToken;
 }
