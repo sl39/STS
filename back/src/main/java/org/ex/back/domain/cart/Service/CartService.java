@@ -63,6 +63,9 @@ public class CartService {
     @Transactional
     public CartResponseDTO pushCart(int cart_pk, CartRequestDTO request) {
 
+        //카트 유효성 검사
+        checkCartPk(cart_pk);
+
         /* Cart 세팅*/
 
         //일치하는 장바구니 가져오기 (없으면 에러)
@@ -272,7 +275,12 @@ public class CartService {
     }
 
     //장바구니 메뉴 수량 수정
+    @Transactional
     public CartResponseDTO putCart(Integer cartId, Integer cartItemId, CartItemDTO request) {
+
+        //카트 유효성 검사
+        checkCartPk(cartId);
+
         //해당 카트 가져오기
         Optional<CartEntity> cartEntity = cartRepository.findById(cartId);
         if(cartEntity.isPresent()) {
@@ -330,7 +338,12 @@ public class CartService {
     }
 
     //장바구니 메뉴 삭제 return -> 리스트
+    @Transactional
     public void deleteCartItem(Integer cartId, Integer cartItemId) {
+
+        //카트 유효성 검사
+        checkCartPk(cartId);
+
         Optional<CartEntity> cartEntity = cartRepository.findById(cartId);
         if(cartEntity.isPresent()) {
             CartEntity cart = cartEntity.get();
@@ -373,6 +386,12 @@ public class CartService {
                 new CustomException(ErrorCode.CART_NOT_FOUND));
 
         return UserCartResponseDto.builder().userCartPk(cart.getCart_pk()).build();
+    }
+
+    //카드pk 유효성 검사
+    private void checkCartPk(Integer cartPk){
+
+        cartRepository.findById(cartPk).orElseThrow(() -> new CustomException(ErrorCode.CART_NOT_FOUND));
     }
 }
 
