@@ -99,10 +99,6 @@ public class OrderService {
                         .orderedAt(order.getOrderedAt())
                         .store_pk(storeDTO)
                         .order_pk(order.getOrder_pk())
-<<<<<<< HEAD
-                        .isClear(order.getIsClear())
-=======
->>>>>>> back/feat/order
                         .paymentType(order.getPaymentType())
                         .tableNumber(order.getTableNumber())
                         .totalPrice(order.getTotalPrice())

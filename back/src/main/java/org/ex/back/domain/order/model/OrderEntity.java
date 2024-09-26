@@ -17,12 +17,8 @@ import org.ex.back.domain.store.model.StoreEntity;
 public class OrderEntity {
 
 	@Id
-<<<<<<< HEAD
 	private String order_pk;
-=======
-	private String order_pk; //랜덤 아이디 생성
->>>>>>> back/feat/order
-	
+
 	@ManyToOne
 	@JoinColumn(name ="user_pk")
 	private UserEntity user;
