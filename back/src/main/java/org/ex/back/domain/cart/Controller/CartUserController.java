@@ -25,7 +25,7 @@ public class CartUserController {
     private final MenuService menuService;
 
     // 회원 - 장바구니 pk 조회
-    @GetMapping("api/cart/user")
+    @GetMapping("/api/cart/user")
     public ResponseEntity<UserCartResponseDto> getUserCartPk(
             @AuthenticationPrincipal UserDetails userDetails
     ){
@@ -35,8 +35,12 @@ public class CartUserController {
       return new ResponseEntity<>(cartService.getUserCartPk(userPk), HttpStatus.OK);
     }
 
+    /*
+            장바구니 CRUD
+     */
+
     //장바구니에 장바구니 아이템 추가
-    @PostMapping("api/cart/{cartId}")
+    @PostMapping("/api/cart/user/{cartId}")
     public ResponseEntity<CartResponseDTO> addCartItem(@PathVariable int cartId, @RequestBody CartRequestDTO request){
         CartResponseDTO response = cartService.pushCart(cartId, request);
 
@@ -46,7 +50,7 @@ public class CartUserController {
     }
 
     //장바구니 메뉴 조회
-    @GetMapping("api/cart/{cartId}")
+    @GetMapping("/api/cart/user/{cartId}")
     public ResponseEntity<CartResponseDTO> getCart(@PathVariable int cartId){
         CartResponseDTO response = cartService.getCart(cartId);
 
@@ -57,7 +61,7 @@ public class CartUserController {
     }
 
     //장바구니 메뉴 수량 수정
-    @PatchMapping("api/cart/{cartId}/cartItem/{cartItemId}")
+    @PatchMapping("/api/cart/user/{cartId}/cartItem/{cartItemId}")
     public ResponseEntity<CartResponseDTO> updateCartItem(
             @PathVariable int cartId,
             @PathVariable int cartItemId,
@@ -71,7 +75,7 @@ public class CartUserController {
     }
 
     //장바구니 메뉴 삭제
-    @DeleteMapping("api/cart/{cartId}/cartItem/{cartItemId}")
+    @DeleteMapping("/api/cart/user/{cartId}/cartItem/{cartItemId}")
     public ResponseEntity<?> deleteCartItem(
             @PathVariable int cartId,
             @PathVariable int cartItemId
