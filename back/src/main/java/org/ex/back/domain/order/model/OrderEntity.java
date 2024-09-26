@@ -25,7 +25,6 @@ public class OrderEntity {
 
 	@ManyToOne
 	@JoinColumn(name ="store_pk")
-	@JsonBackReference
 	private StoreEntity store;
 
 	@OneToMany(cascade = CascadeType.ALL)
