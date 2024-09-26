@@ -40,10 +40,8 @@ public class OwnerStoreController {
     public ResponseEntity<Map<String, Object>> getStoreById(@PathVariable("store_pk") Integer storePk) {
         try {
             StoreDTO store = storeService.findStoreById(storePk);
-            List<Integer> categoryPks = storeService.findCategoryPksByStoreId(storePk);
             Map<String, Object> response = new HashMap<>();
             response.put("store", store);
-            response.put("categoryPks", categoryPks);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             e.printStackTrace();
@@ -51,15 +49,14 @@ public class OwnerStoreController {
         }
     }
 
-    // 매장 등록 API
     @PostMapping
     public ResponseEntity<StoreDTO> createStore(
-    		@AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody StoreDTO newStore
-    ) {	
-    	OwnerPrincipal ownerPrincipal = (OwnerPrincipal) userDetails;
+    ) {    
+        OwnerPrincipal ownerPrincipal = (OwnerPrincipal) userDetails;
         Integer ownerPk = ownerPrincipal.getPk();
-    	
+        
         try {
             // 소유자가 매장을 가지고 있는지 확인
             boolean hasStore = storeService.doesOwnerHaveStore(ownerPk);
@@ -77,7 +74,9 @@ public class OwnerStoreController {
             if (newStore.getStoreImages() == null) {
                 newStore.setStoreImages(new ArrayList<>()); // 빈 리스트 초기화
             }
-
+            if (newStore.getStoreState() == null) {
+                newStore.setStoreState("영업"); // 기본값을 "영업"으로 설정
+            }
             // 주소를 좌표로 변환
             if (newStore.getAddress() != null && !newStore.getAddress().isEmpty()) {
                 Double[] coordinates = geocodingService.getCoordinates(newStore.getAddress());
@@ -92,6 +91,10 @@ public class OwnerStoreController {
 
             // 매장 저장
             StoreDTO savedStore = storeService.saveStore(newStore);
+
+            // 카테고리 정보를 포함하여 반환
+            savedStore.setCategoryPks(newStore.getCategoryPks());
+
             return ResponseEntity.status(201).body(savedStore); // 201 Created와 함께 저장된 매장 정보 반환
         } catch (DataIntegrityViolationException e) {
             e.printStackTrace();
@@ -125,9 +128,9 @@ public class OwnerStoreController {
             if (updatedStoreData.getOperatingHours() != null && !updatedStoreData.getOperatingHours().isEmpty()) {
                 existingStore.setOperatingHours(updatedStoreData.getOperatingHours());
             }
-
-            existingStore.setStoreState(updatedStoreData.getStoreState());
-
+            if (updatedStoreData.getStoreState() != null && !updatedStoreData.getStoreState().isEmpty()) {
+            	existingStore.setStoreState(updatedStoreData.getStoreState());
+            }
             // 이미지 업데이트
             if (updatedStoreData.getStoreImages() != null) {
                 existingStore.setStoreImages(updatedStoreData.getStoreImages()); // 이미지 업데이트
@@ -166,8 +169,6 @@ public class OwnerStoreController {
             // 응답 구성
             Map<String, Object> response = new HashMap<>();
             response.put("store", updatedStore);
-            response.put("categoryPks", categoryPks); // store_category_pks를 categoryPks로 변경
-
             return ResponseEntity.ok(response); // 업데이트된 매장 정보와 카테고리 정보 반환
         } catch (DataIntegrityViolationException e) {
             e.printStackTrace();

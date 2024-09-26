@@ -54,7 +54,13 @@ public StoreDTO findStoreById(Integer storePk) {
     StoreEntity storeEntity = storeRepository.findById(storePk)
             .orElseThrow(() -> new RuntimeException("매장을 찾을 수 없습니다. ID: " + storePk));
     
-    return convertToDTO(storeEntity);
+    StoreDTO storeDTO = convertToDTO(storeEntity); // 매장 정보를 DTO로 변환
+
+    // 카테고리 ID 리스트 조회
+    List<Integer> categoryPks = findCategoryPksByStoreId(storePk); // 카테고리 ID 조회 메서드 호출
+    storeDTO.setCategoryPks(categoryPks); // 카테고리 정보를 DTO에 설정
+
+    return storeDTO;
 }
 
 public StoreDTO saveStore(StoreDTO storeDTO) {
@@ -80,6 +86,17 @@ public StoreDTO saveStore(StoreDTO storeDTO) {
     try {
         StoreEntity savedStore = storeRepository.save(convertToEntity(storeDTO));
         logger.info("저장된 매장 정보: {}", savedStore);
+
+        // 카테고리 추가
+        if (storeDTO.getCategoryPks() != null) {
+            for (Integer categoryPk : storeDTO.getCategoryPks()) {
+                addCategoryToStore(savedStore.getStore_pk(), categoryPk);
+            }
+        }
+
+        // 카테고리 정보를 StoreDTO에 추가
+        storeDTO.setCategoryPks(storeDTO.getCategoryPks());
+
         return convertToDTO(savedStore);
     } catch (Exception e) {
         logger.error("매장 저장 중 오류 발생: {}", e.getMessage(), e);
