@@ -9,8 +9,8 @@ import {
 } from "react-native";
 
 interface TopbarProps {
-  getCategory: Array<string>;
-  handleCategory: (cate: Array<string>) => void;
+  getCategory: Array<number>;
+  handleCategory: (cate: Array<number>) => void;
 }
 
 export const CategoryList: FC<TopbarProps> = ({
@@ -19,7 +19,7 @@ export const CategoryList: FC<TopbarProps> = ({
 }) => {
   const { height, width } = useWindowDimensions();
 
-  const [selectedId, setSelectedId] = useState<string[]>(getCategory);
+  const [selectedId, setSelectedId] = useState<number[]>(getCategory);
   useEffect(() => {
     handleCategory(selectedId);
   }, [selectedId]);
@@ -27,7 +27,7 @@ export const CategoryList: FC<TopbarProps> = ({
   const renderItem = ({ item }: { item: ItemData }) => {
     const backgroundColor = selectedId.includes(item.id) ? "black" : "#D9D9D9";
     const color = selectedId.includes(item.id) ? "white" : "black";
-    const categoryClick = (category: string) => {
+    const categoryClick = (category: number) => {
       if (selectedId.includes(category)) {
         // 이미 선택된 항목이면 배열에서 제거
         setSelectedId((prevSelectedId) =>
@@ -67,24 +67,24 @@ export const CategoryList: FC<TopbarProps> = ({
 };
 
 type ItemData = {
-  id: string;
+  id: number;
   cate: string;
 };
 
 const category: ItemData[] = [
-  { id: "1", cate: "족발,보쌈" },
-  { id: "2", cate: "돈까스,회 일식" },
-  { id: "3", cate: "고기,구이" },
-  { id: "4", cate: "피자" },
-  { id: "5", cate: "찜,탕,찌개" },
-  { id: "6", cate: "양식" },
-  { id: "7", cate: "중식" },
-  { id: "8", cate: "아시안" },
-  { id: "9", cate: "치킨" },
-  { id: "10", cate: "백반,죽,국수" },
-  { id: "11", cate: "버거" },
-  { id: "12", cate: "분식" },
-  { id: "13", cate: "카페,디저트" },
+  { id: 1, cate: "족발,보쌈" },
+  { id: 2, cate: "돈까스,회 일식" },
+  { id: 3, cate: "고기,구이" },
+  { id: 4, cate: "피자" },
+  { id: 5, cate: "찜,탕,찌개" },
+  { id: 6, cate: "양식" },
+  { id: 7, cate: "중식" },
+  { id: 8, cate: "아시안" },
+  { id: 9, cate: "치킨" },
+  { id: 10, cate: "백반,죽,국수" },
+  { id: 11, cate: "버거" },
+  { id: 12, cate: "분식" },
+  { id: 13, cate: "카페,디저트" },
 ];
 
 type ItemProps = {

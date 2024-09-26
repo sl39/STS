@@ -5,9 +5,13 @@ import { Platform, StyleSheet, View, Button, TextInput } from "react-native";
 
 interface AddressProps {
   handleAddress: (address: string) => void;
+  handleAddressCheck: (val: boolean) => void;
 }
 
-const PostCode: React.FC<AddressProps> = ({ handleAddress }) => {
+const PostCode: React.FC<AddressProps> = ({
+  handleAddress,
+  handleAddressCheck,
+}) => {
   const [storeAddress, setStoreAddress] = useState<string>("");
   const [detailAddress, setDetailAddress] = useState<string>("");
   // Functions
@@ -20,7 +24,12 @@ const PostCode: React.FC<AddressProps> = ({ handleAddress }) => {
   };
 
   useEffect(() => {
-    handleAddress(storeAddress + " " + detailAddress);
+    if (storeAddress === "" || detailAddress === "") {
+      handleAddressCheck(false);
+    } else {
+      handleAddress(storeAddress + " " + detailAddress);
+      handleAddressCheck(true);
+    }
   }, [storeAddress, detailAddress]);
 
   // Function to open Daum Postcode in a popup on the web

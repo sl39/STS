@@ -16,6 +16,7 @@ import {
   View,
 } from "react-native";
 import { api, apiRequest, getCookie } from "../../api/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // contact me :)
 // instagram: must_ait6
 // email : mustapha.aitigunaoun@gmail.com
@@ -24,6 +25,11 @@ type Login = {
   id: string;
   password: string;
 };
+interface StoreData {
+  hasStore: boolean;
+  ownerPk: number;
+  storePk: number | null;
+}
 
 export function Login() {
   const API_URL = process.env.API_URL;
@@ -47,18 +53,24 @@ export function Login() {
       // 가게가 있는지 체크 하는 부분
       if (res.status === 200) {
         // router.push("/main");
-        const checkStore = await api(
+        const checkStore = await api<StoreData>(
           API_URL + "/api/store/owner/hasStore",
           "GET",
           null,
           true
         );
+        if (checkStore.data?.hasStore) {
+          router.push("/main");
+        } else {
+          router.push("/signup/store");
+        }
       }
     } catch (e) {
       console.log(e);
       alert("아이디와 비밀번호를 확인해 주세요");
     }
   };
+
   const handleSignup = () => {
     router.push("/signup");
   };

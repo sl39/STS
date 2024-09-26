@@ -12,14 +12,26 @@ import { Button } from "@rneui/themed/dist/Button";
 import { useRouter } from "expo-router";
 import { FireBaseImage } from "../common";
 import Postcode from "./address";
+import { api } from "../../api/api";
 
+interface StoreOpenHours {
+  월: string;
+  화: string;
+  수: string;
+  목: string;
+  금: string;
+  토: string;
+  일: string;
+  브레이크타임: string;
+}
+const API_URL = process.env.API_URL;
 export const StoreCreateDetail = () => {
   const router = useRouter();
 
   const [storeName, SetStoreName] = useState<string>(""); // 스토어 이름
   const [storeAddress, setStoreAddress] = useState<string>(""); // 스토어 주소
   const [phoneNumber, setPhoneNumber] = useState<string>(""); // 스토어 전화번호
-  const [open, setOpen] = useState<object>({
+  const [open, setOpen] = useState<StoreOpenHours>({
     월: "",
     화: "",
     수: "",
@@ -30,10 +42,14 @@ export const StoreCreateDetail = () => {
     브레이크타임: "",
   }); // 스토어 open 시간
   const [getImage, setGetImage] = useState<Array<string>>([]); // storeImages 이미지들
-  const [getCategory, setGetCategory] = useState<Array<string>>([]); // 카테고리들
+  const [getCategory, setGetCategory] = useState<Array<number>>([]); // 카테고리들
+  const [checkAddress, setCheckAddress] = useState<boolean>(false);
+  const handleAddressCheck = (val: boolean) => {
+    setCheckAddress(val);
+  };
 
   const { height, width } = useWindowDimensions();
-  const handleOpen = (date: object) => {
+  const handleOpen = (date: StoreOpenHours) => {
     setOpen(date);
   };
 
@@ -61,12 +77,67 @@ export const StoreCreateDetail = () => {
     setPhoneNumber(num);
   };
 
-  const handleCategory = (cate: Array<string>) => {
+  const handleCategory = (cate: Array<number>) => {
     setGetCategory(cate);
   };
 
   const handleAddress = (address: string) => {
     setStoreAddress(address);
+  };
+
+  const submitStore = async () => {
+    // router.push("/main");
+    console.log(
+      "이름 ",
+      storeName,
+      "주소 ",
+      storeAddress,
+      "전화번호 ",
+      phoneNumber,
+      "요일 ",
+      open,
+      "카테고리 ",
+      getCategory,
+      "이미지 ",
+      getImage
+    );
+    const hasEmptyTime = Object.entries(open).some(([day, time]) => {
+      if (time === "") {
+        alert(`${day}요일 시간이 비어 있습니다.`);
+        return true; // 조건에 맞으면 루프 중단
+      }
+      return false;
+    });
+
+    if (hasEmptyTime) return; // 빈 시간이 있으면 함수 종료
+
+    // 모든 시간이 유효할 때만 문자열로 변환
+    const operatingHours = Object.entries(open)
+      .map(([day, time]) => `${day} ${time}`)
+      .join(" // ");
+    if (storeName === "") {
+      alert("가게이름을 넣어주세요");
+      return;
+    }
+    if (!checkAddress) {
+      alert("가게주소를 입력해주세요");
+      return;
+    }
+
+    const data = {
+      storeImages: getImage,
+      storeName: storeName,
+      address: storeAddress,
+      phone: phoneNumber,
+      operatingHours: operatingHours,
+      categoryPks: getCategory,
+    };
+    try {
+      const res = await api(API_URL + "/api/store/owner", "POST", data, true);
+      console.log(res.data);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -86,7 +157,10 @@ export const StoreCreateDetail = () => {
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <Postcode handleAddress={handleAddress} />
+            <Postcode
+              handleAddress={handleAddress}
+              handleAddressCheck={handleAddressCheck}
+            />
           </View>
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
@@ -104,7 +178,7 @@ export const StoreCreateDetail = () => {
         <Button
           title="가게 등록"
           onPress={() => {
-            router.push("/main");
+            submitStore();
           }}
         />
       </View>

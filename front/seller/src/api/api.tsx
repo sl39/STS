@@ -75,8 +75,6 @@ export const api = async <T,>(
         accessToken ? accessToken : "",
         refreshToken
       );
-      accessToken = newTokens.accessToken;
-      // 필요하다면 새로운 토큰을 저장할 수도 있습니다.
     }
 
     // 2. 요청 옵션 설정
@@ -109,6 +107,8 @@ export const api = async <T,>(
 
         // 갱신된 토큰으로 다시 요청
         options.headers["Authorization"] = `Bearer ${newTokens}`;
+        console.log(options);
+        console.log(newTokens);
         const retryResponse = await fetch(url, options);
 
         if (!retryResponse.ok) {
@@ -154,21 +154,17 @@ export const getCookie = (cookieName: string) => {
   return null;
 };
 // 리프레시 토큰을 사용하여 새 액세스 토큰을 요청하는 함수
-const refreshTokens = async (
-  accessToken: string,
-  refreshToken: string
-): Promise<{ accessToken: string; refreshToken: string }> => {
+const refreshTokens = async (accessToken: string, refreshToken: string) => {
   const response = await fetch(API_URL + "/api/auth/owner/reissue", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
       "Refresh-Token": refreshToken,
     },
+    credentials: "include",
   });
 
   if (!response.ok) {
     throw new Error("Failed to refresh token");
   }
-
-  return response.json();
 };

@@ -13,8 +13,8 @@ type timeProps = {
 };
 
 interface DayProps {
-  handleOpen: (date: object) => void;
-  open: object;
+  handleOpen: (date: StoreOpenHours) => void;
+  open: StoreOpenHours;
 }
 
 const day: string[] = [
@@ -27,8 +27,20 @@ const day: string[] = [
   "일",
   "브레이크타임",
 ];
+
+interface StoreOpenHours {
+  월: string;
+  화: string;
+  수: string;
+  목: string;
+  금: string;
+  토: string;
+  일: string;
+  브레이크타임: string;
+}
+
 export const DayComponent: React.FC<DayProps> = ({ handleOpen, open }) => {
-  const [date, setDate] = useState<object>(open);
+  const [date, setDate] = useState<StoreOpenHours>(open);
   const setDateObject = (day: string, time: string) => {
     ///// 이쪽 파트 필요함
     setDate({ ...date, [day]: time });
@@ -53,10 +65,23 @@ const DateTime: React.FC<dayTimeProps> = ({ day, setTime }) => {
   const [isChecked, setChecked] = useState(false);
 
   useEffect(() => {
-    const date =
-      startHour + ":" + startMinute + " ~ " + endHour + ":" + endMinute;
-    setTime(day, date);
-  }, [startHour, startMinute, endHour, endMinute]);
+    if (isChecked) {
+      setTime(day, "정기휴무");
+    } else {
+      if (
+        startHour !== "" &&
+        startMinute !== "" &&
+        endHour !== "" &&
+        endMinute !== ""
+      ) {
+        const date =
+          startHour + ":" + startMinute + " ~ " + endHour + ":" + endMinute;
+        setTime(day, date);
+      } else {
+        setTime(day, "");
+      }
+    }
+  }, [startHour, startMinute, endHour, endMinute, isChecked]);
   return (
     <View style={{ flexDirection: "row", gap: 15 }}>
       <View style={styles.daycontainer}>
