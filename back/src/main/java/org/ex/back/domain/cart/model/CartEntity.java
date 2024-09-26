@@ -11,6 +11,7 @@ import org.ex.back.domain.user.model.UserEntity;
 @AllArgsConstructor
 @Data
 @Entity
+@Builder
 @Table(name="cart_entity")
 public class CartEntity {
 
@@ -18,12 +19,13 @@ public class CartEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer cart_pk;
 
+	//사용하지 않음 계속 null
 	@OneToOne
 	@JoinColumn(name="user_pk")
 	private UserEntity user;
 
 	@OneToMany
-	@JoinColumn(name="cart_item_pk")
+	//@JoinColumn(name="cart_item_pk")
 	private List<CartItemEntity> cartItems;
 
 	@ManyToOne
@@ -34,5 +36,5 @@ public class CartEntity {
 	private String tableNumber;
 
 	@Column
-	private Integer totalPrice;
+	private Integer totalPrice; // 카트 총금액
 }
