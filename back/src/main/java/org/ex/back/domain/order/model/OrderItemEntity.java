@@ -22,6 +22,12 @@ public class OrderItemEntity {
     private MenuEntity menu;
 
     @Column
+    private String optionItemList; //추가된 옵션
+
+    @Column
+    private Integer totalExtraPrice; //추가된 옵션 금액
+
+    @Column
     private Integer menuCount;
 
     @Column
