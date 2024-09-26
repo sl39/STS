@@ -14,6 +14,7 @@ import {
 import { Menu } from "./menu";
 import { useStore } from "../../context/StoreContext";
 import { api } from "../../api/api";
+import { MenuListProps, MenuProps } from "./type";
 
 type categoryType = {
   category_pk: number;
@@ -21,27 +22,72 @@ type categoryType = {
 };
 const API_URL = process.env.API_URL;
 
+type categoryMenuType = {
+  category_pk: number;
+  categoryMenus: Array<MenuProps>;
+};
+
 export const MenuCategory = () => {
   const { height, width } = useWindowDimensions();
   const [showInput, setShowInput] = useState<boolean>(false); // 입력 창 표시 여부
   const [categoryName, setCategoryName] = useState<string>("");
   const [categoryList, setCategoryList] = useState<categoryType[]>([]);
   const [checkCategory, setCheckCategory] = useState<boolean>(false);
+  const [categoryMenus, setCategoryMenus] = useState<Array<categoryMenuType>>(
+    []
+  );
+  const [menusApi, setMenusApi] = useState<Array<MenuListProps>>([]);
   const { storePk } = useStore();
   useEffect(() => {
-    const getCategoryList = async () => {
-      try {
-        const res = await api<Array<categoryType>>(
-          API_URL + `api/store/${storePk}`,
-          "GET",
-          null
-        );
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    getCategoryList();
+    if (storePk) {
+      const getCategoryList = async () => {
+        try {
+          const res = await api<Array<categoryType>>(
+            API_URL + `/api/store/${storePk}`,
+            "GET",
+            null
+          );
+          setCategoryList(res.data || []);
+        } catch (e) {
+          console.log(e);
+        }
+      };
+      const getMenus = async () => {
+        try {
+          const res = await api<Array<MenuListProps>>(
+            API_URL + `/api/store/${storePk}/menu`,
+            "GET",
+            null
+          );
+          setMenusApi(res.data || []);
+        } catch (e) {
+          console.log(e);
+        }
+      };
+      getCategoryList();
+      getMenus();
+    }
   }, [storePk]);
+
+  useEffect(() => {
+    if (categoryList.length > 0 && menusApi.length > 0) {
+      const mList: Array<categoryMenuType> = [];
+      categoryList.map((item) => {
+        const data: categoryMenuType = {
+          category_pk: item.category_pk,
+          categoryMenus: [],
+        };
+        menusApi.map((me) => {
+          if (item.category_pk === me.category_pk) {
+            const d: MenuProps = { ...me, options: [] };
+            data.categoryMenus.push(d);
+          }
+        });
+        mList.push(data);
+      });
+      setCategoryMenus(mList);
+    }
+  }, [categoryList, menusApi]);
 
   const handleAddCategory = () => {
     const isCategoryExists = categoryList.some(
@@ -76,8 +122,23 @@ export const MenuCategory = () => {
     addCategory();
   };
 
-  const deleteMenuGroup = (pk: number) => {
-    setCategoryList((prev) => prev.filter((cate) => cate.category_pk !== pk));
+  const deleteMenuGroup = async (pk: number) => {
+    console.log(pk);
+    try {
+      const res = await api(API_URL + `/api/category/${pk}`, "DELETE", null);
+      console.log(res);
+      setCategoryList((prev) => prev.filter((cate) => cate.category_pk !== pk));
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const flatListMenus = (pk: number) => {
+    for (let i = 0; i < categoryMenus.length; i++) {
+      if (categoryMenus[i].category_pk === pk) {
+        return categoryMenus[i].categoryMenus;
+      }
+    }
   };
 
   return (
@@ -124,7 +185,13 @@ export const MenuCategory = () => {
       <View style={{ flex: 1, width: "100%" }}>
         <FlatList
           data={categoryList}
-          renderItem={({ item }) => renderItem(item, deleteMenuGroup)}
+          renderItem={({ item }) =>
+            renderItem(
+              item,
+              deleteMenuGroup,
+              flatListMenus(item.category_pk) || []
+            )
+          }
           keyExtractor={(item) => item.category_pk.toString()}
           showsVerticalScrollIndicator={false}
         />
@@ -134,7 +201,8 @@ export const MenuCategory = () => {
 };
 const renderItem = (
   item: categoryType,
-  deleteMenuGroup: (pk: number) => void
+  deleteMenuGroup: (pk: number) => void,
+  categoryMenus: Array<MenuProps>
 ) => (
   <View style={{ backgroundColor: "white", margin: 10, padding: 10 }}>
     <View>
@@ -142,6 +210,7 @@ const renderItem = (
         subject={item.subject}
         category_pk={item.category_pk}
         deleteMenuGroup={deleteMenuGroup}
+        categoryMenus={categoryMenus}
       />
     </View>
   </View>

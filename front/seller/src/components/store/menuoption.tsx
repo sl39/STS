@@ -31,17 +31,21 @@ export const MenuOption: React.FC<MenuOption> = ({
   const [option, setOption] = useState<Array<OptionListProps>>([]);
   const [isOption, setIsOption] = useState<boolean>(false);
   const [form, setForm] = useState<OptionListProps>({
-    optionListPk: Math.round(Math.random() * 100000),
+    menu_option_pk: 0,
     opSubject: "",
-    optionItem: [],
+    optionItems: [],
+    minCount: 0,
+    maxCount: 0,
   });
 
   const handleOptionCategory = () => {
     setOption([...option, form]);
     setForm({
-      optionListPk: Math.round(Math.random() * 100000),
+      menu_option_pk: 0,
       opSubject: "",
-      optionItem: [],
+      optionItems: [],
+      minCount: 0,
+      maxCount: 0,
     });
     setIsOption(!isOption);
   };
@@ -49,12 +53,12 @@ export const MenuOption: React.FC<MenuOption> = ({
   const updateOptionCate = (element: OptionListProps) => {
     setOption((prevOptions) =>
       prevOptions.map((opt) =>
-        opt.optionListPk === element.optionListPk ? element : opt
+        opt.menu_option_pk === element.menu_option_pk ? element : opt
       )
     );
   };
   const deleteOptionCate = (pk: number) => {
-    setOption((prev) => prev.filter((e) => e.optionListPk != pk));
+    setOption((prev) => prev.filter((e) => e.menu_option_pk != pk));
   };
 
   const handleImage = (img: Array<string>) => {
@@ -86,7 +90,7 @@ export const MenuOption: React.FC<MenuOption> = ({
       <View style={{ flexDirection: "row", gap: 20 }}>
         <Image source={{ uri: item.imageURL }} style={styles.image} />
         <View>
-          <Text style={styles.title}>메뉴 이름: {item.subject}</Text>
+          <Text style={styles.title}>메뉴 이름: {item.name}</Text>
           <Text>메뉴 설명: {item.description}</Text>
           <Text>가격: {item.price}</Text>
           <Text>베스트 메뉴: {item.isBestMenu ? "Yes" : "No"}</Text>
@@ -125,7 +129,7 @@ export const MenuOption: React.FC<MenuOption> = ({
       )}
       <View style={{ marginTop: 10 }}>
         {option.map((el) => (
-          <View key={el.optionListPk}>
+          <View key={el.menu_option_pk}>
             <OptionCategory
               val={el}
               updateOptionCate={updateOptionCate}
@@ -142,9 +146,9 @@ export const MenuOption: React.FC<MenuOption> = ({
             style={{ height: 40, backgroundColor: "white" }}
             placeholder="메뉴 이름"
             onChangeText={(newText) =>
-              setMenuItem({ ...menuItem, subject: newText })
+              setMenuItem({ ...menuItem, name: newText })
             }
-            defaultValue={menuItem.subject}
+            defaultValue={menuItem.name}
           />
           <TextInput
             style={{ height: 40, backgroundColor: "white" }}

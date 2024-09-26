@@ -125,10 +125,13 @@ export const api = async <T,>(
     // Content-Length가 0이거나 응답 바디가 없는 경우 null 반환
     const contentLength = response.headers.get("Content-Length");
     let responseData: T | null = null;
-
     if (contentLength !== "0" && response.body) {
       // JSON 형식의 응답만 파싱
-      responseData = (await response.json()) as T;
+      try {
+        responseData = (await response.json()) as T;
+      } catch (error) {
+        console.error("Failed to parse JSON:", error);
+      }
     }
 
     // 응답 코드와 데이터를 함께 반환

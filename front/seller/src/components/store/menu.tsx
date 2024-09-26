@@ -7,35 +7,59 @@ import { FireBaseImage } from "../common";
 import { firestore, storage } from "../../../fierbaseConfig";
 import { ref, deleteObject } from "firebase/storage";
 import { collection, query, where } from "firebase/firestore";
+import { api } from "../../api/api";
+import { useStore } from "../../context/StoreContext";
 
 type CategoryType = {
   category_pk: number;
   subject: string;
   deleteMenuGroup: (arg: number) => void;
+  categoryMenus: Array<MenuProps>;
 };
+
+const API_URL = process.env.API_URL;
 
 export const Menu: React.FC<CategoryType> = ({
   category_pk,
   subject,
   deleteMenuGroup,
+  categoryMenus,
 }) => {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [menuLists, setMenuLists] = useState<Array<MenuProps>>([]);
   const [form, setForm] = useState<MenuProps>({
     category_pk,
     menu_pk: 1,
-    subject: "",
+    name: "",
     imageURL: "",
     description: "",
     price: 0,
     isBestMenu: false,
     isAlcohol: false,
-    optionList: [],
+    options: [],
   });
+  const { storePk } = useStore();
 
-  const addMenuLists = (form: MenuProps) => {
-    setMenuLists((prevMenuLists) => [...prevMenuLists, form]);
+  const addMenuLists = async (form: MenuProps) => {
+    console.log(form);
+    try {
+      const res = await api<MenuProps>(
+        API_URL + `/api/store/${storePk}/menu`,
+        "POST",
+        form
+      );
+      const data = res.data;
+      console.log(data);
+
+      if (data) setMenuLists((prevMenuLists) => [...prevMenuLists, form]);
+    } catch (e) {
+      console.log(e);
+    }
   };
+
+  useEffect(() => {
+    setMenuLists(categoryMenus);
+  }, [categoryMenus]);
 
   const updateMenuLists = (form: MenuProps) => {
     setMenuLists((prevMenuLists) =>
@@ -43,10 +67,15 @@ export const Menu: React.FC<CategoryType> = ({
     );
   };
 
-  const deleteMenuLists = (form: number) => {
-    setMenuLists((prevMenuLists) =>
-      prevMenuLists.filter((menu) => menu.menu_pk !== form)
-    );
+  const deleteMenuLists = async (form: number) => {
+    try {
+      await api(API_URL + `/api/menu/${form}`, "DELETE", null);
+      setMenuLists((prevMenuLists) =>
+        prevMenuLists.filter((menu) => menu.menu_pk !== form)
+      );
+    } catch (e) {
+      console.log(e);
+    }
   };
   const handleImage = (img: Array<string>) => {
     console.log(img);
@@ -59,18 +88,16 @@ export const Menu: React.FC<CategoryType> = ({
 
   //form 값 초기화
   const hml = () => {
-    const cnt = Math.round(menuLists.length * Math.random() * 100000);
-
     setForm({
       category_pk,
-      menu_pk: cnt,
-      subject: "",
+      menu_pk: 0,
+      name: "",
       imageURL: "",
       description: "",
       price: 0,
       isBestMenu: false,
       isAlcohol: false,
-      optionList: [],
+      options: [],
     });
     setIsModalVisible(false);
   };
@@ -132,8 +159,8 @@ export const Menu: React.FC<CategoryType> = ({
           <TextInput
             style={{ height: 40, backgroundColor: "white" }}
             placeholder="메뉴 이름"
-            onChangeText={(newText) => setForm({ ...form, subject: newText })}
-            defaultValue={form.subject}
+            onChangeText={(newText) => setForm({ ...form, name: newText })}
+            defaultValue={form.name}
           />
           <TextInput
             style={{ height: 40, backgroundColor: "white" }}
