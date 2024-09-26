@@ -39,7 +39,6 @@ public class OrderService {
                         .orderedAt(order.getOrderedAt())
                         .store_pk(storeDTO)
                         .order_pk(order.getOrder_pk())
-                        .isPaidAll(order.getIsPaidAll())
                         .isClear(order.getIsClear())
                         .paymentType(order.getPaymentType())
                         .tableNumber(order.getTableNumber())

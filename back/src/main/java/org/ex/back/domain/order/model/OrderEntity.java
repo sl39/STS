@@ -15,9 +15,9 @@ import org.ex.back.domain.store.model.StoreEntity;
 @Entity
 @Table(name = "order_entity")
 public class OrderEntity {
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	private String order_pk; //랜덤 아이디 생성
+	private String order_pk;
 	
 	@ManyToOne
 	@JoinColumn(name ="user_pk")
@@ -45,12 +45,6 @@ public class OrderEntity {
 
 	@Column
 	private String paymentType; //지불 방식
-	
-	@Column
-	private Integer paidPrice; //결제된 금액
-
-	@Column
-	private Boolean isPaidAll = false; //결제완료 여부
 
 	@Column
 	private Boolean isClear = false; //음식 완료
