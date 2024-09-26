@@ -26,5 +26,5 @@ public class StoreDTO {
     private LocalDateTime createdAt; // 생성 시간
     private LocalDateTime deletedAt; // 삭제 시간
     private Double distance; // 거리 (선택적)
-    
+    private List<Integer> categoryPks; // 카테고리 ID 리스트
 }

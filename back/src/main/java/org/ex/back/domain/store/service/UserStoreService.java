@@ -28,11 +28,17 @@ public class UserStoreService {
     @Autowired
     private MenuRepository menuRepository;  
     
-    // 모든 매장을 조회하는 메소드
-    public List<StoreDTO> findAllStores() {
-        return storeRepository.findAll().stream()
+ // 모든 매장을 조회하는 메소드 (위치 기반 정렬 추가)
+    public List<StoreDTO> findAllStores(double userLat, double userLng) {
+        List<StoreDTO> stores = storeRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+        
+        return sortStoresByDistance(stores, userLat, userLng);
+    }
+ // 매장 ID로 연결된 카테고리 ID 리스트 가져오기
+    public List<Integer> findCategoryPksByStoreId(Integer storePk) {
+        return storeCategoryConnectorRepository.findCategoryPksByStoreId(storePk);
     }
 
  // 매장 이름 또는 메뉴 이름으로 매장을 검색하는 메소드
@@ -89,7 +95,13 @@ public class UserStoreService {
     public StoreDTO findStoreById(Integer storeId) {
         StoreEntity storeEntity = storeRepository.findById(storeId)
                 .orElseThrow(() -> new RuntimeException("매장을 찾을 수 없습니다. ID: " + storeId));
-        return convertToDTO(storeEntity);
+        StoreDTO storeDTO = convertToDTO(storeEntity); // 매장 정보를 DTO로 변환
+
+        // 카테고리 ID 리스트 조회
+        List<Integer> categoryPks = findCategoryPksByStoreId(storeId); // 카테고리 ID 조회 메서드 호출
+        storeDTO.setCategoryPks(categoryPks); // 카테고리 정보를 DTO에 설정
+
+        return storeDTO;
     }
 
     // 특정 카테고리에 해당하는 매장을 조회하는 메소드
@@ -142,17 +154,10 @@ public class UserStoreService {
         return R * c; // 거리 반환 (킬로미터)
     }
 
-    // Entity를 DTO로 변환하는 메소드
+ // Entity를 DTO로 변환하는 메소드
     private StoreDTO convertToDTO(StoreEntity storeEntity) {
         StoreDTO storeDTO = new StoreDTO();
         
-        // Entity -> String
-        List<String> list = new ArrayList<>();
-        for(StoreImageEntity entity : storeEntity.getStoreImages()) {
-            list.add(entity.getImageUrl());
-        }
-        
-        storeDTO.setStoreImages(list);
         storeDTO.setStorePk(storeEntity.getStore_pk());
         storeDTO.setStoreName(storeEntity.getStoreName());
         storeDTO.setAddress(storeEntity.getAddress());
@@ -160,12 +165,20 @@ public class UserStoreService {
         storeDTO.setOperatingHours(storeEntity.getOperatingHours());
         storeDTO.setStoreState(storeEntity.getStoreState());
         storeDTO.setIsOpen(storeEntity.getIsOpen());
-        storeDTO.setLat(storeEntity.getLat() != null ? storeEntity.getLat() : 0.0); // 기본값 설정
-        storeDTO.setLng(storeEntity.getLng() != null ? storeEntity.getLng() : 0.0); // 기본값 설정
+        storeDTO.setLat(storeEntity.getLat());
+        storeDTO.setLng(storeEntity.getLng());
+        storeDTO.setCreatedAt(storeEntity.getCreatedAt());
+     // Owner PK 설정
         if (storeEntity.getOwner() != null) {
-            storeDTO.setOwnerPk(storeEntity.getOwner().getOwner_pk());
+            storeDTO.setOwnerPk(storeEntity.getOwner().getOwner_pk()); // owner_pk 설정
         }
+        // 이미지 URL 리스트 변환
+        List<String> imageUrls = storeEntity.getStoreImages() != null ? 
+            storeEntity.getStoreImages().stream().map(StoreImageEntity::getImageUrl).toList() : 
+            new ArrayList<>();
+        storeDTO.setStoreImages(imageUrls);
         
         return storeDTO;
     }
+
 }
