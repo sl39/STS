@@ -16,7 +16,11 @@ public enum ErrorCode {
 
     MenuNotFoundException(HttpStatus.NOT_FOUND, "MENU-001", "메뉴를 찾을 수 없습니다."),
 
-    StoreNotFoundException(HttpStatus.NOT_FOUND, "STORE-001", "가게를 찾을 수 없습니다.");
+    StoreNotFoundException(HttpStatus.NOT_FOUND, "STORE-001", "가게를 찾을 수 없습니다."),
+
+    STORE_SAMEMENU_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "STORE-002", "장바구니 메뉴의 가게와 일치하지 않습니다."),
+
+    CART_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "CART-001", "카트를 찾을 수 없습니다.");
 
 
     private final HttpStatus httpStatus;
