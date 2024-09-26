@@ -104,6 +104,7 @@ public class CartService {
         //해당 카트의 테이블 넘버를 요청받은 테이블 넘버로 바꿈
         cart.setStore(store);
         cart.setTableNumber(request.getTableNumber());
+        cart.setTotalPrice(convertTotalPrice(request.getTotalExtraPrice(), menu.getPrice(), 1));
 
         //제일처음 값을 저장할 아이템 객체
         CartItemEntity cartItemEntity = new CartItemEntity();
@@ -118,6 +119,7 @@ public class CartService {
             cartItemEntity.setTotalExtraPrice(request.getTotalExtraPrice()); //옵션값 합을 요청 옵션값 합으로 변경
             cartItemEntity.setTotalPrice(convertTotalPrice(request.getTotalExtraPrice(), menu.getPrice(), 1));
             cartItemEntity.setMenu(menu); //엔티티 내부의 메뉴를 요청 메뉴로 변경
+            cartItemEntity.setCart(cart);
 
             //카트 내부에 저장
             //값이 바뀔때마다 리포지 터리 저장 -> 저장 안해주면 또 새로 바뀌니까? -> 근데 나중에 해줘도 상관없다고 생각함
@@ -163,6 +165,7 @@ public class CartService {
                     //해당 아이템 토탈 프라이스 값 변경 (해당 카트 아이템의 옵션값과 메뉴값과 메뉴 수량이 곱해진 값으로 변경)
                     cartItem.setTotalPrice(convertTotalPrice(cartItem.getTotalExtraPrice(), cartItem.getMenu().getPrice(), cartItem.getMenuCount()));
 
+                    cartItem.setCart(cart);
                     //값이 바뀔때마다 리포지 터리 저장 -> 저장 안해주면 또 새로 바뀌니까? -> 근데 나중에 해줘도 상관없다고 생각함
                     cartItemRepository.save(cartItem);
 
@@ -192,6 +195,7 @@ public class CartService {
                 elseCartItem.setMenuCount(1);
                 elseCartItem.setTotalExtraPrice(request.getTotalExtraPrice());
                 elseCartItem.setTotalPrice(convertTotalPrice(request.getTotalExtraPrice(), menu.getPrice(), 1));
+                elseCartItem.setCart(cart);
 
                 cartItemRepository.save(elseCartItem);
 
@@ -232,7 +236,8 @@ public class CartService {
                                 item.getMenu().getName(),
                                 item.getOptionItemList(),
                                 item.getMenuCount(),
-                                item.getTotalPrice()
+                                item.getTotalPrice(),
+                                item.getMenu().getImageUrl()
                         )
                 ).collect(Collectors.toList())
         );
@@ -262,7 +267,8 @@ public class CartService {
                                     item.getMenu().getName(),
                                     item.getOptionItemList(),
                                     item.getMenuCount(),
-                                    item.getTotalPrice()
+                                    item.getTotalPrice(),
+                                    item.getMenu().getImageUrl()
                             )
                     ).collect(Collectors.toList())
             );
@@ -326,7 +332,8 @@ public class CartService {
                                     item.getMenu().getName(),
                                     item.getOptionItemList(),
                                     item.getMenuCount(),
-                                    item.getTotalPrice()
+                                    item.getTotalPrice(),
+                                    item.getMenu().getImageUrl()
                             )
                     ).collect(Collectors.toList())
             );

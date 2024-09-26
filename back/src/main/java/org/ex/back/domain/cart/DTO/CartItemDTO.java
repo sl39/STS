@@ -28,12 +28,17 @@ public class CartItemDTO {
     //선택된 가격 총합 (메뉴금액+ 옵션 추가금액) X 수량 (내가 넣어서 보내야할거)
     private Integer totalPrice;
 
-    public CartItemDTO(Integer cartItemPk, Integer menuPk, String name, String optionItemList, Integer menuCount, Integer totalPrice) {
+    //메뉴의 이미지
+    private String ImageURL;
+
+    public CartItemDTO(Integer cartItemPk, Integer menuPk, String name, String optionItemList, Integer menuCount, Integer totalPrice, String imageUrl) {
         this.cart_item_pk = cartItemPk;
         this.menu_pk = menuPk;
         this.menu_name = name;
         this.optionItemList = optionItemList;
         this.menuCount = menuCount;
         this.totalPrice = totalPrice;
+        this.ImageURL = imageUrl;
     }
+
 }
