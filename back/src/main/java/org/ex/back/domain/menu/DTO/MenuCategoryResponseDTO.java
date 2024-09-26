@@ -15,6 +15,11 @@ public class MenuCategoryResponseDTO {
 
     //카테고리 이름
     private String subject;
+
+    public MenuCategoryResponseDTO(Integer menuCategoryPk, String subject) {
+        this.category_pk = menuCategoryPk;
+        this.subject = subject;
+    }
 }
 
 

@@ -26,8 +26,8 @@ public class MenuCategoryController {
 
     //메뉴카테고리 리스트 조회
     @GetMapping("api/store/{id}")
-    public ResponseEntity<List<String>> getCategory(@PathVariable int id) {
-        List<String> response = menuCategoryService.getCategory(id);
+    public ResponseEntity<List<MenuCategoryResponseDTO>> getCategory(@PathVariable int id) {
+        List<MenuCategoryResponseDTO> response = menuCategoryService.getCategory(id);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
