@@ -17,8 +17,10 @@ public class UserStoreController {
 
     // 모든 매장 조회 API
     @GetMapping
-    public ResponseEntity<List<StoreDTO>> getAllStores() {
-        List<StoreDTO> stores = storeService.findAllStores();
+    public ResponseEntity<List<StoreDTO>> getAllStores(
+            @RequestParam("lat") double userLat,
+            @RequestParam("lng") double userLng) {
+        List<StoreDTO> stores = storeService.findAllStores(userLat, userLng);
         return ResponseEntity.ok(stores);
     }
 

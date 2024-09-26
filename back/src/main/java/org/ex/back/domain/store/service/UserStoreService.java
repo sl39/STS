@@ -28,11 +28,13 @@ public class UserStoreService {
     @Autowired
     private MenuRepository menuRepository;  
     
-    // 모든 매장을 조회하는 메소드
-    public List<StoreDTO> findAllStores() {
-        return storeRepository.findAll().stream()
+ // 모든 매장을 조회하는 메소드 (위치 기반 정렬 추가)
+    public List<StoreDTO> findAllStores(double userLat, double userLng) {
+        List<StoreDTO> stores = storeRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+        
+        return sortStoresByDistance(stores, userLat, userLng);
     }
 
  // 매장 이름 또는 메뉴 이름으로 매장을 검색하는 메소드
