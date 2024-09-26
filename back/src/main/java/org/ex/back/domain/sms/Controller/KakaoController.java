@@ -18,7 +18,7 @@ public class KakaoController {
         this.kakaoService = kakaoService;
     }
 
-    // 주문 생성 시 카카오 알림톡 전송
+    // 주문 생성 시 카카오 알림톡 테스트 전송
     @PostMapping("/sendOrder")
     public String sendOrderKakao(
             @RequestParam String phoneNum,
@@ -29,11 +29,11 @@ public class KakaoController {
         return "주문 알림톡이 전송되었습니다.";
     }
 
-    // 웨이팅 알림톡 전송
-    @PostMapping("/sendWait")
-    public String sendWaitKakao(
-            @RequestParam String phoneNum) {
-        kakaoService.sendWaitKakaoMessage(phoneNum);
-        return "웨이팅 알림톡이 전송되었습니다.";
-    }
+    // 웨이팅 알림톡 테스트 전송
+//    @PostMapping("/sendWait")
+//    public String sendWaitKakao(
+//            @RequestParam String phoneNum) {
+//        kakaoService.sendWaitKakaoMessage(phoneNum);
+//        return "웨이팅 알림톡이 전송되었습니다.";
+//    }
 }
