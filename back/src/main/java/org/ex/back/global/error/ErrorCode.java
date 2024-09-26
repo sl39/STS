@@ -16,16 +16,19 @@ public enum ErrorCode {
     PHONE_NUMBER_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "ACCOUNT-006", "인증된 전화번호를 가지고 있지 않습니다."),
     BANK_NOT_FOUND(HttpStatus.NOT_FOUND, "ACCOUNT-007", "계좌 정보를 찾을 수 없습니다."),
 
-    CATEGORY_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "CATEGORY-001", "카테고리를 찾을 수 없습니다."),
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CATEGORY-001", "카테고리를 찾을 수 없습니다."),
 
-    MenuNotFoundException(HttpStatus.NOT_FOUND, "MENU-001", "메뉴를 찾을 수 없습니다."),
+    MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "MENU-001", "메뉴를 찾을 수 없습니다."),
 
-    StoreNotFoundException(HttpStatus.NOT_FOUND, "STORE-001", "가게를 찾을 수 없습니다."),
+    STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "STORE-001", "가게 정보를 찾을 수 없습니다."),
+    STORE_SAMEMENU_NOT_FOUND(HttpStatus.NOT_FOUND, "STORE-002", "장바구니 메뉴의 가게와 일치하지 않습니다."),
+
+    CART_NOT_FOUND(HttpStatus.NOT_FOUND, "CART-001", "카트를 찾을 수 없습니다."),
 
     WAITING_NOT_FOUND(HttpStatus.NOT_FOUND, "WAITING-001", "예약건을 찾을 수 없습니다."),
     WAITING_BAD_REQUEST(HttpStatus.BAD_REQUEST, "WAITING-002", "예약건을 대기 상태로 변경할 수 없습니다."),
 
-    STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "STORE-001", "가게 정보를 찾을 수 없습니다.");
+    ;
 
 
 

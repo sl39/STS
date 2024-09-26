@@ -19,6 +19,7 @@ public class CartEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer cart_pk;
 
+	//사용하지 않음 계속 null
 	@OneToOne
 	@JoinColumn(name="user_pk")
 	private UserEntity user;
@@ -34,5 +35,5 @@ public class CartEntity {
 	private String tableNumber;
 
 	@Column
-	private Integer totalPrice;
+	private Integer totalPrice; // 카트 총금액
 }
