@@ -69,7 +69,7 @@ public class MenuCategoryService {
        }
         else
         {
-            throw new CustomException(ErrorCode.StoreNotFoundException);
+            throw new CustomException(ErrorCode.STORE_NOT_FOUND);
         }
     }
 
