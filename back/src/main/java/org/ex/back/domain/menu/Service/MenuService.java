@@ -246,7 +246,7 @@ public class MenuService {
         }
         //스토어가 없으면 예외 반환
         else {
-            throw new CustomException(ErrorCode.StoreNotFoundException);
+            throw new CustomException(ErrorCode.STORE_NOT_FOUND);
         }
     }
 
@@ -304,7 +304,7 @@ public class MenuService {
             return response;
         }
         else{
-            throw new CustomException(ErrorCode.MenuNotFoundException);
+            throw new CustomException(ErrorCode.MENU_NOT_FOUND);
         }
     }
 
@@ -361,7 +361,7 @@ public class MenuService {
                 throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND);
             }
         }else {
-            throw new CustomException(ErrorCode.MenuNotFoundException);
+            throw new CustomException(ErrorCode.MENU_NOT_FOUND);
         }
     }
 
@@ -374,7 +374,7 @@ public class MenuService {
             menuRepository.delete(menuEntity);
         }
         else{
-            throw new CustomException(ErrorCode.MenuNotFoundException);
+            throw new CustomException(ErrorCode.MENU_NOT_FOUND);
         }
     }
 }
