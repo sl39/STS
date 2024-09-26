@@ -5,6 +5,8 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.ex.back.global.enumclass.Role;
+import org.ex.back.global.error.CustomException;
+import org.ex.back.global.error.ErrorCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -63,11 +65,19 @@ public class JwtTokenProvider {
      * */
 
     public Integer getPkFromJwtToken(String token) {
-        return Integer.parseInt(Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject());
+        try {
+            return Integer.parseInt(Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject());
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.TOKEN_NOT_VALID);
+        }
     }
 
     public String getRoleFromJwtToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("role", String.class);
+        try {
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("role", String.class);
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.TOKEN_NOT_VALID);
+        }
     }
 
     public boolean validateJwtToken(String token) {
@@ -86,6 +96,7 @@ public class JwtTokenProvider {
         } catch (IllegalArgumentException e) {
             log.error("JWT claims string is empty: {}", e.getMessage());
         }
+
         return false;
     }
 }

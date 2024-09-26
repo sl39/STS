@@ -59,6 +59,7 @@ public class SecurityConfig {
 
                 // 소셜로그인 설정
                 .oauth2Login(oauth2Login -> oauth2Login
+                        .defaultSuccessUrl("/", false)
                         .userInfoEndpoint(userInfoEndpoint  -> userInfoEndpoint
                                 .userService(customOAuth2UserService))
                                 .successHandler(oAuth2SuccessHandler)
@@ -66,7 +67,7 @@ public class SecurityConfig {
 
                 // 인증, 인가 실패 처리
                 .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint) //401
+                        //.authenticationEntryPoint(jwtAuthenticationEntryPoint) //401
                         .accessDeniedHandler(jwtAccessDeniedHandler) //403
                 )
 
@@ -76,17 +77,17 @@ public class SecurityConfig {
                         .addLogoutHandler(logoutService)
                         .logoutSuccessHandler((((request, response, authentication) ->
                                 SecurityContextHolder.clearContext())))
-                );
+                )
 
                 // API 접근
-                /*
                 .authorizeHttpRequests(request -> request
+                        .requestMatchers("/").permitAll() // localhost (소셜로그인 페이지)
                         .requestMatchers("/api/auth/**").permitAll() // 인증 관련 api
-                        .requestMatchers("", "").permitAll() // 비회원 요청 가능 api
-                        .requestMatchers("/api/seller", "").hasRole("OWNER") // only owner api
-                        .requestMatchers("/api/user", "").hasRole("USER") // only user api
+                        .requestMatchers("/api/cart/nonuser/**").permitAll() // 비회원 요청 가능 api
+                        .requestMatchers("/api/seller").hasRole("OWNER") // only owner api
+                        .requestMatchers("/api/user").hasRole("USER") // only user api
                         .anyRequest().authenticated() // 위에서 명시되지 않은 모든 api 요청은 인증된 사용자만 접근 가능
-                );*/
+                );
 
         return http.build();
     }
