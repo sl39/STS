@@ -92,7 +92,7 @@ public class MenuCategoryService {
                 return response;
             }
             else{
-                throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND_EXCEPTION);
+                throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND);
             }
         }
 
@@ -106,7 +106,7 @@ public class MenuCategoryService {
                 menuCategoryRepository.delete(menuCategory);
         }
             else {
-                throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND_EXCEPTION);
+                throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND);
             }
     }
 }

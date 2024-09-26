@@ -8,13 +8,13 @@ import org.ex.back.domain.cart.DTO.CartResponseDTO;
 import org.ex.back.domain.cart.DTO.UserCartResponseDto;
 import org.ex.back.domain.cart.Service.CartService;
 import org.ex.back.domain.menu.Service.MenuService;
+import org.ex.back.domain.user.service.UserPrincipal;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.attribute.UserPrincipal;
 
 @RequiredArgsConstructor
 @Data
@@ -29,10 +29,10 @@ public class CartUserController {
     public ResponseEntity<UserCartResponseDto> getUserCartPk(
             @AuthenticationPrincipal UserDetails userDetails
     ){
-//        UserPrincipal userPrincipal = (UserPrincipal) userDetails;
-//        Integer userPk = userPrincipal.getUserPk();
+        UserPrincipal userPrincipal = (UserPrincipal) userDetails;
+        Integer userPk = userPrincipal.getUserPk();
 
-      return ResponseEntity<>(cartService.getUserCartPk(userPk), HttpStatus.OK);
+      return new ResponseEntity<>(cartService.getUserCartPk(userPk), HttpStatus.OK);
     }
 
     //장바구니에 장바구니 아이템 추가

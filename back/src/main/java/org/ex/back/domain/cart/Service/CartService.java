@@ -7,14 +7,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.ex.back.domain.cart.DTO.CartItemDTO;
 import org.ex.back.domain.cart.DTO.CartRequestDTO;
 import org.ex.back.domain.cart.DTO.CartResponseDTO;
-import org.ex.back.domain.cart.Repository.CartItemRepository;
-import org.ex.back.domain.cart.Repository.CartRepository;
+import org.ex.back.domain.cart.DTO.UserCartResponseDto;
+import org.ex.back.domain.cart.repository.CartItemRepository;
 import org.ex.back.domain.cart.model.CartEntity;
 import org.ex.back.domain.cart.model.CartItemEntity;
+import org.ex.back.domain.cart.repository.CartRepository;
 import org.ex.back.domain.menu.Repository.MenuRepository;
 import org.ex.back.domain.menu.model.MenuEntity;
-import org.ex.back.domain.store.Repository.StoreRepository;
+import org.ex.back.domain.store.repository.StoreRepository;
 import org.ex.back.domain.store.model.StoreEntity;
+import org.ex.back.domain.user.model.UserEntity;
+import org.ex.back.domain.user.repository.UserRepository;
 import org.ex.back.global.error.CustomException;
 import org.ex.back.global.error.ErrorCode;
 import org.springframework.stereotype.Service;
@@ -34,6 +37,7 @@ public class CartService {
     private final CartItemRepository cartItemRepository;
     private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
+    private final UserRepository userRepository;
 
     //TotalPrice 연산 메소드 (현재 존재하는 옵션 값, 메뉴 가격, 메뉴 수량)
     private Integer convertTotalPrice(Integer totalExtraPrice, Integer menuPrice, Integer menuCount) {
@@ -63,7 +67,7 @@ public class CartService {
 
         //일치하는 장바구니 가져오기 (없으면 에러)
         CartEntity cart = cartRepository.findById(cart_pk).orElseThrow(
-                () -> new CustomException(ErrorCode.CART_NOT_FOUND_EXCEPTION)
+                () -> new CustomException(ErrorCode.CART_NOT_FOUND)
         );
 
        //스토어 정보가 없거나 기존의 스토어와 요청 스토어가 다른 경우 내용 비우기 -> 스토어정복가 없을때 아래 내용 지워도 상관X
@@ -84,13 +88,13 @@ public class CartService {
 
         //스토어 리포지 터리에서 일치하는 pk 가져와서 넣기 -> 없으면 에러
         StoreEntity store = storeRepository.findById(request.getStore_pk()).orElseThrow(
-                () -> new CustomException(ErrorCode.StoreNotFoundException)
+                () -> new CustomException(ErrorCode.STORE_NOT_FOUND)
         );
 
         //요청받은 메뉴 값 가져오기(현재 메뉴 값이 null이라 pk로 받아서 넣어줘야함)
         MenuEntity menu = new MenuEntity();
         menu = menuRepository.findById(request.getMenu_pk()).orElseThrow((
-                () -> new CustomException(ErrorCode.StoreNotFoundException)
+                () -> new CustomException(ErrorCode.STORE_NOT_FOUND)
         ));
 
         //카트의 Store를 찾은 가게정보로 바꿈
@@ -263,7 +267,7 @@ public class CartService {
 
         }
         else{
-            throw new CustomException(ErrorCode.CART_NOT_FOUND_EXCEPTION);
+            throw new CustomException(ErrorCode.CART_NOT_FOUND);
         }
     }
     //장바구니 메뉴 수량 수정
@@ -320,7 +324,7 @@ public class CartService {
             return response;
         }
         else{
-            throw new CustomException(ErrorCode.CART_NOT_FOUND_EXCEPTION);
+            throw new CustomException(ErrorCode.CART_NOT_FOUND);
         }
     }
 
@@ -355,10 +359,20 @@ public class CartService {
             }
         }
         else{
-            throw new CustomException(ErrorCode.CART_NOT_FOUND_EXCEPTION);
+            throw new CustomException(ErrorCode.CART_NOT_FOUND);
         }
     }
 
+    public UserCartResponseDto getUserCartPk(Integer userPk) {
+
+        UserEntity user = userRepository.findById(userPk).orElseThrow(() ->
+                new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        CartEntity cart = cartRepository.findByUser(user).orElseThrow(() ->
+                new CustomException(ErrorCode.CART_NOT_FOUND));
+
+        return UserCartResponseDto.builder().userCartPk(cart.getCart_pk()).build();
+    }
 }
 
 
