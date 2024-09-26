@@ -51,8 +51,6 @@ public class SmsService {
         smsEntity.setCertifiedState(false);
         smsEntity.setExpirationTime(LocalDateTime.now().plusMinutes(5)); //5분 후 삭제
 
-
-
         //db 저장
         try {
             smsRepository.save(smsEntity);

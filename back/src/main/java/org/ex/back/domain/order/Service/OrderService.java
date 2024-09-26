@@ -21,6 +21,7 @@ public class OrderService {
     @Autowired
     private StoreRepository storeRepository;
 
+    //전체 데이터 조회
     public List<OrderEntity> getAllOrders() {
         return orderRepository.findAll();
     }

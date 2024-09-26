@@ -47,10 +47,10 @@ public class OrderEntity {
 	private String paymentType; //지불 방식
 	
 	@Column
-	private Integer paidPrice; //결제된 금액
+	private Integer paidPrice; //결제된 금액 --
 
 	@Column
-	private Boolean isPaidAll = false; //결제완료 여부
+	private Boolean isPaidAll = false; //결제완료 여부--
 
 	@Column
 	private Boolean isClear = false; //음식 완료
