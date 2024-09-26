@@ -48,7 +48,7 @@ public class MenuCategoryService {
         }
         else
         {
-            throw new CustomException(ErrorCode.StoreNotFoundException);
+            throw new CustomException(ErrorCode.STORE_NOT_FOUND);
         }
     }
 
@@ -69,7 +69,7 @@ public class MenuCategoryService {
        }
         else
         {
-            throw new CustomException(ErrorCode.StoreNotFoundException);
+            throw new CustomException(ErrorCode.STORE_NOT_FOUND);
         }
     }
 
@@ -92,7 +92,7 @@ public class MenuCategoryService {
                 return response;
             }
             else{
-                throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND_EXCEPTION);
+                throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND);
             }
         }
 
@@ -106,7 +106,7 @@ public class MenuCategoryService {
                 menuCategoryRepository.delete(menuCategory);
         }
             else {
-                throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND_EXCEPTION);
+                throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND);
             }
     }
 }

@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ex.back.domain.cart.model.CartEntity;
 import org.ex.back.domain.cart.repository.CartRepository;
-import org.ex.back.domain.owner.model.OwnerEntity;
-import org.ex.back.domain.owner.service.OwnerPrincipal;
 import org.ex.back.domain.user.model.UserEntity;
 import org.ex.back.domain.user.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
