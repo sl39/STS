@@ -53,19 +53,23 @@ public class MenuCategoryService {
     }
 
     //카테고리 조회 로직(storeId)
-    public  List<String> getCategory(int id){
+    public  List<MenuCategoryResponseDTO> getCategory(int id){
         //스토어 아이디로 가게 조회
         Optional<StoreEntity> store = storeRepository.findById(id);
+
         if(store.isPresent()){
-            //스토어 아이디값과 일치하는 카테고리 리스트에 담기
+            //스토어 아이디값과 일치하는 카테고리들 리스트에 담기
            List<MenuCategoryEntity> menuCategoryList = menuCategoryRepository.findByStore(store.get());
 
-           //리스트 안에서 subject만 꺼내서 리스트에 담기(stream api사용)
-            List<String> categoryList = menuCategoryList.stream()
-                    .map(MenuCategoryEntity::getSubject)
-                    .collect(Collectors.toList());
+           //리스트를 ReponseEntity로 변환
+            List<MenuCategoryResponseDTO> response = menuCategoryList.stream().map(
+                    category -> new MenuCategoryResponseDTO(
+                            category.getMenu_category_pk(),
+                            category.getSubject()
+                    )
+            ).collect(Collectors.toList());
 
-        return categoryList;
+        return response;
        }
         else
         {

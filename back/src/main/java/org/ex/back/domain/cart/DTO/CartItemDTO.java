@@ -29,7 +29,7 @@ public class CartItemDTO {
     private Integer totalPrice;
 
     //메뉴의 이미지
-    private String ImageURL;
+    private String imageURL;
 
     public CartItemDTO(Integer cartItemPk, Integer menuPk, String name, String optionItemList, Integer menuCount, Integer totalPrice, String imageUrl) {
         this.cart_item_pk = cartItemPk;
@@ -38,7 +38,7 @@ public class CartItemDTO {
         this.optionItemList = optionItemList;
         this.menuCount = menuCount;
         this.totalPrice = totalPrice;
-        this.ImageURL = imageUrl;
+        this.imageURL = imageUrl;
     }
 
 }
