@@ -24,6 +24,7 @@ public class MenuEntity {
 	
 	@ManyToOne
 	@JoinColumn(name="menu_category_pk")
+
 	private MenuCategoryEntity menuCategory;
 
 	@OneToMany(cascade = CascadeType.ALL)

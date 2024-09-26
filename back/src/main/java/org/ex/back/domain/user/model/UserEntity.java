@@ -27,6 +27,9 @@ public class UserEntity {
 	
 	@Column
 	private String email;
+
+	@Column
+	private String phone;
 	
 	@Column
 	private String socialId;

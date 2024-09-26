@@ -10,9 +10,14 @@ import org.ex.back.domain.owner.model.OwnerEntity;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 @Entity
 @Table(name="store_entity")
 public class StoreEntity {
+	
+	public StoreEntity(Integer store_pk) {
+	    this.store_pk = store_pk;
+	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,8 +27,7 @@ public class StoreEntity {
 	@JoinColumn(name="owner_pk")
 	private OwnerEntity owner;
 
-	@OneToMany
-	@JoinColumn(name="store_image_pk")
+	@OneToMany(cascade = CascadeType.ALL)
 	private List<StoreImageEntity> storeImages;
 	
 	@Column
@@ -34,8 +38,11 @@ public class StoreEntity {
 	
 	@Column
 	private String phone;
-	
+
 	@Column
+	private String fcmToken;
+	
+	@Column(length = 1000)
 	private String operatingHours; //영업시간(브레이크타임)
 
 	@Column

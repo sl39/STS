@@ -1,5 +1,5 @@
 package org.ex.back.global.enumclass;
 
 public enum Role {
-    OWNER, USER
+    ROLE_OWNER, ROLE_USER
 }

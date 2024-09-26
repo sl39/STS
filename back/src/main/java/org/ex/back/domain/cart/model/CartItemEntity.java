@@ -22,6 +22,10 @@ public class CartItemEntity {
     @JoinColumn(name="menu_pk")
     private MenuEntity menu;
 
+    @ManyToOne
+    @JoinColumn(name="cart_pk")
+    private CartEntity cart;
+
     @Column
     private String optionItemList;
 

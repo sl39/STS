@@ -10,8 +10,8 @@ import org.ex.back.domain.user.model.UserEntity;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Entity
 @Builder
+@Entity
 @Table(name="cart_entity")
 public class CartEntity {
 
@@ -24,8 +24,7 @@ public class CartEntity {
 	@JoinColumn(name="user_pk")
 	private UserEntity user;
 
-	@OneToMany
-	//@JoinColumn(name="cart_item_pk")
+	@OneToMany(cascade = CascadeType.ALL)
 	private List<CartItemEntity> cartItems;
 
 	@ManyToOne

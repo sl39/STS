@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ex.back.domain.owner.model.OwnerEntity;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -17,14 +19,11 @@ public class OwnerSignUpRequestDto {
     private String id;
     private String password;
     private String email;
-    private String BRN;
+    private String businessNumber;
     private String ownerName;
     private String ownerPhone;
+    private String bankName;
     private String bankAccount;
-
-    //가게 정보
-
-
 
     @Builder
     public OwnerEntity toEntity(){
@@ -32,10 +31,12 @@ public class OwnerSignUpRequestDto {
                 .id(id)
                 .password(password)
                 .email(email)
-                .businessNumber(BRN)
+                .businessNumber(businessNumber)
                 .name(ownerName)
                 .phone(ownerPhone)
+                .bankName(bankName)
                 .bankAccount(bankAccount)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 }
