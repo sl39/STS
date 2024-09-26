@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderRepository extends JpaRepository<OrderEntity, String> {
 
+
 	//store_pk로 현재 주문내역 리스트
 	List<OrderEntity> findAllByStoreAndIsClearFalse(StoreEntity store_pk);
 

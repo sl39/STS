@@ -1,10 +1,18 @@
 package org.ex.back.domain.order.Service;
 
+import org.ex.back.domain.cart.model.CartEntity;
+import org.ex.back.domain.cart.model.CartItemEntity;
+import org.ex.back.domain.cart.repository.CartItemRepository;
+import org.ex.back.domain.cart.repository.CartRepository;
+import org.ex.back.domain.order.DTO.OrderItemCheckDTO;
 import org.ex.back.domain.order.DTO.StoreOrderListResponseDTO;
 import org.ex.back.domain.order.Repository.OrderRepository;
 import org.ex.back.domain.order.model.OrderEntity;
+import org.ex.back.domain.order.model.OrderItemEntity;
 import org.ex.back.domain.store.model.StoreEntity;
 import org.ex.back.domain.store.repository.StoreRepository;
+import org.ex.back.domain.user.model.UserEntity;
+import org.ex.back.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -12,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -20,11 +29,54 @@ public class OrderService {
     private OrderRepository orderRepository;
     @Autowired
     private StoreRepository storeRepository;
+    @Autowired
+    private CartItemRepository cartItemRepository;
+    @Autowired
+    private CartRepository cartRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     //전체 데이터 조회
     public List<OrderEntity> getAllOrders() {
         return orderRepository.findAll();
     }
+
+    //주문 생성
+    public OrderEntity createOrder(String order_pk,Integer cart_pk, Integer user_pk, Integer store_pk, String paymentType, String payNumber) {
+        CartEntity cartEntity = cartRepository.findById(cart_pk).orElseThrow(() -> new RuntimeException("Cart not found"));
+        List<CartItemEntity> cartItems = cartEntity.getCartItems();
+
+        List<OrderItemEntity> orderItems = new ArrayList<>();
+        for (CartItemEntity cartItem : cartItems) {
+            OrderItemEntity orderItem = new OrderItemEntity();
+            orderItem.setMenu(cartItem.getMenu());
+            orderItem.setOptionItemList(cartItem.getOptionItemList());
+            orderItem.setTotalExtraPrice(cartItem.getTotalExtraPrice());
+            orderItem.setMenuCount(cartItem.getMenuCount());
+            orderItem.setTotalPrice(cartItem.getTotalPrice());
+            orderItems.add(orderItem);
+
+        }
+        UserEntity userEntity = userRepository.findById(user_pk).orElseThrow(() -> new RuntimeException("Cart not found"));
+        StoreEntity storeEntity = storeRepository.findById(store_pk).orElseThrow(() -> new RuntimeException("Cart not found"));
+
+
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setOrder_pk(order_pk);
+        orderEntity.setOrderItems(orderItems);
+        orderEntity.setUser(userEntity);
+        orderEntity.setStore(storeEntity);
+        orderEntity.setPaymentType(paymentType);
+        orderEntity.setPayNumber(payNumber);
+        orderEntity.setTableNumber(cartEntity.getTableNumber());
+        orderEntity.setTotalPrice(cartEntity.getTotalPrice());
+        orderEntity.setGuestPhone(userEntity.getPhone());
+        orderEntity.setIsClear(false);
+        orderEntity.setOrderedAt(LocalDateTime.now());
+
+        return orderRepository.save(orderEntity);
+    }
+
 
     // 가게 주문검색 공통부분 DTO 사용부분
     public List<StoreOrderListResponseDTO> getOrdersByStore(Integer storeDTO, boolean isClear) {
@@ -36,15 +88,21 @@ public class OrderService {
 
             List<StoreOrderListResponseDTO> storeOrderListResponseDTOList = new ArrayList<>();
             for (OrderEntity order : orderList) {
+                List<OrderItemCheckDTO> orderItems = order.getOrderItems().stream()
+                        .map(item -> new OrderItemCheckDTO(
+                                item.getMenu().getName(),
+                                item.getMenuCount(),
+                                item.getOptionItemList()
+                        )).collect(Collectors.toList());
+
                 StoreOrderListResponseDTO storeOrder = StoreOrderListResponseDTO.builder()
                         .orderedAt(order.getOrderedAt())
                         .store_pk(storeDTO)
                         .order_pk(order.getOrder_pk())
-                        .isPaidAll(order.getIsPaidAll())
-                        .isClear(order.getIsClear())
                         .paymentType(order.getPaymentType())
                         .tableNumber(order.getTableNumber())
                         .totalPrice(order.getTotalPrice())
+                        .orderItems(orderItems)
                         .build();
                 storeOrderListResponseDTOList.add(storeOrder);
             }
@@ -70,10 +128,6 @@ public class OrderService {
         return orderRepository.findById(id);
     }
 
-    //주문 생성
-    public OrderEntity createOrder(OrderEntity order) {
-        return orderRepository.save(order);
-    }
 
     //isClear true로 수정
     public boolean updateIsClear(String order_pk, Integer store_pk) {

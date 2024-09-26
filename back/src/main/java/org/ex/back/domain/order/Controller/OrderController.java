@@ -32,15 +32,30 @@ public class OrderController {
 
     //주문 생성
     @PostMapping
-    public ResponseEntity<OrderEntity> createOrder(@RequestBody OrderEntity order) {
-        OrderEntity createdOrder = orderService.createOrder(order);
+    public ResponseEntity<OrderEntity> createOrder(
+            @RequestParam String orderPk,
+            @RequestParam Integer cartPk,
+            @RequestParam Integer userPk,
+            @RequestParam Integer storePk,
+            @RequestParam String paymentType,
+            @RequestParam String payNumber ) {
 
-        // FCM 알림 전송 - 토큰 storeEntity에서 가져와야함
-//        String token = "판매자 FCM 토큰"; // 실제 토큰으로 대체
-//        fcmService.sendNotification(token, "새 주문 알림", "새 주문이 도착했습니다.");
+        OrderEntity createdOrder = orderService.createOrder(orderPk, cartPk, userPk, storePk, paymentType, payNumber);
 
         return ResponseEntity.ok(createdOrder);
     }
+
+
+//    @PostMapping
+//    public ResponseEntity<OrderEntity> createOrder(@RequestBody OrderEntity order) {
+//        OrderEntity createdOrder = orderService.createOrder(order);
+//
+//        // FCM 알림 전송 - 토큰 storeEntity에서 가져와야함
+////        String token = "판매자 FCM 토큰"; // 실제 토큰으로 대체
+////        fcmService.sendNotification(token, "새 주문 알림", "새 주문이 도착했습니다.");
+//
+//        return ResponseEntity.ok(createdOrder);
+//    }
 
     //전체 내역 확인용
     @GetMapping
