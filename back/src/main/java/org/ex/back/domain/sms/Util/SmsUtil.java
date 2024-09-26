@@ -64,7 +64,7 @@ public class SmsUtil {
         // 변수 설정
         HashMap<String, String> variables = new HashMap<>();
         variables.put("#{주문번호}", variable1);
-        variables.put("#{금액}", variable2);
+        variables.put("#{금액}", variable2 + "원");
         variables.put("#{주문일자}", variable3);
         kakaoOption.setVariables(variables);
 
