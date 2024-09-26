@@ -6,11 +6,13 @@ import { Platform, StyleSheet, View, Button, TextInput } from "react-native";
 interface AddressProps {
   handleAddress: (address: string) => void;
   handleAddressCheck: (val: boolean) => void;
+  address: string;
 }
 
 const PostCode: React.FC<AddressProps> = ({
   handleAddress,
   handleAddressCheck,
+  address,
 }) => {
   const [storeAddress, setStoreAddress] = useState<string>("");
   const [detailAddress, setDetailAddress] = useState<string>("");
@@ -27,10 +29,20 @@ const PostCode: React.FC<AddressProps> = ({
     if (storeAddress === "" || detailAddress === "") {
       handleAddressCheck(false);
     } else {
-      handleAddress(storeAddress + " " + detailAddress);
+      handleAddress(storeAddress + " |n " + detailAddress);
       handleAddressCheck(true);
     }
   }, [storeAddress, detailAddress]);
+  useEffect(() => {
+    if (address !== storeAddress + "|n" + detailAddress) {
+      const list = address.split("|n");
+      const load = list[0];
+      const detail = list[1];
+      console.log(list);
+      if (load) setStoreAddress(load.trim() || "");
+      if (detail) setDetailAddress(detail.trim() || "");
+    }
+  }, [address]);
 
   // Function to open Daum Postcode in a popup on the web
   const openPostcodePopup = () => {

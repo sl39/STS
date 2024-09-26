@@ -25,11 +25,6 @@ type Login = {
   id: string;
   password: string;
 };
-interface StoreData {
-  hasStore: boolean;
-  ownerPk: number;
-  storePk: number | null;
-}
 
 export function Login() {
   const API_URL = process.env.API_URL;
@@ -52,18 +47,7 @@ export function Login() {
       );
       // 가게가 있는지 체크 하는 부분
       if (res.status === 200) {
-        // router.push("/main");
-        const checkStore = await api<StoreData>(
-          API_URL + "/api/store/owner/hasStore",
-          "GET",
-          null,
-          true
-        );
-        if (checkStore.data?.hasStore) {
-          router.push("/main");
-        } else {
-          router.push("/signup/store");
-        }
+        router.push("/main");
       }
     } catch (e) {
       console.log(e);

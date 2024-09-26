@@ -62,7 +62,7 @@ export const api = async <T,>(
   url: string,
   method = "GET",
   data: object | null = null,
-  includeCredentials = false
+  includeCredentials = true
 ): Promise<ApiResponse<T>> => {
   try {
     // 1. 요청 인터셉터 로직 (토큰 갱신 등)

@@ -19,10 +19,13 @@ export const CategoryList: FC<TopbarProps> = ({
 }) => {
   const { height, width } = useWindowDimensions();
 
-  const [selectedId, setSelectedId] = useState<number[]>(getCategory);
+  const [selectedId, setSelectedId] = useState<number[]>([]);
   useEffect(() => {
     handleCategory(selectedId);
   }, [selectedId]);
+  useEffect(() => {
+    if (selectedId.length != getCategory.length) setSelectedId(getCategory);
+  }, [getCategory]);
 
   const renderItem = ({ item }: { item: ItemData }) => {
     const backgroundColor = selectedId.includes(item.id) ? "black" : "#D9D9D9";

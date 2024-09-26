@@ -13,6 +13,7 @@ import { useRouter } from "expo-router";
 import { FireBaseImage } from "../common";
 import Postcode from "./address";
 import { api } from "../../api/api";
+import { useStore } from "../../context/StoreContext";
 
 interface StoreOpenHours {
   월: string;
@@ -24,9 +25,42 @@ interface StoreOpenHours {
   일: string;
   브레이크타임: string;
 }
+interface StoreObject {
+  store: StoreInfo;
+}
+
+interface StoreInfo {
+  address: string;
+  categoryPks: number[];
+  createdAt: string;
+  deletedAt: string | null;
+  distance: number | null;
+  isOpen: boolean;
+  lat: number;
+  lng: number;
+  operatingHours: string;
+  ownerPk: number;
+  phone: string;
+  storeImages: string[];
+  storeName: string;
+  storePk: number;
+  storeState: string;
+}
+
 const API_URL = process.env.API_URL;
 export const StoreCreateDetail = () => {
   const router = useRouter();
+  const [storeInfo, setStoreInfo] = useState<StoreInfo>();
+  const [updateOpen, setUpdateOpen] = useState<StoreOpenHours>({
+    월: "",
+    화: "",
+    수: "",
+    목: "",
+    금: "",
+    토: "",
+    일: "",
+    브레이크타임: "",
+  });
 
   const [storeName, SetStoreName] = useState<string>(""); // 스토어 이름
   const [storeAddress, setStoreAddress] = useState<string>(""); // 스토어 주소
@@ -132,9 +166,11 @@ export const StoreCreateDetail = () => {
       operatingHours: operatingHours,
       categoryPks: getCategory,
     };
+    console.log(data);
     try {
-      const res = await api(API_URL + "/api/store/owner", "POST", data, true);
-      console.log(res.data);
+      const res = await api(API_URL + `/api/store/owner`, "POST", data, true);
+      console.log(res);
+      router.push("/main");
     } catch (e) {
       console.log(e);
     }
@@ -160,6 +196,7 @@ export const StoreCreateDetail = () => {
             <Postcode
               handleAddress={handleAddress}
               handleAddressCheck={handleAddressCheck}
+              address={storeInfo?.address || ""}
             />
           </View>
           <View
@@ -173,7 +210,7 @@ export const StoreCreateDetail = () => {
             />
           </View>
           <Text>요일 설정</Text>
-          <DayComponent handleOpen={handleOpen} open={open} />
+          <DayComponent handleOpen={handleOpen} open={updateOpen} />
         </View>
         <Button
           title="가게 등록"
