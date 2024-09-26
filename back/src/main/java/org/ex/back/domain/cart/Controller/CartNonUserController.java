@@ -11,25 +11,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RequiredArgsConstructor
 @Data
 @RestController
-public class CartController {
+public class CartNonUserController {
 
     private final CartService cartService;
     private final MenuService menuService;
 
-    //장바구니 생성
-    @PostMapping("api/cart/nonUser")
+    // 비회원 - 장바구니 생성하고 PK 반환
+    @PostMapping("api/cart/nonuser")
     public ResponseEntity<CartResponseDTO> createCart(){
         CartResponseDTO cartItemResponseDTO = cartService.creatCart();
 
-      return ResponseEntity
-              .status(HttpStatus.CREATED)
-              .body(cartItemResponseDTO);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(cartItemResponseDTO);
     }
+
+    /*
+
+     */
 
     //장바구니에 장바구니 아이템 추가
     @PostMapping("api/cart/{cartId}")
@@ -72,7 +74,7 @@ public class CartController {
             @PathVariable int cartId,
             @PathVariable int cartItemId
     ){
-     cartService.deleteCartItem(cartId, cartItemId);
+        cartService.deleteCartItem(cartId, cartItemId);
 
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
