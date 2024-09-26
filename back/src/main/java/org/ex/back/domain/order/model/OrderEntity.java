@@ -17,7 +17,11 @@ import org.ex.back.domain.store.model.StoreEntity;
 public class OrderEntity {
 
 	@Id
+<<<<<<< HEAD
 	private String order_pk;
+=======
+	private String order_pk; //랜덤 아이디 생성
+>>>>>>> back/feat/order
 	
 	@ManyToOne
 	@JoinColumn(name ="user_pk")
@@ -48,6 +52,6 @@ public class OrderEntity {
 	@Column
 	private Boolean isClear = false; //음식 완료
 	
-	@Column
+	@Column//
 	private LocalDateTime orderedAt = LocalDateTime.now(); //시간
 }
