@@ -23,4 +23,13 @@ public class ErrorResponseEntity {
                         .message(e.getMessage())
                         .build());
     }
+
+    public static ErrorResponseEntity toErrorResponseEntity(ErrorCode e) {
+        return ErrorResponseEntity.builder()
+                .status(e.getHttpStatus().value())
+                .name(e.name())
+                .code(e.getCode())
+                .message(e.getMessage())
+                .build();
+    }
 }

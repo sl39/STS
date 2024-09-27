@@ -12,9 +12,11 @@ public enum ErrorCode {
     HAS_ID(HttpStatus.BAD_REQUEST, "ACCOUNT-002", "동일한 ID가 이미 존재합니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "ACCOUNT-003", "비밀번호가 일치하지 않습니다."),
     RELOGIN_REQUIRED(HttpStatus.BAD_REQUEST, "ACCOUNT-004", "재로그인이 필요합니다."),
-    TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "ACCOUNT-005", "헤더에 토큰이 없습니다."),
+    TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "ACCOUNT-005", "인증 정보가 없습니다."),
     PHONE_NUMBER_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "ACCOUNT-006", "인증된 전화번호를 가지고 있지 않습니다."),
     BANK_NOT_FOUND(HttpStatus.NOT_FOUND, "ACCOUNT-007", "계좌 정보를 찾을 수 없습니다."),
+    TOKEN_NOT_VALID(HttpStatus.UNAUTHORIZED, "ACCOUNT-008", "유효하지 않은 인증 정보입니다."),
+    FORBIDDEN_ERROR(HttpStatus.FORBIDDEN, "ACCOUNT-009", "작업을 수행할 권한이 없습니다."),
 
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CATEGORY-001", "카테고리를 찾을 수 없습니다."),
 
@@ -28,11 +30,7 @@ public enum ErrorCode {
     OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "OPTION-001", "일치하는 옵션 pk를 찾을 수 없습니다."),
 
     WAITING_NOT_FOUND(HttpStatus.NOT_FOUND, "WAITING-001", "예약건을 찾을 수 없습니다."),
-    WAITING_BAD_REQUEST(HttpStatus.BAD_REQUEST, "WAITING-002", "예약건을 대기 상태로 변경할 수 없습니다."),
-
-    ;
-
-
+    WAITING_BAD_REQUEST(HttpStatus.BAD_REQUEST, "WAITING-002", "예약건을 대기 상태로 변경할 수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
