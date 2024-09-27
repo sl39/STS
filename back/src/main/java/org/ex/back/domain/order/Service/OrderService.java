@@ -4,8 +4,7 @@ import org.ex.back.domain.cart.model.CartEntity;
 import org.ex.back.domain.cart.model.CartItemEntity;
 import org.ex.back.domain.cart.repository.CartItemRepository;
 import org.ex.back.domain.cart.repository.CartRepository;
-import org.ex.back.domain.order.DTO.OrderItemCheckDTO;
-import org.ex.back.domain.order.DTO.StoreOrderListResponseDTO;
+import org.ex.back.domain.order.DTO.*;
 import org.ex.back.domain.order.Repository.OrderRepository;
 import org.ex.back.domain.order.model.OrderEntity;
 import org.ex.back.domain.order.model.OrderItemEntity;
@@ -29,8 +28,6 @@ public class OrderService {
     private OrderRepository orderRepository;
     @Autowired
     private StoreRepository storeRepository;
-    @Autowired
-    private CartItemRepository cartItemRepository;
     @Autowired
     private CartRepository cartRepository;
     @Autowired
@@ -112,20 +109,87 @@ public class OrderService {
             return Collections.emptyList();
         }
     }
-
     // 미완료 주문 검색
     public List<StoreOrderListResponseDTO> getIncompleteOrdersByStore(Integer storeDTO) {
         return getOrdersByStore(storeDTO, false);
     }
-
     // 완료된 주문 검색
     public List<StoreOrderListResponseDTO> getCompletedOrdersByStore(Integer storeDTO) {
         return getOrdersByStore(storeDTO, true);
     }
 
-    //주문번호 조회
-    public Optional<OrderEntity> getOrderById(String id) {
-        return orderRepository.findById(id);
+
+    //주문번호 기반 조회
+    public OrderNumberDTO getOrderById(String order_pk) {
+        Optional<OrderEntity> orderId = orderRepository.findById(order_pk);
+
+        if (orderId.isPresent()){
+            OrderEntity order = orderId.get();
+
+            List<OrderItemCheckDTO> orderItems = order.getOrderItems().stream()
+                    .map(item -> new OrderItemCheckDTO(
+                            item.getMenu().getName(),
+                            item.getMenuCount(),
+                            item.getOptionItemList()
+                    )).collect(Collectors.toList());
+
+            return OrderNumberDTO.builder()
+                    .order_pk(order.getOrder_pk())
+                    .orderedAt(order.getOrderedAt())
+                    .orderItems(orderItems)
+                    .totalPrice(order.getTotalPrice())
+                    .paymentType(order.getPaymentType())
+                    .build();
+        } else {
+            return null;
+        }
+    }
+
+    //사용자 simple조회
+    public List<OrderUserSimpleDTO> getOrderByUserPkSimple(Integer userPk) {
+        UserEntity user = userRepository.findById(userPk)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+
+        List<OrderEntity> orders = orderRepository.findByUser(user);
+
+        // OrderEntity 리스트를 OrderUserSimpleDTO 리스트로 변환하여 반환
+        return orders.stream()
+                .map(order -> OrderUserSimpleDTO.builder()
+                        .order_pk(order.getOrder_pk())
+                        .user_pk(order.getUser().getUser_pk())
+                        .storeName(order.getStore().getStoreName())
+                        .storeAddress(order.getStore().getAddress())
+                        .orderedAt(order.getOrderedAt())
+                        .storeImageUrl(order.getStore().getStoreImages().isEmpty() ? null : order.getStore().getStoreImages().get(0).getImageUrl())
+                        .build())
+                .collect(Collectors.toList());
+    }
+    //사용자 detail조회
+    public OrderUserDetailDTO getOrderByUserPkDetail(String order_pk) {
+        Optional<OrderEntity> orderId = orderRepository.findById(order_pk);
+
+        if (orderId.isPresent()){
+            OrderEntity order = orderId.get();
+
+            List<OrderItemCheckDTO> orderItems = order.getOrderItems().stream()
+                    .map(item -> new OrderItemCheckDTO(
+                            item.getMenu().getName(),
+                            item.getMenuCount(),
+                            item.getOptionItemList()
+                    )).collect(Collectors.toList());
+
+            return OrderUserDetailDTO.builder()
+                    .order_pk(order.getOrder_pk())
+                    .storeName(order.getStore().getStoreName())
+                    .storeAddress(order.getStore().getAddress())
+                    .totalPrice(order.getTotalPrice())
+                    .orderedAt(order.getOrderedAt())
+                    .paymentType(order.getPaymentType())
+                    .orderItems(orderItems)
+                    .build();
+        } else {
+            return null;
+        }
     }
 
 

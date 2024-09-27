@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.ex.back.domain.order.model.OrderEntity;
 import org.ex.back.domain.store.model.StoreEntity;
+import org.ex.back.domain.user.model.UserEntity;
+import org.hibernate.query.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,9 +19,11 @@ public interface OrderRepository extends JpaRepository<OrderEntity, String> {
 
 	//store_pk로 현재 주문내역 리스트
 	List<OrderEntity> findAllByStoreAndIsClearFalse(StoreEntity store_pk);
-
 	//store_pk로 완료된 주문내역 리스트
 	List<OrderEntity> findAllByStoreAndIsClearTrue(StoreEntity store_pk);
+
+	//user_pk로 simple 주문내역 리스트
+	List<OrderEntity> findByUser(UserEntity user);
 
 
 	//가게 요일별 정산 쿼리문(총금액/카드결제)
