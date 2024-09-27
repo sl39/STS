@@ -30,9 +30,9 @@ public interface OrderRepository extends JpaRepository<OrderEntity, String> {
 	@Query("SELECT DATE(o.orderedAt), " +
 			"SUM(o.totalPrice) - SUM(CASE WHEN o.paymentType = '환불' THEN o.totalPrice ELSE 0 END) AS totalPriceAfterRefund, " +
 			"SUM(o.totalPrice) - SUM(CASE WHEN o.paymentType = '환불' THEN o.totalPrice ELSE 0 END) - SUM(CASE WHEN o.paymentType = '현장결제' THEN o.totalPrice ELSE 0 END) AS totalPriceAfterOnSitePayment " +
-			"FROM OrderEntity o WHERE o.isClear = true AND DATE(o.orderedAt) = :targetDate " +
+			"FROM OrderEntity o WHERE o.isClear = true AND DATE_FORMAT(o.orderedAt, '%Y-%m') = :targetMonth " +
 			"GROUP BY DATE(o.orderedAt)")
-	List<Object[]> findTotalPriceByDate(@Param("targetDate") LocalDate targetDate);
+	List<Object[]> findTotalPriceByMonth(@Param("targetMonth") String targetMonth);
 
 
 	//가게 기간 정산 쿼리문(총금액/카드결제)

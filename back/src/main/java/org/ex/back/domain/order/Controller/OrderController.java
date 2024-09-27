@@ -186,8 +186,8 @@ public class OrderController {
     @GetMapping("/{store_pk}/totalPrice")
     public ResponseEntity<List<Map<String, Object>>> getTotalPriceByDate(
             @PathVariable("store_pk") Integer store_pk,
-            @RequestParam("date") LocalDate targetDate) {
-        return orderService.getTotalPriceByDate(store_pk, targetDate);
+            @RequestParam("date") String targetMonth) {
+        return orderService.getTotalPriceByMonth(store_pk, targetMonth);
     }
 
 

@@ -282,14 +282,14 @@ public class OrderService {
         orderRepository.delete(order.get());
     }
     //가게별 요일 정산(총금액/카드결제)
-    public ResponseEntity<List<Map<String, Object>>> getTotalPriceByDate(Integer store_pk, LocalDate targetDate) {
+    public ResponseEntity<List<Map<String, Object>>> getTotalPriceByMonth(Integer store_pk, String targetMonth) {
         Optional<StoreEntity> store = storeRepository.findById(store_pk);
 
         if (store.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        List<Object[]> results = orderRepository.findTotalPriceByDate(targetDate);
+        List<Object[]> results = orderRepository.findTotalPriceByMonth(targetMonth);
         List<Map<String, Object>> responseList = new ArrayList<>();
 
         for (Object[] result : results) {
