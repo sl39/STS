@@ -230,6 +230,7 @@ public class OrderService {
 
             OrderEntity orderEntity = order.get();
             orderEntity.setPaymentType("환불");
+            orderEntity.setIsClear(true);
             orderRepository.save(orderEntity);
             return "환불 되었습니다";
         }

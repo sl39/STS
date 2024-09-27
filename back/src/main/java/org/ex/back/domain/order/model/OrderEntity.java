@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import org.ex.back.domain.user.model.UserEntity;
@@ -48,6 +49,7 @@ public class OrderEntity {
 	@Column
 	private Boolean isClear = false; //음식 완료
 	
-	@Column//
+	@Column
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime orderedAt = LocalDateTime.now(); //시간
 }

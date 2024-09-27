@@ -100,35 +100,39 @@ public class OrderController {
         }
 
         LocalDate targetDate;
-        // 요청된 날짜가 있을 경우 파싱
-        if (date != null && !date.isEmpty()) {
-            try {
-                targetDate = LocalDate.parse(date);
-            } catch (DateTimeParseException e) {
-                return ResponseEntity.badRequest().body(Collections.emptyList());
+
+        if (isComplete) {
+            // complete 주문의 경우 요청된 날짜가 있을 경우 파싱
+            if (date != null && !date.isEmpty()) {
+                try {
+                    targetDate = LocalDate.parse(date);
+                } catch (DateTimeParseException e) {
+                    return ResponseEntity.badRequest().body(Collections.emptyList());
+                }
+            } else {
+                // 요청된 날짜가 없을 경우 오늘 날짜
+                targetDate = LocalDate.now();
             }
+
+            // complete 주문 조회
+            List<StoreOrderListResponseDTO> orders = orderService.getCompletedOrdersByStore(store_pk);
+            List<StoreOrderListResponseDTO> filteredOrders = orders.stream()
+                    .filter(order -> order.getOrderedAt().toLocalDate().equals(targetDate))
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(filteredOrders);
         } else {
-            // 요청된 날짜가 없을 경우 오늘 날짜
-            targetDate = LocalDate.now();
+            // incomplete 주문의 경우 모든 리스트를 가져옴
+            List<StoreOrderListResponseDTO> orders = orderService.getIncompleteOrdersByStore(store_pk);
+            return ResponseEntity.ok(orders);
         }
-
-        List<StoreOrderListResponseDTO> orders = isComplete
-                ? orderService.getCompletedOrdersByStore(store_pk)
-                : orderService.getIncompleteOrdersByStore(store_pk);
-
-        List<StoreOrderListResponseDTO> filteredOrders = orders.stream()
-                .filter(order -> order.getOrderedAt().toLocalDate().equals(targetDate))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(filteredOrders);
     }
 
     // 가게별 incomplete 주문내역 조회
     @GetMapping("/{store_pk}/incomplete")
     public ResponseEntity<List<StoreOrderListResponseDTO>> getICOrdersByStore(
-            @PathVariable("store_pk") Integer store_pk,
-            @RequestParam(required = false) String date) {
-        return getOrdersByStore(store_pk, date, false);
+            @PathVariable("store_pk") Integer store_pk) {
+        return getOrdersByStore(store_pk, null, false);
     }
 
     // 가게별 complete 주문내역 조회
