@@ -14,8 +14,12 @@ import org.ex.back.domain.store.repository.StoreRepository;
 import org.ex.back.domain.user.model.UserEntity;
 import org.ex.back.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -227,16 +231,40 @@ public class OrderService {
         }
         Optional<OrderEntity> order = orderRepository.findById(order_pk);
         if (order.isPresent()) {
-
             OrderEntity orderEntity = order.get();
-            orderEntity.setPaymentType("환불");
-            orderEntity.setIsClear(true);
-            orderRepository.save(orderEntity);
-            return "환불 되었습니다";
+
+            //POST 요청 준비
+            String payNumber = orderEntity.getPayNumber();
+            String url = "http://192.168.30.16:3000/api/cancel-payment";
+            //Json 데이터 생성
+            Map<String, String> requestData = new HashMap<>();
+            requestData.put("merchant_uid", order_pk);
+            requestData.put("imp_uid ", payNumber);
+
+            //헤더 설정
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+            //요청 엔티티 생성
+            HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(requestData, headers);
+            //post 요청 보내기
+            RestTemplate restTemplate = new RestTemplate();
+            try {
+                String response = restTemplate.postForObject(url, requestEntity, String.class);
+
+                if(response != null){
+                    orderEntity.setPaymentType("환불");
+                    orderEntity.setIsClear(true);
+                    orderRepository.save(orderEntity);
+                    return "환불 되었습니다";
+                }
+            } catch (Exception e) {
+                return "결제 취소 실패하였습니다";
+            }
         }
         return null;
     }
-
 
     //삭제
     public void deleteOrder(String order_pk, Integer store_pk) {
