@@ -8,6 +8,7 @@ import org.ex.back.domain.order.DTO.*;
 import org.ex.back.domain.order.Repository.OrderRepository;
 import org.ex.back.domain.order.model.OrderEntity;
 import org.ex.back.domain.order.model.OrderItemEntity;
+import org.ex.back.domain.sms.Service.KakaoService;
 import org.ex.back.domain.store.model.StoreEntity;
 import org.ex.back.domain.store.repository.StoreRepository;
 import org.ex.back.domain.user.model.UserEntity;
@@ -32,6 +33,8 @@ public class OrderService {
     private CartRepository cartRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private KakaoService kakaoService;
 
     //전체 데이터 조회
     public List<OrderEntity> getAllOrders() {
@@ -70,6 +73,13 @@ public class OrderService {
         orderEntity.setGuestPhone(userEntity.getPhone());
         orderEntity.setIsClear(false);
         orderEntity.setOrderedAt(LocalDateTime.now());
+
+        //알림톡 전송 부분 비활성화 - 작동 가능
+//        kakaoService.sendOrderKakaoMessage(
+//                orderEntity.getGuestPhone(),
+//                orderEntity.getOrder_pk(),
+//                orderEntity.getTotalPrice(),
+//                orderEntity.getOrderedAt().toString());
 
         return orderRepository.save(orderEntity);
     }

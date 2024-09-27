@@ -5,6 +5,8 @@ import org.ex.back.domain.sms.Util.SmsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class KakaoService {
 
@@ -16,7 +18,11 @@ public class KakaoService {
     }
 
     // 주문 생성 시 카카오 알림톡 전송
-    public SingleMessageSentResponse sendOrderKakaoMessage(String phoneNum, String variable1, String variable2, String variable3) {
+    public SingleMessageSentResponse sendOrderKakaoMessage(
+            String phoneNum,
+            String variable1,
+            Integer variable2,
+            String variable3) {
         return messageUtil.sendOrderKakao(phoneNum, variable1, variable2, variable3);
     }
 

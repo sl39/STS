@@ -10,6 +10,7 @@ import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 
 @Component
@@ -56,7 +57,7 @@ public class SmsUtil {
     }
 
     // 주문 카카오 알림톡 전송
-    public SingleMessageSentResponse sendOrderKakao(String to, String variable1, String variable2, String variable3) {
+    public SingleMessageSentResponse sendOrderKakao(String to, String variable1, Integer variable2, String variable3) {
         KakaoOption kakaoOption = new KakaoOption();
         kakaoOption.setPfId(pfid); // 설정된 PF ID
         kakaoOption.setTemplateId(orderTemplateid); // 주문 템플릿 ID 설정
