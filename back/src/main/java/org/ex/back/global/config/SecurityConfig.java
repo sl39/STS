@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
@@ -52,14 +53,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(HttpBasicConfigurer::disable)
                 .formLogin(FormLoginConfigurer::disable)
-                .addFilterBefore(jwtAuthFilter, BasicAuthenticationFilter.class)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
                 // 소셜로그인 설정
                 .oauth2Login(oauth2Login -> oauth2Login
-                        .defaultSuccessUrl("/", false)
                         .userInfoEndpoint(userInfoEndpoint  -> userInfoEndpoint
                                 .userService(customOAuth2UserService))
                                 .successHandler(oAuth2SuccessHandler)
@@ -67,7 +66,7 @@ public class SecurityConfig {
 
                 // 인증, 인가 실패 처리
                 .exceptionHandling(exceptionHandling -> exceptionHandling
-                        //.authenticationEntryPoint(jwtAuthenticationEntryPoint) //401
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint) //401
                         .accessDeniedHandler(jwtAccessDeniedHandler) //403
                 )
 
@@ -80,17 +79,41 @@ public class SecurityConfig {
                 )
 
                 // API 접근
+                .addFilterBefore(jwtAuthFilter, BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/").permitAll() // localhost (소셜로그인 페이지)
-                        .requestMatchers("/api/auth/**").permitAll() // 인증 관련 api
-                        .requestMatchers("/api/cart/nonuser/**").permitAll() // 비회원 요청 가능 api
-                        .requestMatchers("/api/seller").hasRole("OWNER") // only owner api
-                        .requestMatchers("/api/user").hasRole("USER") // only user api
+                        .requestMatchers(
+                                "/", "/index.html", // 소셜로그인 테스트 페이지
+                                "/api/auth/**", // 인증 관련 api
+                                "/api/store/user/**", // 사용자 매장 조회 및 검색 api
+                                "/api/cart/nonuser/**", // 비회원 장바구니 CRUD api
+                                "/api/order/*", // 주문번호로 주문내역 조회 api
+                                "/api/sms/send", // 전화번호 인증 api
+                                "/api/sms/verify", // 전화번호 인증 확인 api
+                                "/api/store/*/menu", // 가게 메뉴리스트 조회 api
+                                "/api/menu/*/menu" // 메뉴 상세 조회 api
+                        ).permitAll()
+                        .requestMatchers("/api/store/owner/**").hasRole("OWNER") // only owner api
+                        .requestMatchers("/api/cart/user/**").hasRole("USER") // only user api
                         .anyRequest().authenticated() // 위에서 명시되지 않은 모든 api 요청은 인증된 사용자만 접근 가능
                 );
 
         return http.build();
     }
+
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+//        return (web) -> web.ignoring().requestMatchers(
+//                "/", // 소셜로그인 테스트 페이지
+//                "/api/auth/**", // 인증 관련 api
+//                "/api/store/user/**", // 사용자 매장 조회 및 검색 api
+//                "/api/cart/nonuser/**", // 비회원 장바구니 CRUD api
+//                "/api/order/*", // 주문번호로 주문내역 조회 api
+//                "/api/sms/send", // 전화번호 인증 api
+//                "/api/sms/verify", // 전화번호 인증 확인 api
+//                "/api/store/*/menu", // 가게 메뉴리스트 조회 api
+//                "/api/menu/*/menu" // 메뉴 상세 조회 api
+//        );
+//    }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {

@@ -80,7 +80,7 @@ public class JwtTokenProvider {
         }
     }
 
-    public boolean validateJwtToken(String token) {
+    public boolean validateJwtToken(String token) throws CustomException {
         try {
             // parseClaimsJws() 부분에서 유효기간 검증 알아서 해준다
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -96,7 +96,6 @@ public class JwtTokenProvider {
         } catch (IllegalArgumentException e) {
             log.error("JWT claims string is empty: {}", e.getMessage());
         }
-
-        return false;
+        throw new CustomException(ErrorCode.TOKEN_NOT_VALID);
     }
 }

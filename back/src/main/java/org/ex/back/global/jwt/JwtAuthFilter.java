@@ -22,10 +22,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -48,25 +53,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         try {
             String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-            if (header == null || !header.startsWith("Bearer ")) {
-                log.info("헤더에 Authorization가 없거나 키값이 Bearer 로 시작하지 않습니다.");
-
-                String requestURL = request.getRequestURI();
-                if (requestURL.equals("/") || requestURL.startsWith("/api/auth/")) {
-                    filterChain.doFilter(request, response); // 다음 필터로 진행
-                    return;
-                }
-
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // -> 토큰이 없기 때문에 401 로 넘기기
-                return;
-            }
+//            if (header == null || !header.startsWith("Bearer ")) {
+//                log.info("헤더에 엑세스 토큰이 없습니다.");
+//
+//                if (request.getRequestURI().equals("/")) {
+//                    filterChain.doFilter(request, response);
+//                    return;
+//                }
+//            }
 
             String jwt = header.split(" ")[1];
             log.info("jwt 추출 : {}", jwt);
 
-            if(!jwtTokenProvider.validateJwtToken(jwt)) {
-                throw new CustomException(ErrorCode.TOKEN_NOT_VALID);
-            }
+            jwtTokenProvider.validateJwtToken(jwt);
 
             log.info("jwt 검증 통과");
 
@@ -104,15 +103,40 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         } catch (SignatureException e) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             response.setContentType("application/json; charset=UTF-8");
-            ResponseEntity<ErrorResponseEntity> responseEntity = ErrorResponseEntity.toResponseEntity(ErrorCode.TOKEN_NOT_VALID);
-            response.getWriter().write(new ObjectMapper().writeValueAsString(responseEntity));
+            ErrorResponseEntity entity = ErrorResponseEntity.toErrorResponseEntity(ErrorCode.TOKEN_NOT_VALID);
+            response.getWriter().write(new ObjectMapper().writeValueAsString(entity));
 
         } catch (CustomException e) {
             response.setStatus(e.getErrorCode().getHttpStatus().value());
             response.setContentType("application/json; charset=UTF-8");
-            ResponseEntity<ErrorResponseEntity> responseEntity = ErrorResponseEntity.toResponseEntity(e.getErrorCode());
-            response.getWriter().write(new ObjectMapper().writeValueAsString(responseEntity));
-            //response.getWriter().flush();
+            ErrorResponseEntity entity = ErrorResponseEntity.toErrorResponseEntity(e.getErrorCode());
+            response.getWriter().write(new ObjectMapper().writeValueAsString(entity));
         }
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String[] excludePathList = {
+                "/", "/index.html", // 소셜로그인 테스트 페이지
+                "/api/auth/**", // 인증 관련 api
+                "/api/store/user/**", // 사용자 매장 조회 및 검색 api
+                "/api/cart/nonuser/**", // 비회원 장바구니 CRUD api
+                "/api/order/*", // 주문번호로 주문내역 조회 api
+                "/api/sms/send", // 전화번호 인증 api
+                "/api/sms/verify", // 전화번호 인증 확인 api
+                "/api/store/*/menu", // 가게 메뉴리스트 조회 api
+                "/api/menu/*/menu" // 메뉴 상세 조회 api
+        };
+
+        AntPathMatcher antPathMatcher = new AntPathMatcher();
+        String path = request.getServletPath();
+
+        for(String excludePath : excludePathList) {
+            if(antPathMatcher.match(excludePath, path)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

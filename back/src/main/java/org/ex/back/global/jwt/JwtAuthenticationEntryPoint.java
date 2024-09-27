@@ -1,8 +1,12 @@
 package org.ex.back.global.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.ex.back.global.error.ErrorCode;
+import org.ex.back.global.error.ErrorResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -19,7 +23,9 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             AuthenticationException authException
     ) throws IOException, ServletException
     {
-        response.setCharacterEncoding("UTF-8");
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증되지 않은 사용자입니다.");
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json; charset=UTF-8");
+        ErrorResponseEntity entity = ErrorResponseEntity.toErrorResponseEntity(ErrorCode.TOKEN_NOT_VALID);
+        response.getWriter().write(new ObjectMapper().writeValueAsString(entity));
     }
 }
