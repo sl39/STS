@@ -8,8 +8,6 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 public class OptionItemDTO {
-    private Integer option_pk;
-
     private Integer option_item_pk;
 
     private String name;
