@@ -1,9 +1,13 @@
 package org.ex.back.domain.menu.Controller;
 
 import lombok.RequiredArgsConstructor;
+import org.ex.back.domain.menu.DTO.MenuOptionDTO;
 import org.ex.back.domain.menu.DTO.MenuRequestDTO;
 import org.ex.back.domain.menu.DTO.MenuResponseDTO;
+import org.ex.back.domain.menu.DTO.OptionItemDTO;
 import org.ex.back.domain.menu.Service.MenuService;
+import org.ex.back.domain.menu.Service.OptionItemService;
+import org.ex.back.domain.menu.Service.OptionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +20,8 @@ import java.util.List;
 public class MenuController {
     //Menu별 서비스 연결
     private final MenuService menuService;
+    private final OptionService optionService;
+    private final OptionItemService optionItemService;
 
     //판매자
     //메뉴 생성
@@ -65,4 +71,27 @@ public class MenuController {
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    //메뉴 옵션 생성
+    @PostMapping("api/menu/{menuId}/option")
+    public ResponseEntity<MenuOptionDTO> addOption(@PathVariable int menuId, @RequestBody MenuOptionDTO request) {
+        MenuOptionDTO response = optionService.createdOption(menuId, request);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+
+    }
+
+    //옵션 아이템 생상
+    @PostMapping("api/option/{optionId}")
+    public ResponseEntity<OptionItemDTO> addOptionItem(@PathVariable int optionId, @RequestBody OptionItemDTO request) {
+            OptionItemDTO response = optionItemService.createdOptionItem(optionId, request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+
+    }
+
+
 }

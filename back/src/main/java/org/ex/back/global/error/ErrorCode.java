@@ -25,6 +25,8 @@ public enum ErrorCode {
 
     CART_NOT_FOUND(HttpStatus.NOT_FOUND, "CART-001", "카트를 찾을 수 없습니다."),
 
+    OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "OPTION-001", "일치하는 옵션 pk를 찾을 수 없습니다."),
+
     WAITING_NOT_FOUND(HttpStatus.NOT_FOUND, "WAITING-001", "예약건을 찾을 수 없습니다."),
     WAITING_BAD_REQUEST(HttpStatus.BAD_REQUEST, "WAITING-002", "예약건을 대기 상태로 변경할 수 없습니다."),
 
