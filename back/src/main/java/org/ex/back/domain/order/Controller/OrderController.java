@@ -27,8 +27,6 @@ public class OrderController {
     private OrderService orderService;
     @Autowired
     private FCMService fcmService;
-    @Autowired
-    private KakaoService kakaoService;
 
     //주문 생성
     @PostMapping
@@ -45,7 +43,7 @@ public class OrderController {
         return ResponseEntity.ok(createdOrder);
     }
 
-
+//예전 주문생성 - fcm시 해야함
 //    @PostMapping
 //    public ResponseEntity<OrderEntity> createOrder(@RequestBody OrderEntity order) {
 //        OrderEntity createdOrder = orderService.createOrder(order);
@@ -58,10 +56,10 @@ public class OrderController {
 //    }
 
     //전체 내역 확인용
-    @GetMapping
-    public List<OrderEntity> getAllOrders() {
-        return orderService.getAllOrders();
-    }
+//    @GetMapping
+//    public List<OrderEntity> getAllOrders() {
+//        return orderService.getAllOrders();
+//    }
     
     //주문번호로 조회
     @GetMapping("/{orderNum}")
