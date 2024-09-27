@@ -6,14 +6,15 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { MenuProps, OptionListProps } from "./type";
-import { useState } from "react";
+import { MenuProps, OptionListProps, OptionProps } from "./type";
+import { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import { OptionCategory } from "./optionCategory";
 import { FireBaseImage } from "../common";
 import { firestore, storage } from "../../../fierbaseConfig";
 import { ref, deleteObject } from "firebase/storage";
 import { collection, query, where } from "firebase/firestore";
+import { api } from "../../api/api";
 
 type MenuOption = {
   item: MenuProps;
@@ -21,6 +22,13 @@ type MenuOption = {
   deleteMenuLists: (args: MenuProps) => void;
 };
 
+type MenuOptionReturn = {
+  menu_option_pk: number;
+  minCount: number;
+  maxCount: number;
+  opSubject: string;
+};
+const API_URL = process.env.API_URL;
 export const MenuOption: React.FC<MenuOption> = ({
   item,
   updateMenuLists,
@@ -31,23 +39,61 @@ export const MenuOption: React.FC<MenuOption> = ({
   const [option, setOption] = useState<Array<OptionListProps>>([]);
   const [isOption, setIsOption] = useState<boolean>(false);
   const [form, setForm] = useState<OptionListProps>({
-    menu_option_pk: 0,
+    menu_option_pk: Math.round(Math.random() * 1000),
     opSubject: "",
     optionItems: [],
     minCount: 0,
     maxCount: 0,
   });
+  useEffect(() => {
+    if (item) {
+      const getMenu = async () => {
+        try {
+          const res = await api<MenuProps>(
+            API_URL + `/api/menu/${item.menu_pk}/menu`,
+            "GET",
+            null
+          );
+          setOption(res.data?.options || []);
+        } catch (e) {
+          console.log(e);
+        }
+      };
+      getMenu();
+    }
+  }, [item]);
 
-  const handleOptionCategory = () => {
-    setOption([...option, form]);
-    setForm({
-      menu_option_pk: 0,
-      opSubject: "",
-      optionItems: [],
-      minCount: 0,
-      maxCount: 0,
-    });
-    setIsOption(!isOption);
+  const handleOptionCategory = async () => {
+    console.log(item.menu_pk);
+    const data = {
+      opSubject: form.opSubject,
+      minCount: form.minCount,
+      maxCount: form.maxCount,
+    };
+    try {
+      const res = await api<MenuOptionReturn>(
+        API_URL + `/api/menu/${item.menu_pk}/option`,
+        "POST",
+        data
+      );
+      const newForm = res.data;
+      if (newForm) {
+        const optionItems: Array<OptionProps> = [];
+        const value: OptionListProps = { ...newForm, optionItems: optionItems };
+        console.log(value);
+        setOption([...option, value]);
+        setForm({
+          menu_option_pk: Math.round(Math.random() * 1000),
+          opSubject: "",
+          optionItems: [],
+          minCount: 0,
+          maxCount: 0,
+        });
+        setIsOption(!isOption);
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const updateOptionCate = (element: OptionListProps) => {
@@ -122,6 +168,30 @@ export const MenuOption: React.FC<MenuOption> = ({
               defaultValue={form.opSubject}
             />
           </View>
+          <Text>필수선택개수</Text>
+
+          <TextInput
+            style={{ height: 40, backgroundColor: "white", width: 30 }}
+            placeholder="메뉴 가격"
+            keyboardType="numeric"
+            onChangeText={(newText) => {
+              // 숫자만 필터링
+              const numericValue = newText.replace(/[^0-9]/g, "");
+              setForm({ ...form, minCount: Number(numericValue) });
+            }}
+            value={String(form.minCount)} // 입력 필드에 상태 반영
+          />
+          <TextInput
+            style={{ height: 40, backgroundColor: "white", width: 30 }}
+            placeholder="메뉴 가격"
+            keyboardType="numeric"
+            onChangeText={(newText) => {
+              // 숫자만 필터링
+              const numericValue = newText.replace(/[^0-9]/g, "");
+              setForm({ ...form, maxCount: Number(numericValue) });
+            }}
+            value={String(form.maxCount)} // 입력 필드에 상태 반영
+          />
           <View>
             <Button title="등록" onPress={() => handleOptionCategory()} />
           </View>

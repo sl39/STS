@@ -26,7 +26,7 @@ export interface MenuListProps {
 }
 
 export interface OptionListProps {
-  menu_option_pk: number | null;
+  menu_option_pk: number;
   minCount: number;
   maxCount: number;
   opSubject: string;
@@ -34,7 +34,12 @@ export interface OptionListProps {
 }
 
 export interface OptionProps {
-  optionPk: number | null;
+  option_item_pk: number;
+  name: string;
+  extraPrice: number;
+}
+
+export interface OptionRequest {
   name: string;
   extraPrice: number;
 }
