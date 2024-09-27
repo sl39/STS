@@ -2,14 +2,14 @@ package org.ex.back.domain.order.Controller;
 
 
 import org.ex.back.domain.fcm.FCMService;
-import org.ex.back.domain.order.DTO.OrderFcmTokenDTO;
+import org.ex.back.domain.order.DTO.*;
 import org.ex.back.domain.order.model.OrderEntity;
 import org.ex.back.domain.order.Service.OrderService;
-import org.ex.back.domain.order.DTO.StoreOrderListResponseDTO;
 import org.ex.back.domain.sms.Service.KakaoService;
 import org.ex.back.domain.store.dto.StoreFcmTokenDTO;
 import org.ex.back.domain.store.service.OwnerStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,13 +63,30 @@ public class OrderController {
         return orderService.getAllOrders();
     }
     
-    //주문번호로 조회 DTO사용 손 봐야함.
+    //주문번호로 조회
     @GetMapping("/{orderNum}")
-    public ResponseEntity<OrderEntity> getOrderById(@PathVariable("orderNum") String orderNum) {
-        Optional<OrderEntity> order = orderService.getOrderById(orderNum);
-        return order.map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<OrderNumberDTO> getOrderById(@PathVariable("orderNum") String orderNum) {
+        OrderNumberDTO orderNumberDTO = orderService.getOrderById(orderNum);
+
+        return ResponseEntity.ok(orderNumberDTO);
     }
+    //주문Simple리스트 조회
+    @GetMapping("/simple/{userPk}")
+    public ResponseEntity<List<OrderUserSimpleDTO>> getOrdersByUserPk(@PathVariable("userPk") Integer userPk) {
+        List<OrderUserSimpleDTO> orderDTOs = orderService.getOrderByUserPkSimple(userPk);
+        if (orderDTOs.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(orderDTOs, HttpStatus.OK);
+    }
+    //주문 Detail 조회
+    @GetMapping("/detail/{orderNum}")
+    public ResponseEntity<OrderUserDetailDTO> getOrderByIdDetail(@PathVariable("orderNum") String orderNum) {
+        OrderUserDetailDTO orderUserDetailDTO = orderService.getOrderByUserPkDetail(orderNum);
+
+        return ResponseEntity.ok(orderUserDetailDTO);
+    }
+
 
     // 가게별 주문내역 조회 (완료/미완료)
     private ResponseEntity<List<StoreOrderListResponseDTO>> getOrdersByStore(
@@ -121,6 +138,8 @@ public class OrderController {
             @RequestParam(required = false) String date) {
         return getOrdersByStore(store_pk, date, true);
     }
+
+
 
 
 

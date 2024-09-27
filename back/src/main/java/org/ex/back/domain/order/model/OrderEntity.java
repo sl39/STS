@@ -19,7 +19,6 @@ public class OrderEntity {
 	@Id
 	private String order_pk;
 
-	
 	@ManyToOne
 	@JoinColumn(name ="user_pk")
 	private UserEntity user;
