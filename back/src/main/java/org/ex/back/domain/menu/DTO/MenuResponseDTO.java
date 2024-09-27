@@ -41,6 +41,7 @@ public class MenuResponseDTO {
     //주류 여부
     private Boolean isAlcohol;
 
+    //메뉴 상세 조회할 때 필요
     //모든 옵션 리스트(제목, 최대, 최소, 아이템 리스트)
     private List<OptionsDTO> options;
 

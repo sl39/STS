@@ -32,6 +32,6 @@ public class MenuRequestDTO {
     //주류 여부(메뉴가 술인지 아닌지)
     private Boolean isAlcohol;
 
-    //옵션들을 받을 옵션 리스트
+    //옵션들을 받을 옵션 리스트 -> 일단 생성할때 optionList = null로 리퀘스트
     private List<OptionsDTO> options;
 }

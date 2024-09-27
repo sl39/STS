@@ -281,7 +281,7 @@ public class MenuService {
 
     }
 
-    //메뉴 상세 조회(메뉴  id) -> 메뉴 리스트에서 상세 조회가 이루어지기 때문에 스토어 ID가 필요없음
+    //메뉴 상세 조회(메뉴  id) -> 메뉴 리스트에서 상세 조회가 이루어지기 때문에 스토어 ID가 필요없음 -> 수정 완료
    public MenuResponseDTO getMenu(int menuId){
 
         //메뉴id로 메뉴정보 가져오기
@@ -308,7 +308,7 @@ public class MenuService {
         }
     }
 
-    //메뉴 수정(menuId받음, 스토어 내에서 이루어지기 때문에 스토어 Id 필요 X)
+    //메뉴 수정(menuId받음, 스토어 내에서 이루어지기 때문에 스토어 Id 필요 X) -> 수정 완
     public MenuResponseDTO putMenu(int menuId, MenuRequestDTO request) {
         //메뉴 id로 받아온 값 찾아서 넣기
         Optional<MenuEntity> menu = menuRepository.findById(menuId);
@@ -322,8 +322,6 @@ public class MenuService {
 
                 MenuEntity menuEntity = menu.get();
 
-                log.info("menuEntity11111 : {}", menuEntity);
-
                 menuEntity = menuEntity.builder()
                         //수정후 메뉴 pk를 유지하기 위해 새로 생성되지 않도록 기존 pk 로 설정
                         .menu_pk(menuEntity.getMenu_pk())
@@ -334,11 +332,8 @@ public class MenuService {
                         .price(request.getPrice())
                         .imageUrl(request.getImageURL())
                         .description(request.getDescription())
-                        .menuOptions(convertMenuOptionEntity(request.getOptions()))
                         .build();
                 menuRepository.save(menuEntity);
-
-                log.info("menuEntity2222 : {}", menuEntity);
 
                 //ResponseDTO로 변환
                 MenuResponseDTO response = MenuResponseDTO.builder()
@@ -352,7 +347,6 @@ public class MenuService {
                         .isBestMenu(menuEntity.getIsBestMenu())
                         .isAlcohol(menuEntity.getIsAlcohol())
                         //메뉴 옵션 엔티티 타입 리스트 -> 옵션DTO 타입 리스트 로 변환
-                        .options(convertOptionsDTO(menuEntity.getMenuOptions()))
                         .build();
 
                 return response;
@@ -365,7 +359,7 @@ public class MenuService {
         }
     }
 
-    //메뉴 삭제 (스토어 안에서 이루어지므로 storeID 필요 X)
+    //메뉴 삭제 (스토어 안에서 이루어지므로 storeID 필요 X) -> 완료
     public void deleteMenu(int menuId) {
         //메뉴 id로 받아온 값 찾아서 넣기
         Optional<MenuEntity> menu = menuRepository.findById(menuId);
