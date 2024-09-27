@@ -22,7 +22,7 @@ public class KakaoService {
             String phoneNum,
             String variable1,
             Integer variable2,
-            String variable3) {
+            LocalDateTime variable3) {
         return messageUtil.sendOrderKakao(phoneNum, variable1, variable2, variable3);
     }
 

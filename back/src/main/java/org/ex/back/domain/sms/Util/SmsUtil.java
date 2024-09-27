@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 @Component
@@ -57,16 +58,18 @@ public class SmsUtil {
     }
 
     // 주문 카카오 알림톡 전송
-    public SingleMessageSentResponse sendOrderKakao(String to, String variable1, Integer variable2, String variable3) {
+    public SingleMessageSentResponse sendOrderKakao(String to, String variable1, Integer variable2, LocalDateTime variable3) {
         KakaoOption kakaoOption = new KakaoOption();
         kakaoOption.setPfId(pfid); // 설정된 PF ID
         kakaoOption.setTemplateId(orderTemplateid); // 주문 템플릿 ID 설정
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String formattedDate = variable3.format(formatter);
         // 변수 설정
         HashMap<String, String> variables = new HashMap<>();
         variables.put("#{주문번호}", variable1);
         variables.put("#{금액}", variable2 + "원");
-        variables.put("#{주문일자}", variable3);
+        variables.put("#{주문일자}", formattedDate);
         kakaoOption.setVariables(variables);
 
         Message message = new Message();
