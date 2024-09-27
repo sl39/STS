@@ -64,7 +64,19 @@ export const Menu: React.FC<CategoryType> = ({
     console.log(categoryMenus);
   }, [categoryMenus]);
 
-  const updateMenuLists = (form: MenuProps) => {
+  const updateMenuLists = async (form: MenuProps) => {
+    console.log(form);
+    try {
+      const res = await api<MenuProps>(
+        API_URL + `/api/menu/${form.menu_pk}/menu`,
+        "PUT",
+        form
+      );
+      console.log(res);
+      if (res.data) handleMenus(res.data, "PUT");
+    } catch (e) {
+      console.log(e);
+    }
     setMenuLists((prevMenuLists) =>
       prevMenuLists.map((menu) => (menu.menu_pk === form.menu_pk ? form : menu))
     );

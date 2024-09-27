@@ -16,7 +16,6 @@ export const Calculation: React.FC<CalculationProp> = ({ val, date }) => {
   const storePk = 20;
   useEffect(() => {
     const getOrderList = async () => {
-      console.log(date);
       let url = "";
       if (val && date)
         url = API_URL + `/api/order/${storePk}/complete?date=${date}`;
@@ -36,7 +35,7 @@ export const Calculation: React.FC<CalculationProp> = ({ val, date }) => {
         console.log(e);
       }
     };
-    if (storePk && !date) getOrderList();
+    if (storePk) getOrderList();
   }, [storePk, val, date]);
 
   const removeOrder = async (order_pk: string) => {
@@ -78,21 +77,25 @@ export const Calculation: React.FC<CalculationProp> = ({ val, date }) => {
         marginTop: 3,
       }}
     >
-      <View style={styles.container}>
-        <FlatList
-          data={orderList} // 업데이트된 orderList 사용
-          keyExtractor={(item) => item.order_pk}
-          renderItem={({ item }) => (
-            <OrderItem
-              item={item}
-              onRemove={removeOrder}
-              onClear={onClear}
-              val={val}
-            />
-          )}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-        />
-      </View>
+      {!orderList || orderList.length == 0 ? (
+        <Text> 주문 내역이 없습니다</Text>
+      ) : (
+        <View style={styles.container}>
+          <FlatList
+            data={orderList} // 업데이트된 orderList 사용
+            keyExtractor={(item) => item.order_pk}
+            renderItem={({ item }) => (
+              <OrderItem
+                item={item}
+                onRemove={removeOrder}
+                onClear={onClear}
+                val={val}
+              />
+            )}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+          />
+        </View>
+      )}
     </View>
   );
 };

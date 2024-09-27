@@ -16,11 +16,14 @@ export default function Main() {
     title: "가게 정보",
     component: <StoreTaps />,
   });
+  const handleTabPress = (prop: LeftTabProp) => {
+    setSelectedTabTitle(prop);
+  };
 
   const tabs: Array<LeftTabProp> = [
     {
       title: "정산",
-      component: <TotalCalculation setSelectedTabTitle={setSelectedTabTitle} />,
+      component: <TotalCalculation setSelectedTabTitle={handleTabPress} />,
     },
     {
       title: "주문 내역 진행중",
@@ -32,9 +35,6 @@ export default function Main() {
     },
     { title: "가게 정보", component: <StoreTaps /> },
   ];
-  const handleTabPress = (prop: LeftTabProp) => {
-    setSelectedTabTitle(prop);
-  };
 
   return (
     <View style={{ alignItems: "center", height: "100%", width: "100%" }}>
