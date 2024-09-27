@@ -15,6 +15,7 @@ type CategoryType = {
   subject: string;
   deleteMenuGroup: (arg: number) => void;
   categoryMenus: Array<MenuProps>;
+  handleMenus: (form: MenuProps, mapping: string) => void;
 };
 
 const API_URL = process.env.API_URL;
@@ -24,6 +25,7 @@ export const Menu: React.FC<CategoryType> = ({
   subject,
   deleteMenuGroup,
   categoryMenus,
+  handleMenus,
 }) => {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [menuLists, setMenuLists] = useState<Array<MenuProps>>([]);
@@ -41,7 +43,6 @@ export const Menu: React.FC<CategoryType> = ({
   const { storePk } = useStore();
 
   const addMenuLists = async (form: MenuProps) => {
-    console.log(form);
     try {
       const res = await api<MenuProps>(
         API_URL + `/api/store/${storePk}/menu`,
@@ -51,7 +52,8 @@ export const Menu: React.FC<CategoryType> = ({
       const data = res.data;
       console.log(data);
 
-      if (data) setMenuLists((prevMenuLists) => [...prevMenuLists, form]);
+      // if (data) setMenuLists((prevMenuLists) => [...prevMenuLists, form]);
+      if (data) handleMenus(data, "POST");
     } catch (e) {
       console.log(e);
     }
@@ -59,6 +61,7 @@ export const Menu: React.FC<CategoryType> = ({
 
   useEffect(() => {
     setMenuLists(categoryMenus);
+    console.log(categoryMenus);
   }, [categoryMenus]);
 
   const updateMenuLists = (form: MenuProps) => {
@@ -67,18 +70,18 @@ export const Menu: React.FC<CategoryType> = ({
     );
   };
 
-  const deleteMenuLists = async (form: number) => {
+  const deleteMenuLists = async (form: MenuProps) => {
     try {
-      await api(API_URL + `/api/menu/${form}`, "DELETE", null);
-      setMenuLists((prevMenuLists) =>
-        prevMenuLists.filter((menu) => menu.menu_pk !== form)
-      );
+      await api(API_URL + `/api/menu/${form.menu_pk}`, "DELETE", null);
+      // setMenuLists((prevMenuLists) =>
+      //   prevMenuLists.filter((menu) => menu.menu_pk !== form.menu_pk)
+      // );
+      handleMenus(form, "DELETE");
     } catch (e) {
       console.log(e);
     }
   };
   const handleImage = (img: Array<string>) => {
-    console.log(img);
     if (img.length != 0) {
       setForm({ ...form, imageURL: img[0] });
     } else {

@@ -70,7 +70,8 @@ export const MenuCategory = () => {
   }, [storePk]);
 
   useEffect(() => {
-    if (categoryList.length > 0 && menusApi.length > 0) {
+    console.log(menusApi);
+    if (categoryList.length > 0 && menusApi) {
       const mList: Array<categoryMenuType> = [];
       categoryList.map((item) => {
         const data: categoryMenuType = {
@@ -140,6 +141,39 @@ export const MenuCategory = () => {
       }
     }
   };
+  const transMenu = (menu: MenuProps): MenuListProps => {
+    return {
+      menu_pk: menu.menu_pk,
+      category_pk: menu.category_pk ?? 0, // null일 경우 0으로 처리
+      subject: "", // subject는 따로 값이 필요하다면 여기서 설정
+      name: menu.name,
+      price: menu.price,
+      description: menu.description,
+      imageURL: menu.imageURL,
+      isBestMenu: menu.isBestMenu,
+      isAlcohol: menu.isAlcohol,
+    };
+  };
+
+  const handleMenus = (form: MenuProps, mapping: string) => {
+    const newForm = transMenu(form);
+
+    if (mapping === "POST") {
+      // 메뉴 추가
+      setMenusApi((prev) => [...prev, newForm]);
+    } else if (mapping === "PUT") {
+      // 메뉴 수정
+      setMenusApi((prev) =>
+        prev.map((item) => (item.menu_pk === newForm.menu_pk ? newForm : item))
+      );
+    } else if (mapping === "DELETE") {
+      // 메뉴 삭제
+      console.log("삭제중");
+      setMenusApi((prev) =>
+        prev.filter((item) => item.menu_pk !== newForm.menu_pk)
+      );
+    }
+  };
 
   return (
     <View style={{ height: height * 0.8, alignItems: "center" }}>
@@ -189,7 +223,8 @@ export const MenuCategory = () => {
             renderItem(
               item,
               deleteMenuGroup,
-              flatListMenus(item.category_pk) || []
+              flatListMenus(item.category_pk) || [],
+              handleMenus
             )
           }
           keyExtractor={(item) => item.category_pk.toString()}
@@ -202,7 +237,8 @@ export const MenuCategory = () => {
 const renderItem = (
   item: categoryType,
   deleteMenuGroup: (pk: number) => void,
-  categoryMenus: Array<MenuProps>
+  categoryMenus: Array<MenuProps>,
+  handleMenus: (form: MenuProps, mapping: string) => void
 ) => (
   <View style={{ backgroundColor: "white", margin: 10, padding: 10 }}>
     <View>
@@ -211,6 +247,7 @@ const renderItem = (
         category_pk={item.category_pk}
         deleteMenuGroup={deleteMenuGroup}
         categoryMenus={categoryMenus}
+        handleMenus={handleMenus}
       />
     </View>
   </View>

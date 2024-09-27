@@ -18,7 +18,7 @@ import { collection, query, where } from "firebase/firestore";
 type MenuOption = {
   item: MenuProps;
   updateMenuLists: (args: MenuProps) => void;
-  deleteMenuLists: (args: number) => void;
+  deleteMenuLists: (args: MenuProps) => void;
 };
 
 export const MenuOption: React.FC<MenuOption> = ({
@@ -104,7 +104,7 @@ export const MenuOption: React.FC<MenuOption> = ({
         <Button
           title="삭제"
           onPress={() => {
-            deleteMenuLists(item.menu_pk), onhandleImages(item.imageURL);
+            deleteMenuLists(item), onhandleImages(item.imageURL);
           }}
         />
       </View>
