@@ -2,7 +2,6 @@ package org.ex.back.domain.order.Service;
 
 import org.ex.back.domain.cart.model.CartEntity;
 import org.ex.back.domain.cart.model.CartItemEntity;
-import org.ex.back.domain.cart.repository.CartItemRepository;
 import org.ex.back.domain.cart.repository.CartRepository;
 import org.ex.back.domain.order.DTO.*;
 import org.ex.back.domain.order.Repository.OrderRepository;

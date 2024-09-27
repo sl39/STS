@@ -75,7 +75,7 @@ public class MenuService {
     private List<MenuOptionEntity> convertMenuOptionEntity(List<OptionsDTO> optionDTO){
       List<MenuOptionEntity> menuOptionEntity = optionDTO.stream()
               .map(option -> new MenuOptionEntity(
-                      option.getId(),
+                      option.getOption_pk(),
                       option.getOpSubject(),
                       option.getMaxCount(),
                       option.getMinCount(),
@@ -89,7 +89,7 @@ public class MenuService {
     private List<OptionItemEntity> convertOptionItemEntity(List<OptionItemDTO> optionItemDTO){
         List<OptionItemEntity> optionItemEntity = optionItemDTO.stream()
                 .map(item -> new OptionItemEntity(
-                        item.getId(),
+                        item.getOption_item_pk(),
                         item.getName(),
                         item.getExtraPrice()
                 ))

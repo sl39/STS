@@ -1,10 +1,8 @@
 package org.ex.back.domain.menu.DTO;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.ex.back.domain.menu.model.OptionItemEntity;
 
 import java.util.List;
 
@@ -12,7 +10,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class OptionsDTO {
-    private Integer id;
+    private Integer option_pk;
 
     private String opSubject;
 
@@ -24,7 +22,7 @@ public class OptionsDTO {
 
     //옵션 엔티티 -> 옵션 DTO 변환을 위한 생성자(stream API)
     public OptionsDTO(Integer menuOptionPk, String subject, Integer maxCount, Integer minCount, List<OptionItemDTO> optionItemDTOS) {
-        this.id = menuOptionPk;
+        this.option_pk = menuOptionPk;
         this.opSubject = subject;
         this.maxCount = maxCount;
         this.minCount = minCount;

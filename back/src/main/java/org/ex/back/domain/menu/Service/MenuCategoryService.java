@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.ex.back.domain.menu.DTO.MenuCategoryRequestDTO;
 import org.ex.back.domain.menu.DTO.MenuCategoryResponseDTO;
 import org.ex.back.domain.menu.Repository.MenuCategoryRepository;
+import org.ex.back.domain.menu.Repository.MenuRepository;
 import org.ex.back.domain.menu.model.MenuCategoryEntity;
+import org.ex.back.domain.menu.model.MenuEntity;
 import org.ex.back.domain.store.repository.StoreRepository;
 import org.ex.back.domain.store.model.StoreEntity;
 import org.ex.back.global.error.CustomException;
@@ -23,6 +25,7 @@ public class MenuCategoryService {
     //리포지토리 연결
     private final MenuCategoryRepository menuCategoryRepository;
     private final StoreRepository storeRepository;
+    private final MenuRepository menuRepository;
 
     //카테고리 생성 로직(스토어 아이디, 생성할 카테고리 이름) , 수정해야함
     public MenuCategoryResponseDTO createdCategory(int id, MenuCategoryRequestDTO request) {
@@ -107,7 +110,14 @@ public class MenuCategoryService {
 
             if (menuCategoryEntity.isPresent()) {
                 MenuCategoryEntity menuCategory = menuCategoryEntity.get();
-                menuCategoryRepository.delete(menuCategory);
+                Optional<MenuEntity> menu = menuRepository.findById(menuCategory.getMenu_category_pk());
+
+                if (menu.isPresent()) {
+                    menuRepository.delete(menu.get());
+                    menuCategoryRepository.delete(menuCategory);
+                }else{
+                    menuCategoryRepository.delete(menuCategory);
+                }
         }
             else {
                 throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND);

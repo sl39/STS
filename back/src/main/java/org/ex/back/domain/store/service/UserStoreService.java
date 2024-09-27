@@ -3,7 +3,6 @@ package org.ex.back.domain.store.service;
 import org.ex.back.domain.menu.Repository.MenuRepository;
 import org.ex.back.domain.menu.model.MenuEntity;
 import org.ex.back.domain.store.dto.StoreDTO;
-import org.ex.back.domain.store.model.StoreCategoryConnectorEntity;
 import org.ex.back.domain.store.model.StoreEntity;
 import org.ex.back.domain.store.model.StoreImageEntity;
 import org.ex.back.domain.store.repository.StoreCategoryConnectorRepository;
