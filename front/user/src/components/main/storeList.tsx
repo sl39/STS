@@ -8,7 +8,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView, Text, TouchableOpacity } from "react-native";
-import { api } from "../../loginApi/api";
+import { api } from "../../login/api";
+import { ask, getLocation } from "./location";
 
 interface InputDateProps {
   inputData: { type: number; val: string };
@@ -19,11 +20,69 @@ export const StoreList: React.FC<InputDateProps> = ({ inputData }) => {
   const [storeList, setStoreList] = useState<itemData[]>([]);
   const [numColumns, setNumColumns] = useState<number>(1);
   const router = useRouter();
-  const lat = 35.1580036;
-  const lng = 129.0667028;
+
+  const [locationPermission, setLocationPermission] = useState<boolean>(false);
+  const [lat, setLat] = useState(35.1580036);
+  const [lng, setLng] = useState(129.0667028);
+
   const handleEnter = (storepk: number) => {
     router.push(`/store/${storepk}`);
   };
+  const getStoreList = async () => {
+    console.log(API_URL);
+    if (inputData) {
+      if (inputData.type === 1) {
+        // keyword로 검색
+        try {
+          const res = await api<Array<itemData>>(
+            API_URL +
+              `/api/store/user/search?query=${inputData.val}&lat=${lat}&lng=${lng}`,
+            "GET",
+            null
+          );
+          console.log(res.data);
+          setStoreList(res.data || []);
+        } catch (e) {
+          console.log(e);
+        }
+      } else if (inputData.type === 2) {
+        // category로 검색
+        try {
+          console.log(lat, lng);
+          const res = await api<Array<itemData>>(
+            API_URL +
+              `/api/store/user/category/${inputData.val}?&lat=${lat}&lng=${lng}`,
+            "GET",
+            null
+          );
+          console.log(res.data);
+          setStoreList(res.data || []);
+        } catch (e) {
+          console.log(e);
+        }
+      }
+    }
+  };
+  const permmit = async () => {
+    const per = await ask();
+    if (per) {
+      setLocationPermission(true);
+      const { latitude, longitude } = await getLocation();
+      setLat(latitude);
+      setLng(longitude);
+    }
+    return per;
+  };
+
+  const getStoreListLocation = async () => {
+    const per = await permmit();
+    if (per) {
+      getStoreList();
+    }
+  };
+  useEffect(() => {
+    permmit();
+  }, []);
   useEffect(() => {
     if (width >= 768) {
       setNumColumns(2);
@@ -33,41 +92,11 @@ export const StoreList: React.FC<InputDateProps> = ({ inputData }) => {
   }, [width]);
 
   useEffect(() => {
-    const getStoreList = async () => {
-      console.log(API_URL);
-      if (inputData) {
-        if (inputData.type === 1) {
-          // keyword로 검색
-          try {
-            const res = await api<Array<itemData>>(
-              API_URL +
-                `/api/store/user/search?query=${inputData.val}&lat=${lat}&lng=${lng}`,
-              "GET",
-              null
-            );
-            console.log(res.data);
-            setStoreList(res.data || []);
-          } catch (e) {
-            console.log(e);
-          }
-        } else if (inputData.type === 2) {
-          // category로 검색
-          try {
-            const res = await api<Array<itemData>>(
-              API_URL +
-                `/api/store/user/category/${inputData.val}?&lat=${lat}&lng=${lng}`,
-              "GET",
-              null
-            );
-            console.log(res.data);
-            setStoreList(res.data || []);
-          } catch (e) {
-            console.log(e);
-          }
-        }
-      }
-    };
-    getStoreList();
+    if (locationPermission) {
+      getStoreList();
+    } else {
+      getStoreListLocation();
+    }
   }, [inputData]);
   const renderItem = ({ item }: { item: itemData }) => {
     return (
@@ -110,20 +139,24 @@ type ItemProps = {
   width: number;
 };
 
-const Item = ({ item, onPress, backgroundColor, width }: ItemProps) => (
-  <TouchableOpacity
-    onPress={onPress}
-    style={[{ backgroundColor: backgroundColor, width: width }]}
-  >
-    <View style={styles.storeContainer}>
-      <Image source={{ uri: item.storeImage }} style={styles.storeImage} />
-      <View style={{ flex: 1 }}>
-        <Text style={styles.storeName}>{item.storeName}</Text>
-        <Text style={styles.storeAddress}>{item.address}</Text>
+const Item = ({ item, onPress, backgroundColor, width }: ItemProps) => {
+  const formattedAddress = item.address.replace("|n", "\n");
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={[{ backgroundColor: backgroundColor, width: width }]}
+    >
+      <View style={styles.storeContainer}>
+        <Image source={{ uri: item.storeImage }} style={styles.storeImage} />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.storeName}>{item.storeName}</Text>
+          <Text style={styles.storeAddress}>{formattedAddress}</Text>
+        </View>
       </View>
-    </View>
-  </TouchableOpacity>
-);
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   storeContainer: {

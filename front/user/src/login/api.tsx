@@ -70,12 +70,13 @@ export const api = async <T,>(
     let refreshToken = getCookie("refreshToken");
 
     // accessToken이 없을 경우 리프레시 토큰으로 갱신하는 로직을 추가할 수 있습니다.
-    // if (!accessToken && refreshToken) {
-    //   const newTokens = await refreshTokens(
-    //     accessToken ? accessToken : "",
-    //     refreshToken
-    //   );
-    // }
+    if (!accessToken && refreshToken) {
+      const newTokens = await refreshTokens(
+        accessToken ? accessToken : "",
+        refreshToken
+      );
+    }
+    console.log(accessToken, refreshToken);
 
     // 2. 요청 옵션 설정
     const options: RequestInit = {
@@ -97,7 +98,6 @@ export const api = async <T,>(
     const response = await fetch(url, options);
     // 응답 코드를 저장
     const status = response.status;
-    console.log(response);
 
     if (!response.ok) {
       // 4. 응답이 실패했을 때 토큰이 만료된 경우 처리
