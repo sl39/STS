@@ -54,6 +54,7 @@ export const MenuOption: React.FC<MenuOption> = ({
             "GET",
             null
           );
+          console.log(res.data?.options);
           setOption(res.data?.options || []);
         } catch (e) {
           console.log(e);
@@ -64,7 +65,6 @@ export const MenuOption: React.FC<MenuOption> = ({
   }, [item]);
 
   const handleOptionCategory = async () => {
-    console.log(item.menu_pk);
     const data = {
       opSubject: form.opSubject,
       minCount: form.minCount,
@@ -78,12 +78,13 @@ export const MenuOption: React.FC<MenuOption> = ({
       );
       const newForm = res.data;
       if (newForm) {
-        const optionItems: Array<OptionProps> = [];
-        const value: OptionListProps = { ...newForm, optionItems: optionItems };
-        console.log(value);
+        const value: OptionListProps = {
+          ...newForm,
+          optionItems: [],
+        };
         setOption([...option, value]);
         setForm({
-          menu_option_pk: Math.round(Math.random() * 1000),
+          menu_option_pk: 0,
           opSubject: "",
           optionItems: [],
           minCount: 0,

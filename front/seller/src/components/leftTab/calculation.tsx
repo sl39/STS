@@ -78,7 +78,7 @@ export const Calculation: React.FC<CalculationProp> = ({ val, date }) => {
       }}
     >
       {!orderList || orderList.length == 0 ? (
-        <Text> 주문 내역이 없습니다</Text>
+        <Text>오늘 주문 내역이 없습니다</Text>
       ) : (
         <View style={styles.container}>
           <FlatList
