@@ -39,10 +39,10 @@ public class OrderService {
     @Autowired
     private KakaoService kakaoService;
 
-    //전체 데이터 조회
-    public List<OrderEntity> getAllOrders() {
-        return orderRepository.findAll();
-    }
+    //전체 데이터 조회 - 확인용
+//    public List<OrderEntity> getAllOrders() {
+//        return orderRepository.findAll();
+//    }
 
     //주문 생성
     public OrderEntity createOrder(String order_pk,Integer cart_pk, Integer user_pk, Integer store_pk, String paymentType, String payNumber) {
@@ -232,7 +232,7 @@ public class OrderService {
         if (order.isPresent()) {
             OrderEntity orderEntity = order.get();
 
-            //POST 요청 준비
+            //POST 요청 준비 - 결제취소 연결
             String payNumber = orderEntity.getPayNumber();
             String url = "http://192.168.30.16:3000/api/cancel-payment";
             //Json 데이터 생성
@@ -251,7 +251,7 @@ public class OrderService {
             RestTemplate restTemplate = new RestTemplate();
             try {
                 String response = restTemplate.postForObject(url, requestEntity, String.class);
-
+                //isClear, paymentType 수정
                 if(response != null){
                     orderEntity.setPaymentType("환불");
                     orderEntity.setIsClear(true);
@@ -266,20 +266,21 @@ public class OrderService {
     }
 
     //삭제
-    public void deleteOrder(String order_pk, Integer store_pk) {
-        //storeEntity에서 가져오기
-        Optional<StoreEntity> store = storeRepository.findById(store_pk);
-        if (store.isEmpty()) {
-            return;
-        }
+//    public void deleteOrder(String order_pk, Integer store_pk) {
+//        //storeEntity에서 가져오기
+//        Optional<StoreEntity> store = storeRepository.findById(store_pk);
+//        if (store.isEmpty()) {
+//            return;
+//        }
+//
+//        Optional<OrderEntity> order = orderRepository.findById(order_pk);
+//        if (order.isEmpty()) {
+//            return;
+//        }
+//
+//        orderRepository.delete(order.get());
+//    }
 
-        Optional<OrderEntity> order = orderRepository.findById(order_pk);
-        if (order.isEmpty()) {
-            return;
-        }
-
-        orderRepository.delete(order.get());
-    }
     //가게별 요일 정산(총금액/카드결제)
     public ResponseEntity<List<Map<String, Object>>> getTotalPriceByMonth(Integer store_pk, String targetMonth) {
         Optional<StoreEntity> store = storeRepository.findById(store_pk);
@@ -337,7 +338,15 @@ public class OrderService {
 
         return ResponseEntity.ok(response);
     }
+    // fcm 토큰 저장
+    public void saveToken(Integer storePk, String token) {
+        StoreEntity storeEntity = storeRepository.findById(storePk)
+                .orElseThrow(() -> new RuntimeException("Store not found"));
 
+        storeEntity.setFcmToken(token);
+
+        storeRepository.save(storeEntity);
+    }
 
 
 }

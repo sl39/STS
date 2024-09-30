@@ -44,9 +44,6 @@ private StoreCategoryRepository storeCategoryRepository;
 @Autowired
 private GeocodingService geocodingService; // GeocodingService 주입
 
-@Autowired
-private StoreRepository repository;
-
 // 매장 ID로 매장을 찾는 메소드
 public StoreDTO findStoreById(Integer storePk) {
     StoreEntity storeEntity = storeRepository.findById(storePk)

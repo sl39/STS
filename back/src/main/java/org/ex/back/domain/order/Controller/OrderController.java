@@ -5,9 +5,6 @@ import org.ex.back.domain.fcm.FCMService;
 import org.ex.back.domain.order.DTO.*;
 import org.ex.back.domain.order.model.OrderEntity;
 import org.ex.back.domain.order.Service.OrderService;
-import org.ex.back.domain.sms.Service.KakaoService;
-import org.ex.back.domain.store.dto.StoreFcmTokenDTO;
-import org.ex.back.domain.store.service.OwnerStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,22 +37,14 @@ public class OrderController {
 
         OrderEntity createdOrder = orderService.createOrder(orderPk, cartPk, userPk, storePk, paymentType, payNumber);
 
+//        String token = "판매자 FCM 토큰";
+//        fcmService.sendNotification(token, "새 주문 알림", "새 주문이 도착했습니다.");
+
         return ResponseEntity.ok(createdOrder);
     }
 
-//예전 주문생성 - fcm시 해야함
-//    @PostMapping
-//    public ResponseEntity<OrderEntity> createOrder(@RequestBody OrderEntity order) {
-//        OrderEntity createdOrder = orderService.createOrder(order);
-//
-//        // FCM 알림 전송 - 토큰 storeEntity에서 가져와야함
-////        String token = "판매자 FCM 토큰"; // 실제 토큰으로 대체
-////        fcmService.sendNotification(token, "새 주문 알림", "새 주문이 도착했습니다.");
-//
-//        return ResponseEntity.ok(createdOrder);
-//    }
 
-    //전체 내역 확인용
+    //전체 내역 조회 - 확인용
 //    @GetMapping
 //    public List<OrderEntity> getAllOrders() {
 //        return orderService.getAllOrders();
@@ -79,7 +68,7 @@ public class OrderController {
     }
     //주문 Detail 조회
     @GetMapping("/detail/{orderNum}")
-    public ResponseEntity<OrderUserDetailDTO> getOrderByIdDetail(@PathVariable("orderNum") String orderNum) {
+    public ResponseEntity<OrderUserDetailDTO> getOrderByIdDetail(@PathVariable(value = "orderNum") String orderNum) {
         OrderUserDetailDTO orderUserDetailDTO = orderService.getOrderByUserPkDetail(orderNum);
 
         return ResponseEntity.ok(orderUserDetailDTO);
@@ -92,7 +81,7 @@ public class OrderController {
             String date,
             boolean isComplete) {
 
-        // 에러처리 코드
+        // 에러처리
         if (store_pk == null || store_pk <= 0) {
             return ResponseEntity.badRequest().body(Collections.emptyList());
         }
@@ -120,7 +109,7 @@ public class OrderController {
 
             return ResponseEntity.ok(filteredOrders);
         } else {
-            // incomplete 주문의 경우 모든 리스트를 가져옴
+            // incomplete 주문 조회
             List<StoreOrderListResponseDTO> orders = orderService.getIncompleteOrdersByStore(store_pk);
             return ResponseEntity.ok(orders);
         }
@@ -141,11 +130,7 @@ public class OrderController {
         return getOrdersByStore(store_pk, date, true);
     }
 
-
-
-
-
-    //isClear false -> true 수정
+    // isClear false -> true 수정
     @PutMapping("/{store_pk}/incomplete/{order_pk}/isClear")
     public ResponseEntity<?> updateIsClear(@PathVariable("store_pk") Integer store_pk, @PathVariable("order_pk") String order_pk) {
         boolean isUpdated = orderService.updateIsClear(order_pk, store_pk);
@@ -156,7 +141,7 @@ public class OrderController {
         }
     }
 
-    //환불 처리 수정
+    // 환불 처리 수정
     @PutMapping("/{store_pk}/incomplete/{order_pk}/refund")
     public ResponseEntity<?> updatePaymentType(@PathVariable("store_pk") Integer store_pk, @PathVariable("order_pk") String order_pk) {
         String refund = orderService.updatePaymentType(order_pk, store_pk);
@@ -172,13 +157,12 @@ public class OrderController {
         }
     }
 
-    
     //삭제는 넣어놨는데 과연 필요한 기능인가?
-    @DeleteMapping("/{store_pk}/incomplete/{order_pk}/delete")
-    public ResponseEntity<Void> deleteOrder(@PathVariable("store_pk") Integer store_pk, @PathVariable("order_pk") String order_pk) {
-        orderService.deleteOrder(order_pk, store_pk);
-        return ResponseEntity.noContent().build();
-    }
+//    @DeleteMapping("/{store_pk}/incomplete/{order_pk}/delete")
+//    public ResponseEntity<Void> deleteOrder(@PathVariable("store_pk") Integer store_pk, @PathVariable("order_pk") String order_pk) {
+//        orderService.deleteOrder(order_pk, store_pk);
+//        return ResponseEntity.noContent().build();
+//    }
 
     //가게 요일별 정산
     @GetMapping("/{store_pk}/totalPrice")
@@ -187,7 +171,6 @@ public class OrderController {
             @RequestParam("date") String targetMonth) {
         return orderService.getTotalPriceByMonth(store_pk, targetMonth);
     }
-
 
     //가게 기간 정산
     @GetMapping("/{store_pk}/totalPriceSelect")
@@ -198,6 +181,16 @@ public class OrderController {
         return orderService.getTotalPriceByDateRange(store_pk, startDate, endDate);
     }
 
+    // fcm 토큰 저장
+    @PostMapping("/token/{storePk}")
+    public ResponseEntity<String> saveToken(@PathVariable(value = "storePk") Integer storePk, @RequestBody OrderFcmTokenDTO token) {
+        try {
+            orderService.saveToken(storePk, token.getStoreFcmTokenDTO());
+            return ResponseEntity.ok("토큰이 저장되었습니다");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
 }
 

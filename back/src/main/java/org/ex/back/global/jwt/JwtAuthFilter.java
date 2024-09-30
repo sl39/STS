@@ -121,7 +121,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 "/api/auth/**", // 인증 관련 api
                 "/api/store/user/**", // 사용자 매장 조회 및 검색 api
                 "/api/cart/nonuser/**", // 비회원 장바구니 CRUD api
-                "/api/order/*", // 주문번호로 주문내역 조회 api
+                "/api/order/**", // 주문번호로 주문내역 조회 api
                 "/api/sms/send", // 전화번호 인증 api
                 "/api/sms/verify", // 전화번호 인증 확인 api
                 "/api/store/*/menu", // 가게 메뉴리스트 조회 api

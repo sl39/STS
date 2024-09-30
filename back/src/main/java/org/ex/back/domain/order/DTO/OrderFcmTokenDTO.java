@@ -1,8 +1,11 @@
 package org.ex.back.domain.order.DTO;
 
-import org.ex.back.domain.store.dto.StoreFcmTokenDTO;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class OrderFcmTokenDTO {
-    private StoreFcmTokenDTO storeFcmTokenDTO;
+    private String storeFcmTokenDTO;
 
 }
