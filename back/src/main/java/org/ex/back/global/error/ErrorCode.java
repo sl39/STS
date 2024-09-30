@@ -19,15 +19,12 @@ public enum ErrorCode {
     FORBIDDEN_ERROR(HttpStatus.FORBIDDEN, "ACCOUNT-009", "작업을 수행할 권한이 없습니다."),
 
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CATEGORY-001", "카테고리를 찾을 수 없습니다."),
-
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "MENU-001", "메뉴를 찾을 수 없습니다."),
-
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "STORE-001", "가게 정보를 찾을 수 없습니다."),
     STORE_SAMEMENU_NOT_FOUND(HttpStatus.NOT_FOUND, "STORE-002", "장바구니 메뉴의 가게와 일치하지 않습니다."),
-
     CART_NOT_FOUND(HttpStatus.NOT_FOUND, "CART-001", "카트를 찾을 수 없습니다."),
-
-    OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "OPTION-001", "일치하는 옵션 pk를 찾을 수 없습니다."),
+    OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "OPTION-001", "옵션 pk를 찾을 수 없습니다."),
+    OPTION_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "OPTION_ITEM-001","옵션 아이템 pk를 찾을 수 없습니다."),
 
     WAITING_NOT_FOUND(HttpStatus.NOT_FOUND, "WAITING-001", "예약건을 찾을 수 없습니다."),
     WAITING_BAD_REQUEST(HttpStatus.BAD_REQUEST, "WAITING-002", "예약건을 대기 상태로 변경할 수 없습니다.");

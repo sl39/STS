@@ -1,12 +1,9 @@
 package org.ex.back.domain.cart.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ex.back.domain.menu.model.MenuEntity;
-import org.ex.back.domain.user.model.UserEntity;
 
 @NoArgsConstructor
 @Data
