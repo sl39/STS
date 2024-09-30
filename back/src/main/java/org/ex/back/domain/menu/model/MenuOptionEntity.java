@@ -13,9 +13,14 @@ import java.util.List;
 @Entity
 @Table(name="menu_option_entity")
 public class MenuOptionEntity {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer menu_option_pk;
+
+	@ManyToOne
+	@JoinColumn(name = "menu_pk")
+	private MenuEntity menu;
 
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<OptionItemEntity> optionItems;
