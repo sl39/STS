@@ -56,6 +56,9 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+    implementation ("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0") // 최신 버전으로 변경
+
 }
 
 tasks.withType<JavaCompile> {

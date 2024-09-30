@@ -1,6 +1,9 @@
 package org.ex.back.domain.order.Controller;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ex.back.domain.fcm.FCMService;
 import org.ex.back.domain.order.DTO.*;
 import org.ex.back.domain.order.model.OrderEntity;
@@ -37,16 +40,29 @@ public class OrderController {
             @RequestParam Integer userPk,
             @RequestParam Integer storePk,
             @RequestParam String paymentType,
-            @RequestParam String payNumber ) {
+            @RequestParam String payNumber ) throws JsonProcessingException {
 
         OrderEntity createdOrder = orderService.createOrder(orderPk, cartPk, userPk, storePk, paymentType, payNumber);
+
         // fcm 알림 발송
         StoreEntity storeEntity = storeRepository.findById(storePk).orElse(null);
         if (storeEntity != null) {
             String token = storeEntity.getFcmToken();
+            StoreOrderListResponseDTO storeOrder = orderService.getOrder(createdOrder);
+            OrderLocalDto dto = OrderLocalDto.builder()
+                    .store_pk(storeOrder.getStore_pk())
+                    .order_pk(storeOrder.getOrder_pk())
+                    .tableNumber(storeOrder.getTableNumber())
+                    .totalPrice(storeOrder.getTotalPrice())
+                    .paymentType(storeOrder.getPaymentType())
+                    .orderedAt(storeOrder.getOrderedAt().toString())
+                    .orderItems(storeOrder.getOrderItems())
+                    .build();
+            ObjectMapper objectMapper = new ObjectMapper();
+            String storeOrderJson = objectMapper.writeValueAsString(dto);
 
             if (token != null ) {
-                fcmService.sendNotification(token, "새 주문 알림", "새 주문이 도착했습니다.");
+                fcmService.sendNotification(token, "새 주문 알림", storeOrderJson);
             } else {
                 return ResponseEntity.badRequest().body("FCM 토큰이 없습니다");
             }

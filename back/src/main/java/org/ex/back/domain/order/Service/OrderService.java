@@ -87,6 +87,26 @@ public class OrderService {
         return orderRepository.save(orderEntity);
     }
 
+    public StoreOrderListResponseDTO getOrder(OrderEntity createdOrder) {
+
+                List<OrderItemCheckDTO> orderItems = createdOrder.getOrderItems().stream()
+                        .map(item -> new OrderItemCheckDTO(
+                                item.getMenu().getName(),
+                                item.getMenuCount(),
+                                item.getOptionItemList()
+                        )).collect(Collectors.toList());
+
+                StoreOrderListResponseDTO storeOrder = StoreOrderListResponseDTO.builder()
+                        .orderedAt(createdOrder.getOrderedAt())
+                        .store_pk(createdOrder.getStore().getStore_pk())
+                        .order_pk(createdOrder.getOrder_pk())
+                        .paymentType(createdOrder.getPaymentType())
+                        .tableNumber(createdOrder.getTableNumber())
+                        .totalPrice(createdOrder.getTotalPrice())
+                        .orderItems(orderItems)
+                        .build();
+                return storeOrder;
+    }
 
     // 가게 주문검색 공통부분 DTO 사용부분
     public List<StoreOrderListResponseDTO> getOrdersByStore(Integer storeDTO, boolean isClear) {
