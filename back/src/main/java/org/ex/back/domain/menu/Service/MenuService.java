@@ -48,7 +48,7 @@ public class MenuService {
 
     //옵션 아이템 엔티티 -> 옵션 아이템 DTO 변환
     private List<OptionItemDTO> convertItemDTO(List<OptionItemEntity> optionItems){
-        log.info("Converting OptionItemDTO from OptionItemEntity2222: {}", optionItems);
+        //log.info("Converting OptionItemDTO from OptionItemEntity2222: {}", optionItems);
 
         List<OptionItemDTO> optionsItemsDTO = optionItems.stream()
                 .map(item -> new OptionItemDTO(
@@ -57,7 +57,7 @@ public class MenuService {
                         item.getExtraPrice()
                 ))
                 .collect(Collectors.toList());
-        log.info("Converting OptionItemDTO from OptionItemEntity: {}", optionsItemsDTO);
+        //log.info("Converting OptionItemDTO from OptionItemEntity: {}", optionsItemsDTO);
 
         return optionsItemsDTO;
     }
