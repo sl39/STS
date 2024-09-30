@@ -29,7 +29,7 @@ export async function handleAllowNotification() {
 
         // Notification API를 사용하여 알림 표시
         if (Notification.permission === "granted") {
-          new Notification(payload.data.title);
+          new Notification("주문이 들어왔습니다");
         }
       });
     } else if (permission === "denied") {

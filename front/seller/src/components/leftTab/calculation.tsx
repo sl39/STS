@@ -3,6 +3,7 @@ import { FlatList, StyleSheet, View, Button } from "react-native";
 import { Text } from "react-native";
 import { useStore } from "../../context/StoreContext";
 import { api } from "../../api/api";
+import { useMessaging } from "../../context/MessagingContext";
 
 interface CalculationProp {
   val: boolean;
@@ -13,6 +14,7 @@ const API_URL = process.env.API_URL;
 export const Calculation: React.FC<CalculationProp> = ({ val, date }) => {
   const [orderList, setOrderList] = useState<Array<Order>>([]);
   // const { storePk } = useStore();
+  const { newOrder } = useMessaging();
   const storePk = 20;
   useEffect(() => {
     const getOrderList = async () => {
@@ -52,6 +54,12 @@ export const Calculation: React.FC<CalculationProp> = ({ val, date }) => {
       console.log(e);
     }
   };
+  useEffect(() => {
+    console.log(newOrder);
+    if (!val && newOrder) {
+      setOrderList((prev) => [newOrder, ...prev]);
+    }
+  }, [val, newOrder]);
 
   const onClear = async (order_pk: string) => {
     try {

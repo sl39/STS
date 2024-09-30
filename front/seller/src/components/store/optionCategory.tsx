@@ -36,7 +36,7 @@ export const OptionCategory: React.FC<OptionDetailProps> = ({
     };
     try {
       const res = await api<OptionProps>(
-        API_URL + `/api/option/${val.menu_option_pk}`,
+        API_URL + `/api/optionItem/${val.menu_option_pk}`,
         "POST",
         form
       );

@@ -7,14 +7,30 @@ import { useStore } from "../../context/StoreContext";
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { api } from "../../api/api";
-import { handleAllowNotification } from "../../service/notificationPermission";
+import { registerServiceWorker } from "../../service/resgisterServiceWorker";
+import { MessagingProvider } from "../../context/MessagingContext";
 type LeftTabProp = {
   title: string;
   component: React.JSX.Element;
 };
-
-const VAPID_PUBLIC_KEY = process.env.VAPID_KEY;
-const API_URL = process.env.API_URL;
+interface MyData {
+  [key: string]: string;
+}
+type Order = {
+  store_pk: number;
+  order_pk: string;
+  tableNumber: string;
+  totalPrice: number;
+  paymentType: string;
+  orderedAt: Date;
+  orderItems: [
+    {
+      menuName: string;
+      menuCount: number;
+      optionltemList: string;
+    }
+  ];
+};
 
 export default function Main() {
   const { storePk } = useStore();
@@ -43,38 +59,34 @@ export default function Main() {
     { title: "가게 정보", component: <StoreTaps /> },
   ];
 
-  useEffect(() => {
-    if (storePk) {
-      handleAllowNotification();
-    }
-  }, [storePk]);
-
   return (
-    <View style={{ alignItems: "center", height: "100%", width: "100%" }}>
-      <View
-        style={{
-          height: "7%",
-          backgroundColor: "#F2F2F2",
-          width: "100%",
-          justifyContent: "center",
-        }}
-      >
-        <TopTab title={selectedTabTitle.title} />
-      </View>
-      <View
-        style={{ width: "100%", flexDirection: "row", height: "93%", gap: 5 }}
-      >
+    <MessagingProvider>
+      <View style={{ alignItems: "center", height: "100%", width: "100%" }}>
         <View
           style={{
+            height: "7%",
             backgroundColor: "#F2F2F2",
-            width: "15%",
-            marginTop: 3,
+            width: "100%",
+            justifyContent: "center",
           }}
         >
-          <LeftTab tabs={tabs} setSelectedTabTitle={handleTabPress} />
+          <TopTab title={selectedTabTitle.title} />
         </View>
-        <View style={{ width: "85%" }}>{selectedTabTitle.component}</View>
+        <View
+          style={{ width: "100%", flexDirection: "row", height: "93%", gap: 5 }}
+        >
+          <View
+            style={{
+              backgroundColor: "#F2F2F2",
+              width: "15%",
+              marginTop: 3,
+            }}
+          >
+            <LeftTab tabs={tabs} setSelectedTabTitle={handleTabPress} />
+          </View>
+          <View style={{ width: "85%" }}>{selectedTabTitle.component}</View>
+        </View>
       </View>
-    </View>
+    </MessagingProvider>
   );
 }
