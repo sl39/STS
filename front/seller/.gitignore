@@ -37,3 +37,4 @@ yarn-error.*
 fierbaseConfig.js
 firebaseMessagingConfig.js
 .env
+firebase-messagin-sw.js

@@ -5,13 +5,18 @@ import StoreTaps from "../../navigation/storeNavigation";
 import { Calculation, TotalCalculation } from "../leftTab";
 import { useEffect, useState } from "react";
 import { useStore } from "../../context/StoreContext";
+import { messaging } from "../../../firebaseMessagingConfig";
 
 type LeftTabProp = {
   title: string;
   component: React.JSX.Element;
 };
 
+const VAPID_PUBLIC_KEY = process.env.VAPID_KEY;
+
 export default function Main() {
+  const { storePk } = useStore();
+
   const [selectedTabTitle, setSelectedTabTitle] = useState<LeftTabProp>({
     title: "가게 정보",
     component: <StoreTaps />,
@@ -35,6 +40,11 @@ export default function Main() {
     },
     { title: "가게 정보", component: <StoreTaps /> },
   ];
+
+  useEffect(() => {
+    if (storePk) {
+    }
+  }, [storePk]);
 
   return (
     <View style={{ alignItems: "center", height: "100%", width: "100%" }}>
