@@ -41,22 +41,31 @@ public class OrderController {
 
         OrderEntity createdOrder = orderService.createOrder(orderPk, cartPk, userPk, storePk, paymentType, payNumber);
         // fcm 알림 발송
-        StoreEntity storeEntity = storeRepository.findById(storePk).orElse(null);
-        if (storeEntity != null) {
-            String token = storeEntity.getFcmToken();
-
-            if (token != null ) {
-                fcmService.sendNotification(token, "새 주문 알림", "새 주문이 도착했습니다.");
-            } else {
-                return ResponseEntity.badRequest().body("FCM 토큰이 없습니다");
-            }
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
+        String token = "dAtjn4eKWYe0S9kdyADX17:APA91bEtmiRqGgvsChKR2K8W2z_SdKcR0Xcpau0zz05RDa9YSjPHumBhHUDktV8Wio08dB96po04wBtWhrOgUvgtZVr-2VKsDBjc1S07vWKxefRyvI79am4vUQDoXN2W0OF4Fc08WD6S";
+        fcmService.sendNotification(token, "새 주문 알림", "새 주문이 도착했습니다.");
+//        StoreEntity storeEntity = storeRepository.findById(storePk).orElse(null);
+//        if (storeEntity != null) {
+//            String token = storeEntity.getFcmToken();
+//
+//            if (token != null ) {
+//                fcmService.sendNotification(token, "새 주문 알림", "새 주문이 도착했습니다.");
+//            } else {
+//                return ResponseEntity.badRequest().body("FCM 토큰이 없습니다");
+//            }
+//        } else {
+//            return ResponseEntity.badRequest().build();
+//        }
 
         return ResponseEntity.ok(createdOrder);
     }
+    @PostMapping("/test/token")
+    public ResponseEntity<?> testToken() {
 
+        String token = "dAtjn4eKWYe0S9kdyADX17:APA91bEtmiRqGgvsChKR2K8W2z_SdKcR0Xcpau0zz05RDa9YSjPHumBhHUDktV8Wio08dB96po04wBtWhrOgUvgtZVr-2VKsDBjc1S07vWKxefRyvI79am4vUQDoXN2W0OF4Fc08WD6S";
+        fcmService.sendNotification(token, "새 주문 알림", "새 주문이 도착했습니다.");
+
+        return ResponseEntity.ok(token);
+    }
 
     //전체 내역 조회 - 확인용
 //    @GetMapping
