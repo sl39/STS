@@ -1,18 +1,20 @@
-import { Link, useRouter } from "expo-router";
 import { Text, View } from "react-native";
 import { LeftTab, TopTab } from "./";
 import StoreTaps from "../../navigation/storeNavigation";
 import { Calculation, TotalCalculation } from "../leftTab";
 import { useEffect, useState } from "react";
 import { useStore } from "../../context/StoreContext";
-import { messaging } from "../../../firebaseMessagingConfig";
-
+import { initializeApp } from "firebase/app";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { api } from "../../api/api";
+import { handleAllowNotification } from "../../service/notificationPermission";
 type LeftTabProp = {
   title: string;
   component: React.JSX.Element;
 };
 
 const VAPID_PUBLIC_KEY = process.env.VAPID_KEY;
+const API_URL = process.env.API_URL;
 
 export default function Main() {
   const { storePk } = useStore();
@@ -43,6 +45,7 @@ export default function Main() {
 
   useEffect(() => {
     if (storePk) {
+      handleAllowNotification();
     }
   }, [storePk]);
 
