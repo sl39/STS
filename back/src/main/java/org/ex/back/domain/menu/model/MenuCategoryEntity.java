@@ -1,5 +1,6 @@
 package org.ex.back.domain.menu.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.ex.back.domain.store.model.StoreEntity;
@@ -18,6 +19,7 @@ public class MenuCategoryEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer menu_category_pk;
 
+	@JsonBackReference
 	@OneToMany(mappedBy = "menuCategory", cascade = CascadeType.ALL)
 	private List<MenuEntity> menuList;
 	
