@@ -139,11 +139,13 @@ public class OrderService {
         if (orderId.isPresent()){
             OrderEntity order = orderId.get();
 
-            List<OrderItemCheckDTO> orderItems = order.getOrderItems().stream()
-                    .map(item -> new OrderItemCheckDTO(
+            List<OrderItemTotalDTO> orderItems = order.getOrderItems().stream()
+                    .map(item -> new OrderItemTotalDTO(
                             item.getMenu().getName(),
                             item.getMenuCount(),
-                            item.getOptionItemList()
+                            item.getOptionItemList(),
+                            item.getTotalPrice(),
+                            item.getTotalExtraPrice()
                     )).collect(Collectors.toList());
 
             return OrderNumberDTO.builder()
