@@ -5,6 +5,8 @@ import org.ex.back.domain.fcm.FCMService;
 import org.ex.back.domain.order.DTO.*;
 import org.ex.back.domain.order.model.OrderEntity;
 import org.ex.back.domain.order.Service.OrderService;
+import org.ex.back.domain.store.model.StoreEntity;
+import org.ex.back.domain.store.repository.StoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,10 +26,12 @@ public class OrderController {
     private OrderService orderService;
     @Autowired
     private FCMService fcmService;
+    @Autowired
+    private StoreRepository storeRepository;
 
     //주문 생성
     @PostMapping
-    public ResponseEntity<OrderEntity> createOrder(
+    public ResponseEntity<?> createOrder(
             @RequestParam String orderPk,
             @RequestParam Integer cartPk,
             @RequestParam Integer userPk,
@@ -36,9 +40,19 @@ public class OrderController {
             @RequestParam String payNumber ) {
 
         OrderEntity createdOrder = orderService.createOrder(orderPk, cartPk, userPk, storePk, paymentType, payNumber);
+        // fcm 알림 발송
+        StoreEntity storeEntity = storeRepository.findById(storePk).orElse(null);
+        if (storeEntity != null) {
+            String token = storeEntity.getFcmToken();
 
-//        String token = "판매자 FCM 토큰";
-//        fcmService.sendNotification(token, "새 주문 알림", "새 주문이 도착했습니다.");
+            if (token != null ) {
+                fcmService.sendNotification(token, "새 주문 알림", "새 주문이 도착했습니다.");
+            } else {
+                return ResponseEntity.badRequest().body("FCM 토큰이 없습니다");
+            }
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
 
         return ResponseEntity.ok(createdOrder);
     }
