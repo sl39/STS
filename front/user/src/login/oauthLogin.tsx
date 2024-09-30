@@ -12,7 +12,7 @@ export const handleOAuthLogin = async (social: string) => {
   } else {
     // 앱일 경우, Deep Linking을 위한 앱 리디렉션 URI 설정
     const redirectUri = "myapp://oauth/redirect"; // 앱 스킴 URI
-    authUrl = API_URL + authUrl + `?redirect_uri=${redirectUri}`;
+    authUrl = API_URL + authUrl;
   }
 
   try {
