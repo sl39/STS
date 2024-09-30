@@ -9,6 +9,6 @@ import lombok.*;
 public class OrderItemCheckDTO {
     private String menuName;
     private Integer menuCount;
-    private String optionltemList;
+    private String optionItemList;
 
 }
