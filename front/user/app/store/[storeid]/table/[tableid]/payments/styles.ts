@@ -9,7 +9,6 @@ export const getResponsiveStyles = () => {
       ...styles.container,
       width: getwidth,
       alignSelf: "center",
-
       paddingTop: "10%",
     },
   });
@@ -17,20 +16,25 @@ export const getResponsiveStyles = () => {
 
 export const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    justifyContent: "space-around",
     paddingTop: "5%",
-    paddingHorizontal: "5%",
-    marginStart: "5%",
+  },
+  paymentContainer: {
+    paddingTop: "5%",
+    marginStart: "10%",
+    justifyContent: "center",
+    alignContent: "center",
   },
   spacer: {
     height: 20,
   },
+  data: { alignContent: "center", justifyContent: "center" },
   title: {
     fontSize: 20,
+
     fontWeight: "bold",
     alignSelf: "center",
     marginBottom: 20,
-    marginEnd: "10%",
   },
   buttonContainer: {
     width: "90%",
@@ -55,7 +59,6 @@ export const styles = StyleSheet.create({
     padding: 70,
     borderRadius: 5,
     margin: 10,
-
     alignSelf: "center", // 부모 컨테이너 내에서 중앙 정렬
   },
   buttonText: {
@@ -69,13 +72,18 @@ export const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   input: {
-    backgroundColor: "#D9D9D9",
+    flex: 1,
     fontSize: 16,
     borderWidth: 1,
     borderColor: "gray",
     borderRadius: 5,
     padding: 10,
-    marginBottom: 10,
+  },
+  smallinput: {
+    flex: 0.1,
+    padding: 10,
+    borderWidth: 1,
+    fontSize: 16,
   },
   inputContainer: {
     marginTop: 10,
@@ -84,6 +92,11 @@ export const styles = StyleSheet.create({
     borderColor: "#D9D9D9",
     borderRadius: 5,
     padding: 10,
+    marginBottom: 10,
+  },
+  rowContainer: {
+    flexDirection: "row", // 가로 정렬
+    alignItems: "center", // 세로 가운데 정렬
     marginBottom: 10,
   },
   orderTitle: {
@@ -98,11 +111,13 @@ export const styles = StyleSheet.create({
   orderItemName: {
     fontSize: 16,
     marginBottom: 5,
-    alignSelf: "flex-start",
+    alignItems: "flex-start",
   },
   orderItemPrice: {
     fontSize: 16,
     marginBottom: 5,
+  },
+  orderItemOption: {
     alignSelf: "flex-start",
   },
   orderTotal: {
@@ -163,6 +178,62 @@ export const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "#D9D9D9",
     marginBottom: 10,
+  },
+  Authenticationbutton: {
+    width: 80, // 버튼의 가로 크기 (px 또는 %로 설정 가능)
+    height: 40, // 버튼의 세로 크기 (원하는 높이로 설정)
+    backgroundColor: "#ddd", // 배경 색상 (필요시)
+    borderRadius: 5,
+    padding: 10,
+    marginLeft: 10,
+    alignItems: "center",
+  },
+  recipecontainer: {
+    backgroundColor: "#dfdfdf",
+    width: "60%",
+    marginStart: "20%",
+    height: "auto",
+  },
+  header: {
+    flexDirection: "row",
+    padding: 10,
+  },
+  closeButton: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  refreshButton: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  content: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  doctorIcon: {
+    width: 100,
+    height: 100,
+    marginBottom: 20,
+  },
+
+  subtitle: {
+    fontSize: 14,
+    color: "#666",
+    marginBottom: 5,
+  },
+  timer: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 10,
+  },
+  checkIcon: {
+    width: 100,
+    height: 100,
+    marginBottom: 20,
+  },
+  checkContainer: {
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

@@ -25,7 +25,7 @@ function myShoppingCart() {
   // 
   const router = useRouter();
   const handleEnter = () => {
-    router.push(`/store/${param.storeid}/table/${param.tableid}/payments`);
+    router.push(`/store/${param.storeid}/table/${param.tableid}/payments?userpk=1&cartpk&amount=`);
   };
 const storeName = '스토어네임'
 const MenuPrice = 12000
