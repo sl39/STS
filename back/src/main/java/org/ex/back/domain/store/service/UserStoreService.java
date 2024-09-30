@@ -53,19 +53,31 @@ public class UserStoreService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
 
-        // 메뉴 검색 (부분 검색)
+     // 메뉴 검색 (부분 검색)
         List<MenuEntity> menusByPartialName = menuRepository.findByNameContaining(query);
         List<Integer> storePksFromPartialMenus = menusByPartialName.stream()
-                                                                  .map(menu -> menu.getStore().getStore_pk())
-                                                                  .distinct()
-                                                                  .collect(Collectors.toList());
-
-        // 메뉴 검색 (정확히 일치)
+            .map(menu -> {
+                if (menu.getStore() != null) {
+                    return menu.getStore().getStore_pk();
+                }
+                return null; // null인 경우 처리
+            })
+            .filter(storePk -> storePk != null) // null 제거
+            .distinct()
+            .collect(Collectors.toList());
+        
+     // 메뉴 검색 (정확히 일치)
         List<MenuEntity> menusByExactName = menuRepository.findByName(query);
         List<Integer> storePksFromExactMenus = menusByExactName.stream()
-                                                                .map(menu -> menu.getStore().getStore_pk())
-                                                                .distinct()
-                                                                .collect(Collectors.toList());
+            .map(menu -> {
+                if (menu.getStore() != null) {
+                    return menu.getStore().getStore_pk();
+                }
+                return null; // null인 경우 처리
+            })
+            .filter(storePk -> storePk != null) // null 제거
+            .distinct()
+            .collect(Collectors.toList());
 
         // 메뉴로 찾은 매장 DTO들
         List<StoreDTO> storesByMenu = new ArrayList<>();
@@ -76,7 +88,7 @@ public class UserStoreService {
                                                   .map(this::findStoreById)
                                                   .collect(Collectors.toList()));
 
-        // 모든 검색 결과 통합
+     // 모든 검색 결과 통합
         List<StoreDTO> combinedStores = new ArrayList<>(storesByName);
         combinedStores.addAll(exactStoresByName);
         combinedStores.addAll(storesByMenu);
@@ -84,9 +96,13 @@ public class UserStoreService {
         // 중복 제거 및 거리 기준으로 정렬
         return combinedStores.stream()
                              .distinct()
-                             .collect(Collectors.toList())
-                             .stream()
-                             .sorted(Comparator.comparingDouble(store -> calculateDistance(userLat, userLng, store.getLat(), store.getLng())))
+                             .filter(store -> store.getLat() != null && store.getLng() != null) // null 체크
+                             .map(store -> {
+                                 double distance = calculateDistance(userLat, userLng, store.getLat(), store.getLng());
+                                 store.setDistance(distance); // 거리 설정
+                                 return store;
+                             })
+                             .sorted(Comparator.comparingDouble(StoreDTO::getDistance))
                              .limit(50)
                              .collect(Collectors.toList());
     }
