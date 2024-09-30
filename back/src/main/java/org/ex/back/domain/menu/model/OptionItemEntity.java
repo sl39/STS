@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name="option_item_entity")
 public class OptionItemEntity {

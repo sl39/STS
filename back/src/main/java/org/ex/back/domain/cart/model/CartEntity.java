@@ -9,7 +9,8 @@ import org.ex.back.domain.user.model.UserEntity;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
 @Entity
 @Table(name="cart_entity")

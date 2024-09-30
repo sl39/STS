@@ -2,11 +2,14 @@ package org.ex.back.domain.cart.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.ex.back.domain.menu.model.MenuEntity;
 
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name="cart_item_entity")
 public class CartItemEntity {
