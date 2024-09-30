@@ -4,6 +4,10 @@ import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.ex.back.domain.cart.model.CartEntity;
+import org.ex.back.domain.cart.model.CartItemEntity;
+import org.ex.back.domain.cart.repository.CartItemRepository;
+import org.ex.back.domain.cart.repository.CartRepository;
 import org.ex.back.domain.menu.DTO.MenuRequestDTO;
 import org.ex.back.domain.menu.DTO.MenuResponseDTO;
 import org.ex.back.domain.menu.DTO.OptionItemDTO;
@@ -21,6 +25,8 @@ import org.ex.back.domain.store.model.StoreEntity;
 import org.ex.back.global.error.CustomException;
 import org.ex.back.global.error.ErrorCode;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,8 +43,9 @@ public class MenuService {
     private final OptionItemRepository optionItemRepository;
     private final MenuCategoryService menuCategoryService;
     private final MenuCategoryRepository menuCategoryRepository;
+    private final CartItemRepository cartItemRepository;
+    private final CartRepository cartRepository;
 
-    //이게 먼저 사용됨
     //옵션 아이템 엔티티 -> 옵션 아이템 DTO 변환
     private List<OptionItemDTO> convertItemDTO(List<OptionItemEntity> optionItems){
         log.info("Converting OptionItemDTO from OptionItemEntity2222: {}", optionItems);
@@ -63,7 +70,7 @@ public class MenuService {
                         options.getSubject(),
                         options.getMaxCount(),
                         options.getMinCount(),
-                        convertItemDTO(options.getOptionItems())
+                       convertItemDTO(options.getOptionItems())
                 ))
                 .collect(Collectors.toList());
         //log.info("Converting OptionsDTO from MenuOptionEntity: {}", optionDTO);
@@ -75,7 +82,7 @@ public class MenuService {
     private List<MenuOptionEntity> convertMenuOptionEntity(List<OptionsDTO> optionDTO){
       List<MenuOptionEntity> menuOptionEntity = optionDTO.stream()
               .map(option -> new MenuOptionEntity(
-                      option.getOption_pk(),
+                      option.getMenu_option_pk(),
                       option.getOpSubject(),
                       option.getMaxCount(),
                       option.getMinCount(),
@@ -257,7 +264,7 @@ public class MenuService {
 
         if(store.isPresent()){
             //리스트 안에 스토어id 값과 일치하는 메뉴 리스트 담기
-            List<MenuEntity> menuList = menuRepository.findByStore(store.get());
+            List<MenuEntity> menuList = menuRepository.findAllByDeletedAtIsNullAndStore(store.get());
 
             //menuList 를 ResponseDTO타입 리스트로 변환 streamAPI 사용필요
             List<MenuResponseDTO> response = menuList.stream()
@@ -286,9 +293,15 @@ public class MenuService {
 
         //메뉴id로 메뉴정보 가져오기
         Optional<MenuEntity> menu = menuRepository.findById(menuId);
+
         if(menu.isPresent()){
+
             //response로 변환하기 위한 엔티티 객체
             MenuEntity menuEntity = menu.get();
+
+            // deleteAt null이 아니면 Error 이미 삭제
+            if(menuEntity.getDeletedAt() != null) throw new CustomException(ErrorCode.MENU_NOT_FOUND);
+
             MenuResponseDTO response = MenuResponseDTO.builder().
                     category_pk(menuEntity.getMenuCategory().getMenu_category_pk())
                     .subject(menuEntity.getMenuCategory().getSubject())
@@ -308,7 +321,7 @@ public class MenuService {
         }
     }
 
-    //메뉴 수정(menuId받음, 스토어 내에서 이루어지기 때문에 스토어 Id 필요 X) -> 수정 완
+    //메뉴 수정(menuId받음, 스토어 내에서 이루어지기 때문에 스토어 Id 필요 X) -> 수정 완fy
     public MenuResponseDTO putMenu(int menuId, MenuRequestDTO request) {
         //메뉴 id로 받아온 값 찾아서 넣기
         Optional<MenuEntity> menu = menuRepository.findById(menuId);
@@ -324,8 +337,8 @@ public class MenuService {
 
                 menuEntity = menuEntity.builder()
                         //수정후 메뉴 pk를 유지하기 위해 새로 생성되지 않도록 기존 pk 로 설정
-                        .menu_pk(menuEntity.getMenu_pk())
                         .menuCategory(categoryEntity)
+                        .store(menuEntity.getStore())
                         .name(request.getName())
                         .isBestMenu(request.getIsBestMenu())
                         .isAlcohol(request.getIsAlcohol())
@@ -359,16 +372,49 @@ public class MenuService {
         }
     }
 
-    //메뉴 삭제 (스토어 안에서 이루어지므로 storeID 필요 X) -> 완료
+    //메뉴 삭제 (스토어 안에서 이루어지므로 storeID 필요 X)
+    //연관된 카트 아이템 삭제
+    //연관된 메뉴 옵션 삭제
+    //연관된 메뉴 옵션 아이템 삭제
+    //메뉴의 삭제 정보를 남김
     public void deleteMenu(int menuId) {
-        //메뉴 id로 받아온 값 찾아서 넣기
-        Optional<MenuEntity> menu = menuRepository.findById(menuId);
-        if(menu.isPresent()){
-            MenuEntity menuEntity = menu.get();
-            menuRepository.delete(menuEntity);
+        Optional<MenuEntity> menuEntity = menuRepository.findById(menuId);
+        if (menuEntity.isPresent()) {
+           MenuEntity menu = menuEntity.get();
+
+            //메뉴와 연관된 해당 카트 아이템을 가져오기
+            List<CartItemEntity> cartItems = cartItemRepository.findByMenu(menu);
+
+            //연관된 카트 아이템이 존재할 때
+            if(cartItems != null){
+                //연관된 카트 아이템 삭제
+                cartItemRepository.deleteAll(cartItems);
+            }
+
+            //연관된 메뉴 옵션 리스트 가져오기
+            List<MenuOptionEntity> menuOptions = menu.getMenuOptions();
+
+            //연관된 메뉴 옵션 리스트가 존재한다면
+            if(menuOptions != null){
+                //메뉴 옵션리스트 돌면서 해당하는 옵션 아이템들 가져오기
+                for(MenuOptionEntity options : menuOptions){
+
+                    //해당 옵션의 아이템 리스트 가져오기
+                    List<OptionItemEntity> items = options.getOptionItems();
+                    //아이템이 존재할 때
+                    if(items != null){
+                        //해당 아이템 리스트 전부 삭제
+                        optionItemRepository.deleteAll(items);
+                    }
+                    menuOptionRepository.delete(options);
+                }
+            }
+            //해당 메뉴 삭제 정보를 LocalDateTime으로
+            menu.setDeletedAt(LocalDateTime.now());
+            menuRepository.save(menu);
         }
         else{
             throw new CustomException(ErrorCode.MENU_NOT_FOUND);
         }
+        }
     }
-}

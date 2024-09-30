@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.ex.back.domain.store.model.StoreEntity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -24,10 +25,9 @@ public class MenuEntity {
 	
 	@ManyToOne
 	@JoinColumn(name="menu_category_pk")
-
 	private MenuCategoryEntity menuCategory;
 
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
 	private List<MenuOptionEntity> menuOptions;
 
 	//메뉴 생성
@@ -48,6 +48,9 @@ public class MenuEntity {
 
 	@Column
 	private Boolean isAlcohol;
+
+	@Column
+	private LocalDateTime deletedAt;
 
 	//로그 찍기용 toString 메소드
 //	@Override

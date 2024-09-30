@@ -105,19 +105,23 @@ public class MenuCategoryService {
 
 
     //카테고리 삭제 로직 (가게 내에서 이루어지기 때문에 스토어 아이티 필요 X)
+    //해당 카테고리 정보를 가진 메뉴들 전부 삭제
     public void deleteCategory(int ctid) {
             Optional<MenuCategoryEntity> menuCategoryEntity = menuCategoryRepository.findById(ctid);
 
             if (menuCategoryEntity.isPresent()) {
                 MenuCategoryEntity menuCategory = menuCategoryEntity.get();
-                Optional<MenuEntity> menu = menuRepository.findById(menuCategory.getMenu_category_pk());
 
-                if (menu.isPresent()) {
-                    menuRepository.delete(menu.get());
-                    menuCategoryRepository.delete(menuCategory);
-                }else{
-                    menuCategoryRepository.delete(menuCategory);
+                //해당 카테고리 정보를 가진 메뉴들 가져오기
+                List<MenuEntity> menuList = menuCategory.getMenuList();
+
+                //해당 카테고리를 가진 메뉴 리스트가 존재한다면
+                if(menuList != null){
+                    //메뉴 리스트 삭제
+                    menuRepository.deleteAll(menuList);
                 }
+
+                menuCategoryRepository.deleteById(ctid);
         }
             else {
                 throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND);
