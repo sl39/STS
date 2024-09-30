@@ -40,6 +40,8 @@ public class OptionService {
 
             //옵션 엔티티를 새로 만들어서 옵션 정보를 request 받은 정보로 변환
             MenuOptionEntity menuOptionEntity = new MenuOptionEntity();
+            menuOptionEntity.setMenu(menu);
+
             menuOptionEntity.setSubject(request.getOpSubject());
             menuOptionEntity.setMinCount(request.getMinCount());
             menuOptionEntity.setMaxCount(request.getMaxCount());
