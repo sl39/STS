@@ -20,7 +20,7 @@ public class MenuOptionEntity {
 	@JoinColumn(name = "menu_pk")
 	private MenuEntity menu;
 
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "menuOption", cascade = CascadeType.ALL)
 	private List<OptionItemEntity> optionItems;
 
 	@Column

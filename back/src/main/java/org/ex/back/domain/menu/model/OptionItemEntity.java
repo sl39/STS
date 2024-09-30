@@ -13,6 +13,10 @@ public class OptionItemEntity {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer option_item_pk;
 
+	@ManyToOne
+	@JoinColumn(name = "menu_option_pk")
+	private MenuOptionEntity menuOption;
+
 	@Column
 	private String name;
 
