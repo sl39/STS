@@ -2,6 +2,7 @@ package org.ex.back.domain.waiting.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.ex.back.domain.fcm.FCMService;
 import org.ex.back.domain.sms.Service.KakaoService;
 import org.ex.back.domain.store.model.StoreEntity;
 import org.ex.back.domain.store.repository.StoreRepository;
@@ -29,6 +30,7 @@ public class WaitingService {
     private final WaitingRepository waitingRepository;
     private final StoreRepository storeRepository;
     private final KakaoService kakaoService;
+    private final FCMService fcmService;
 
     public WaitingResponseDto create(Integer storeId, WaitingCreateRequestDto request) {
 
@@ -50,7 +52,8 @@ public class WaitingService {
         );
 
         // 2. 판매자에게 새로운 예약건 FCM 발송
-
+        String token = store.getFcmToken();
+        fcmService.sendNotification(token, "새 예약 알림", "새로운 예약팀이 있습니다.");
         /*
 
          */
