@@ -1,117 +1,117 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
+import QRCode from 'react-native-qrcode-svg';
 import cookIcon from '../../../../../../../assets/images/cook.png';
 import readyIcon from '../../../../../../../assets/images/foodready.png';
+import { styles } from '../styles';
 
 interface OrderInProgressProps {
   onClose: () => void;
   onRefresh: () => void;
 }
 
-const OrderInProgress: React.FC<OrderInProgressProps> = ({ onClose, onRefresh }) => {
-  const [remainingTime, setRemainingTime] = useState(5);
-  const [isCompleted, setIsCompleted] = useState(false);
+interface MenuItem {
+  orderItems: Array<{ menuName: string; menuCount: number; optionItemList: string; }>;  // 주문 항목 배열
+  order_pk: string;  // 주문 고유 ID
+  orderedAt: string; 
+  totalPrice: number;  // 총 결제 금액
+  paymentMethod: 'Cash' | 'Card';
+}
 
+
+const OrderInProgress: React.FC<OrderInProgressProps> = ({ onClose, onRefresh }) => {
+  const storepk = 1; 
+  const [remainingTime, setRemainingTime] = useState(5); // 타이머 기본값 5초
+  const [isCompleted, setIsCompleted] = useState(false); // 주문 완료 상태
+  const [menuItem, setMenuItem] = useState<MenuItem | null>(null); // 메뉴 아이템 데이터
+
+  // 비동기로 데이터 불러오는 함수
+  async function getMenuItem() {
+    try {
+      const response = await fetch(`http://192.168.30.10:8080/api/order/order_no_0001`, {
+        method: 'GET',
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setMenuItem(data); // 상태 업데이트
+    } catch (error) {
+      console.error('Error fetching menu item:', error);
+    }
+  }
+
+  // 상태가 업데이트될 때마다 콘솔에 출력
   useEffect(() => {
+    console.log(menuItem); // menuItem 업데이트 후 출력
+  }, [menuItem]);
+
+  // 처음 렌더링될 때 주문 데이터 가져오기 및 타이머 시작
+  useEffect(() => {
+    getMenuItem(); // 주문 데이터 불러오기
+
     const timer = setInterval(() => {
       setRemainingTime((prevTime) => {
         if (prevTime <= 1) {
           clearInterval(timer);
-          setIsCompleted(true);
+          setIsCompleted(true); // 타이머 종료 시 주문 완료 상태로 변경
           return 0;
         }
-        return prevTime - 1;
+        return prevTime - 1; // 타이머 감소
       });
     }, 1000);
 
-    return () => clearInterval(timer);
+    return () => clearInterval(timer); // 컴포넌트가 언마운트될 때 타이머 정리
   }, []);
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={onClose}>
-          <Text style={styles.closeButton}>×</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onRefresh}>
-          <Text style={styles.refreshButton}>↻</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.content}>        
+      <View style={styles.content}>
         {isCompleted ? (
           <View style={styles.checkContainer}>
-            <Image source={cookIcon} style={styles.checkIcon} />          
+            <Image source={cookIcon} style={styles.checkIcon} />
             <Text style={styles.title}>결제가 완료되었습니다.</Text>
-            <Text style={styles.subtitle}>평균 대기 시간은 3분 정도 입니다.</Text>
-            <Text style={styles.subtitle}>주문 번호는 010-1234-5678 입니다.(이건 보여주지말까 ?)</Text>                   
-          </View>                    
+            <Text style={styles.subtitle}>평균 대기 시간은 10분 정도 입니다.</Text>
+          </View>
         ) : (
-          <>
-            <Image source={readyIcon} style={styles.checkIcon} />          
+          <View style={styles.checkContainer}>
+            <Image source={readyIcon} style={styles.checkIcon} />
             <Text style={styles.title}>주문 진행 중이에요</Text>
-            <Text style={styles.subtitle}>잠시만 기다려 주세요</Text>
-            <Text style={styles.subtitle}>잠시 후 다시 주문해 주세요</Text>
             <Text style={styles.timer}>남은시간 {remainingTime}초</Text>
-          </>
+          </View>
         )}
+      </View>
+
+      <View style={styles.recipecontainer}>
+        <View style={styles.data}>
+          <Text style={styles.title}>결제 내역</Text>
+          <Text style={styles.header}>가격</Text>
+          {menuItem ? (
+            <View>
+              <Text style={styles.header}>메뉴</Text>
+              <Text style={{textAlign:'right'}}>{menuItem.orderItems.map(item => `${item.menuName} ${item.menuCount}개 옵션: ${item.optionItemList}\n`)}</Text>
+              <Text style={styles.header}>주문일시</Text>
+              <Text style={{textAlign:'right'}}>{menuItem.orderedAt.slice(0,16)}</Text>
+              <Text style={styles.header}>총 결제금액</Text>
+              <Text style={{textAlign:'right'}}>{menuItem.totalPrice}원</Text> 
+              <Text style={styles.header}>결제방식</Text>
+              <Text>{menuItem.paymentMethod}</Text>
+            </View>
+          ) : (
+            <Text>주문 정보를 불러오는 중...</Text>
+          )}
+          <QRCode
+          value="https://www.example.com"
+          size={100}
+          color="black"
+          backgroundColor="white"
+        />
+        </View>
+
+        
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 10,
-  },
-  closeButton: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  refreshButton: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  content: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  doctorIcon: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 5,
-  },
-  timer: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 10,
-  },
-  checkIcon: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
-  },
-  checkContainer: {   
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingBottom: 50,
-  },
-});
 
 export default OrderInProgress;
