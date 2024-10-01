@@ -128,7 +128,7 @@ export const StoreList: React.FC<InputDateProps> = ({ inputData }) => {
 
 type itemData = {
   storePk: number;
-  storeImage: string;
+  storeImages: Array<string>;
   storeName: string;
   address: string;
 };
@@ -141,6 +141,7 @@ type ItemProps = {
 
 const Item = ({ item, onPress, backgroundColor, width }: ItemProps) => {
   const formattedAddress = item.address.replace("|n", "\n");
+  console.log(item.storeImages);
 
   return (
     <TouchableOpacity
@@ -148,7 +149,10 @@ const Item = ({ item, onPress, backgroundColor, width }: ItemProps) => {
       style={[{ backgroundColor: backgroundColor, width: width }]}
     >
       <View style={styles.storeContainer}>
-        <Image source={{ uri: item.storeImage }} style={styles.storeImage} />
+        <Image
+          source={{ uri: item.storeImages[0] }}
+          style={styles.storeImage}
+        />
         <View style={{ flex: 1 }}>
           <Text style={styles.storeName}>{item.storeName}</Text>
           <Text style={styles.storeAddress}>{formattedAddress}</Text>
