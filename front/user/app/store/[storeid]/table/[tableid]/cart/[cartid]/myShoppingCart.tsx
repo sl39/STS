@@ -68,7 +68,7 @@ const myShoppingCart = () => {
         setCartItems(res.data)
         console.log('장바구니 데이터2? :', res.data)
       } else {
-        const res = await apiClient.get(`/api/cart/nonuser/${cartPK}`)
+        const res = await apiClient.get(`/api/cart/nonuser/51`)
         console.log('장바구니 데이터1? : ', res.data)
         setCartItems(res.data)
         console.log('장바구니 데이터1? : ', res.data)

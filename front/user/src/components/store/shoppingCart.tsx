@@ -7,7 +7,6 @@ interface A1Props {
   cartData: cartItems;
   cartPK: number;
   cartItemId: number;
-  updateData: (newData: number) => void
 }
 interface ShoppingCarts {
   cart_pk: number;
@@ -27,7 +26,7 @@ interface cartItems {
   optionItemList : string;
 }
 
-const ShoppingCart : React.FC<A1Props> = ({ cartData, cartPK, cartItemId, updateData })  => {
+const ShoppingCart : React.FC<A1Props> = ({ cartData, cartPK, cartItemId})  => {
 
   const isMember = Platform.OS !== 'web';
 
