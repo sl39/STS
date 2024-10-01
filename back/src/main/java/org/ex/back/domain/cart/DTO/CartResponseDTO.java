@@ -1,11 +1,8 @@
 package org.ex.back.domain.cart.DTO;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.ex.back.domain.cart.model.CartEntity;
-
 import java.util.List;
 
 @Getter
@@ -41,8 +38,6 @@ public class CartResponseDTO {
         this.cartItem = collect;
     }
 
-
     //선택된 옵션 아이템 리스트 문자열 -> itemList에 들어가있음
     //private String optionItemList;
-
 }

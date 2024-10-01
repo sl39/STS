@@ -3,8 +3,6 @@ package org.ex.back.domain.menu.Controller;
 import lombok.RequiredArgsConstructor;
 import org.ex.back.domain.menu.DTO.*;
 import org.ex.back.domain.menu.Service.MenuService;
-import org.ex.back.domain.menu.Service.OptionItemService;
-import org.ex.back.domain.menu.Service.OptionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +15,7 @@ import java.util.List;
 public class MenuController {
     //Menu별 서비스 연결
     private final MenuService menuService;
-    private final OptionService optionService;
-    private final OptionItemService optionItemService;
+
 
     //판매자
     //메뉴 생성
