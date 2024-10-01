@@ -115,13 +115,15 @@ const Main = () => {
       // 일단 store_pk 받았다 생각하고 진행.
       const requestStoreInfo = async () => {
         try {
-          const res = await apiClient.get<storeInfomation>(`/api/store/38/menu`)
+          const res = await apiClient.get<storeInfomation>(`/api/store/owner/38`)
           setStoreInfo(res.data)
           setStoreImageInfo(res.data.storeImages)
         } catch(e) {
           console.log('가게 정보 요청 실패!')
         }
       }
+
+      console.log(storeInfo)
 
       // 메뉴 옵션 요청(대표메뉴)
       const requestMenuOption1 = async (menu_pk: number) => {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, ScrollView, useWindowDimensions, Image, TouchableOpacity, Button } from 'react-native';
+import { View, Text, ScrollView, useWindowDimensions, Image, TouchableOpacity, Button, Platform } from 'react-native';
 // import HorizonLine from '../../../src/utils/store/HorizontalLine';
 // import OrderList from '../../../src/components/store/OrderList'
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -90,7 +90,7 @@ return (
           <TouchableOpacity style={{width: 85, height : 30, marginRight : 10, backgroundColor:Colors.grey300}} onPress={handleMain}>
             <Text style={{textAlign:'center', justifyContent:'center', alignContent:'center'}}>메인화면</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={logOut} style={{width: 85, height : 30, marginRight : 10, backgroundColor:Colors.grey300}}>
+          <TouchableOpacity onPress={Platform.OS === 'web' ? handleMain : logOut} style={{width: 85, height : 30, marginRight : 10, backgroundColor:Colors.grey300}}>
             <Text style={{textAlign:'center', justifyContent:'center', alignContent:'center'}}>로그아웃</Text>
           </TouchableOpacity>
         </View>

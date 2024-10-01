@@ -172,8 +172,7 @@ const MenuOptions = () => {
                 console.log('비회원 장바구니 물품 추가 성공2');
                 console.log('storePk : ', store_pk, 'menuPk : ', menupk, '테이블넘버 : ', tableNumber, '총 가격 : ', totalPrice, '옵션아이템리스트 : ', optionItemList)
                 } 
-                // 장바구니 제대로 돌아가면 아래 주석처리 풀기
-                // router.push(`store/${param.storeid}`)
+                router.push(`store/${param.storeid}`)
               } else {
                 await getMemberCart()
                 console.log('회원 장바구니 조회 완료3')

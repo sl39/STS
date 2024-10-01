@@ -42,8 +42,6 @@ const myShoppingCart = () => {
 
   const param = useGlobalSearchParams();
 
-  console.log(param)
-
   const cartPK = param.cartid ? Number(param.cartid) : 0
 
   const {storeid, tableid} = useLocalSearchParams();
@@ -57,6 +55,14 @@ const myShoppingCart = () => {
   }
   // 총 가격은 amount로 줘야 함. 
   // userPk = null(비회원) / number(회원)
+
+  const [data, setData] = useState<number>(1)
+
+  const updateData = (newData: number) => {
+    setData(newData);
+};
+
+
 
   const [cartItems, setCartItems] = useState<ShoppingCarts>()
 
@@ -83,14 +89,16 @@ const myShoppingCart = () => {
     console.log('useEffec : ', cartPK)
   }, [cartPK]);
 
-  console.log('cartItems?: ', cartItems)
+  useEffect(() => {
+
+  })
 
 return (
   <ScrollView showsVerticalScrollIndicator={false}>
       <View style={{backgroundColor: '#F2F2F2',  alignItems:'center'}}>
       <View style={{backgroundColor: '#FFFFFF', width: width >= 786 ? 786 : width}}>
         <Text style={{fontSize: 40, textAlign:'center', margin: 10}}>{cartItems?.store_name}</Text>
-      {cartItems?.cartItem.map(Menu => <ShoppingCart key={Menu.cart_item_pk} cartData={Menu} cartPK={cartPK} cartItemId={Menu.cart_item_pk}/>)}
+      {cartItems?.cartItem.map(Menu => <ShoppingCart key={Menu.cart_item_pk} cartData={Menu} cartPK={cartPK} cartItemId={Menu.cart_item_pk} updateData={updateData}/>)}
     <Button style={[styles.button]} onPress={() => handleEnter()}>
       <Text style={[styles.text]}>{cartItems?.cartTotalPrice}원 결제하기</Text>
     </Button>
