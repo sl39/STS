@@ -22,10 +22,14 @@ export const FireBaseImage: React.FC<FireBaseProps> = ({
 }) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [imageUrlList, setImageUrlList] = useState<Array<string>>(imgs);
+  const [imageUrlList, setImageUrlList] = useState<Array<string>>([]);
   useEffect(() => {
     handleImages(imageUrlList);
   }, [imageUrlList]);
+
+  useEffect(() => {
+    if (imageUrlList.length !== imgs.length) setImageUrlList(imgs);
+  }, [imgs]);
 
   const handleFileInputChange = async (e: any) => {
     console.log("Loding imageStart");

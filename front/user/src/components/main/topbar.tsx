@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Searchbar } from "react-native-paper";
 import { View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { useRouter } from "expo-router";
+import { router, useRouter } from "expo-router";
 
 interface TopbarProps {
   onSearch: (word: string) => void;
@@ -21,8 +21,10 @@ export const Topbar: React.FC<TopbarProps> = ({
     setSearch(search);
   };
 
+  const router = useRouter()
+
   const profileClick = () => {
-    console.log("go to profile");
+    router.push(`./myOrderList`)
   };
 
   const searchKeyword = () => {

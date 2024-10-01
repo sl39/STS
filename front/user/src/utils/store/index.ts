@@ -1,2 +1,2 @@
-export * from './HorizontalLine'
-export * from './interface'
+export * from "./HorizontalLine";
+export * from "./interface";

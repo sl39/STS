@@ -21,7 +21,15 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "build": {
+        "babel": {
+          "presets": [
+            "module:metro-react-native-babel-preset"
+          ]
+        }
+      }
     },
     "plugins": [
       "expo-router"

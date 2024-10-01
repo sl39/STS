@@ -5,16 +5,18 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 type dayTimeProps = {
   day: string;
   setTime: (dat: string, time: string) => void;
+  time: string;
 };
 
 type timeProps = {
   isCheckd: boolean;
   setTime: (val: string) => void;
+  time: string;
 };
 
 interface DayProps {
-  handleOpen: (date: object) => void;
-  open: object;
+  handleOpen: (date: StoreOpenHours) => void;
+  open: StoreOpenHours;
 }
 
 const day: string[] = [
@@ -27,36 +29,88 @@ const day: string[] = [
   "일",
   "브레이크타임",
 ];
+
+interface StoreOpenHours {
+  월: string;
+  화: string;
+  수: string;
+  목: string;
+  금: string;
+  토: string;
+  일: string;
+  브레이크타임: string;
+}
+
 export const DayComponent: React.FC<DayProps> = ({ handleOpen, open }) => {
-  const [date, setDate] = useState<object>(open);
+  const [date, setDate] = useState<StoreOpenHours>(open);
   const setDateObject = (day: string, time: string) => {
     ///// 이쪽 파트 필요함
-    setDate({ ...date, [day]: time });
+
+    setDate((prevDate) => ({ ...prevDate, [day]: time }));
   };
   useEffect(() => {
+    console.log(date);
     handleOpen(date);
   }, [date]);
   return (
     <View style={{ gap: 15 }}>
       {day.map((d, index) => (
-        <DateTime key={index} day={d} setTime={setDateObject} />
+        <DateTime
+          key={index}
+          day={d}
+          setTime={setDateObject}
+          time={open[d as keyof StoreOpenHours]}
+        />
       ))}
     </View>
   );
 };
 
-const DateTime: React.FC<dayTimeProps> = ({ day, setTime }) => {
+const DateTime: React.FC<dayTimeProps> = ({ day, setTime, time }) => {
   const [startHour, setStartHour] = useState<string>("");
   const [startMinute, setStartMinute] = useState<string>("");
   const [endHour, setEndHour] = useState<string>("");
   const [endMinute, setEndMinute] = useState<string>("");
   const [isChecked, setChecked] = useState(false);
+  const [checkStartHour, setCheckStartHour] = useState<string>("");
+  const [checkStartMinute, setCheckStartMinute] = useState<string>("");
+  const [checkEndHour, setCheckEndHour] = useState<string>("");
+  const [checkEndMinute, setCheckEndMinute] = useState<string>("");
 
   useEffect(() => {
-    const date =
-      startHour + ":" + startMinute + " ~ " + endHour + ":" + endMinute;
-    setTime(day, date);
-  }, [startHour, startMinute, endHour, endMinute]);
+    if (isChecked) {
+      setTime(day, "정기휴무");
+    } else {
+      if (
+        startHour !== "" &&
+        startMinute !== "" &&
+        endHour !== "" &&
+        endMinute !== ""
+      ) {
+        const date =
+          startHour + ":" + startMinute + " ~ " + endHour + ":" + endMinute;
+        setTime(day, date);
+      } else {
+        setTime(day, "");
+        console.log(1);
+      }
+    }
+  }, [startHour, startMinute, endHour, endMinute, isChecked]);
+  useEffect(() => {
+    if (time === "정기휴무") {
+      setChecked(true);
+    } else if (time) {
+      const times = time.split(":");
+      setCheckStartHour(times[0] || "");
+      setCheckStartMinute(times[1] || "");
+      setCheckEndHour(times[2] || "");
+      setCheckEndMinute(times[3] || "");
+      setStartHour(times[0] || "");
+      setStartMinute(times[1] || "");
+      setEndHour(times[2] || "");
+      setEndMinute(times[3] || "");
+    }
+  }, [time]);
   return (
     <View style={{ flexDirection: "row", gap: 15 }}>
       <View style={styles.daycontainer}>
@@ -65,13 +119,29 @@ const DateTime: React.FC<dayTimeProps> = ({ day, setTime }) => {
         </Text>
       </View>
       <View style={{ flexDirection: "row", gap: 5, alignItems: "center" }}>
-        <HourInput isCheckd={isChecked} setTime={setStartHour} />
+        <HourInput
+          isCheckd={isChecked}
+          setTime={setStartHour}
+          time={checkStartHour}
+        />
         <Text style={styles.exTime}>:</Text>
-        <MinuteInput isCheckd={isChecked} setTime={setStartMinute} />
+        <MinuteInput
+          isCheckd={isChecked}
+          setTime={setStartMinute}
+          time={checkStartMinute}
+        />
         <Text style={styles.exTime}>~</Text>
-        <HourInput isCheckd={isChecked} setTime={setEndHour} />
+        <HourInput
+          isCheckd={isChecked}
+          setTime={setEndHour}
+          time={checkEndHour}
+        />
         <Text style={styles.exTime}>:</Text>
-        <MinuteInput isCheckd={isChecked} setTime={setEndMinute} />
+        <MinuteInput
+          isCheckd={isChecked}
+          setTime={setEndMinute}
+          time={checkEndMinute}
+        />
         <Checkbox
           style={{ marginLeft: 10 }}
           value={isChecked}
@@ -83,7 +153,7 @@ const DateTime: React.FC<dayTimeProps> = ({ day, setTime }) => {
   );
 };
 
-const HourInput: React.FC<timeProps> = ({ isCheckd, setTime }) => {
+const HourInput: React.FC<timeProps> = ({ isCheckd, setTime, time }) => {
   const [value, setValue] = useState<string>("");
   const handleInputChange = (input: string) => {
     // Remove any non-numeric characters
@@ -105,6 +175,9 @@ const HourInput: React.FC<timeProps> = ({ isCheckd, setTime }) => {
       setTime("");
     }
   }, [value, isCheckd]);
+  useEffect(() => {
+    setValue(time);
+  }, [time]);
 
   return (
     <View style={styles.time}>
@@ -120,7 +193,7 @@ const HourInput: React.FC<timeProps> = ({ isCheckd, setTime }) => {
   );
 };
 
-const MinuteInput: React.FC<timeProps> = ({ isCheckd, setTime }) => {
+const MinuteInput: React.FC<timeProps> = ({ isCheckd, setTime, time }) => {
   const [value, setValue] = useState<string>("");
   const handleInputChange = (input: string) => {
     // Remove any non-numeric characters
@@ -142,6 +215,9 @@ const MinuteInput: React.FC<timeProps> = ({ isCheckd, setTime }) => {
       setTime("");
     }
   }, [value, isCheckd]);
+  useEffect(() => {
+    setValue(time);
+  }, [time]);
 
   return (
     <View style={styles.time}>

@@ -1,5 +1,5 @@
 import { CheckBox } from '@rneui/themed'
-import React, {forwardRef} from 'react'
+import React, {forwardRef, useState} from 'react'
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import { Checkbox } from 'react-native-paper'
 
@@ -8,6 +8,7 @@ const subject_name = '새우튀김'
 const subject_price = 3000
 
 type OptionProps = {
+  menu_pk : number,
   minCount: number,
   maxCount: number,
   subjectName: string;
@@ -16,7 +17,9 @@ type OptionProps = {
   onCheck: () => void;
 };
 
-const OptionList: React.FC<OptionProps> = ({ minCount, maxCount, subjectName, subjectPrice, isChecked, onCheck }) => {
+const OptionList: React.FC<OptionProps> = ({menu_pk, minCount, maxCount, subjectName, subjectPrice, isChecked, onCheck }) => {
+
+  // const [isChecked, setIsChecked] = useState(false)
 
   // 필수 아이콘 이미지 결정
   const requiredIcon = minCount > 0
@@ -48,42 +51,3 @@ const OptionList: React.FC<OptionProps> = ({ minCount, maxCount, subjectName, su
 
 
 export default OptionList
-
-// import React from 'react'
-// import { View, Text, Image } from 'react-native'
-
-// const subject = "사이드"
-// const subject_name = "새우튀김"
-// const subject_price = 3000
-
-// type OptionProps = {
-//   isRequired: boolean;
-//   subject: string;
-//   subjectName: string;
-//   subjectPrice: number;
-//   isChecked: boolean;
-//   onCheck: () => void;
-// };
-
-// const OptionList: React.FC<OptionProps> = ({ isRequired, subject, subjectName, subjectPrice, isChecked, onCheck }) =>  {
-//     return (
-//         <View>
-//           <View style={{flexDirection:'row'}}>
-//         <Text style={{marginLeft:20, fontSize:20}}>{subject}</Text>
-//         {isRequired && (
-//           <Image
-//             source={{ uri: '../../../assets/Must.jpg' }}
-//           /> )}
-//           </View>
-//         <View style={{flexDirection:'row', marginRight: 'auto'}}>
-//         <input type='checkbox' style={{marginLeft:30}}></input>
-//           <Text style={{marginLeft:10}}>{subject_name} </Text>
-//           <Text style={{marginLeft:300}}>+{subject_price}원</Text>
-//         </View>
-//         </View>
-//     )
-// }
-
-
-
-// export default OptionList
