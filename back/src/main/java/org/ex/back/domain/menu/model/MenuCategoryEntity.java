@@ -29,4 +29,5 @@ public class MenuCategoryEntity {
 	
 	@Column
 	private String subject;
+
 }

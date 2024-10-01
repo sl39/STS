@@ -35,6 +35,7 @@ public class OptionItemService {
 
             //옵션 아이템 엔티티 내용을 넣은뒤 추가
             OptionItemEntity optionItemEntity = new OptionItemEntity();
+            optionItemEntity.setMenuOption(option);
             optionItemEntity.setName(request.getName());
             optionItemEntity.setExtraPrice(request.getExtraPrice());
 

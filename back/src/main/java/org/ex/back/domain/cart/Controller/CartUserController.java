@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class CartUserController {
 
-    private final CartService cartService;
     private final MenuService menuService;
+    private final CartService cartService;
 
     // 회원 - 장바구니 pk 조회
     @GetMapping("/api/cart/user")
