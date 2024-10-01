@@ -1,9 +1,11 @@
+import axios from "axios";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
   Button,
   Image,
+  Platform,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -13,19 +15,46 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
+import { api, apiRequest, getCookie } from "../../api/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // contact me :)
 // instagram: must_ait6
 // email : mustapha.aitigunaoun@gmail.com
 
+type Login = {
+  id: string;
+  password: string;
+};
+
 export function Login() {
-  const [click, setClick] = useState(false);
+  const API_URL = process.env.API_URL;
+
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-  const handleMain = () => {
-    router.push("/main");
+
+  const handleMain = async () => {
+    const data: Login = {
+      id: username,
+      password: password,
+    };
+    try {
+      const res = await apiRequest(
+        API_URL + "/api/auth/owner/login",
+        "POST",
+        data,
+        true
+      );
+      // 가게가 있는지 체크 하는 부분
+      if (res.status === 200) {
+        router.push("/main");
+      }
+    } catch (e) {
+      console.log(e);
+      alert("아이디와 비밀번호를 확인해 주세요");
+    }
   };
+
   const handleSignup = () => {
     router.push("/signup");
   };

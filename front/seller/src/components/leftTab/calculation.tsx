@@ -1,39 +1,79 @@
 import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, View, Button } from "react-native";
 import { Text } from "react-native";
+import { useStore } from "../../context/StoreContext";
+import { api } from "../../api/api";
+import { useMessaging } from "../../context/MessagingContext";
 
 interface CalculationProp {
   val: boolean;
   date: string | null;
 }
 
+const API_URL = process.env.API_URL;
 export const Calculation: React.FC<CalculationProp> = ({ val, date }) => {
-  console.log(date);
-  const [orderList, setOrderList] = useState<Array<Order>>([
-    {
-      store_pk: 1,
-      order_pk: "ORD12345",
-      tableNumber: "5",
-      totalPrice: 45000,
-      paymentType: "Credit Card",
-      isPaidAll: true,
-      isClear: false,
-      orderedAt: "2024-09-19T12:34:56",
-    },
-    {
-      store_pk: 2,
-      order_pk: "ORD12346",
-      tableNumber: "10",
-      totalPrice: 30000,
-      paymentType: "Cash",
-      isPaidAll: false,
-      isClear: false,
-      orderedAt: "2024-09-19T13:22:10",
-    },
-  ]);
+  const [orderList, setOrderList] = useState<Array<Order>>([]);
+  // const { storePk } = useStore();
+  const { newOrder } = useMessaging();
+  const storePk = 20;
+  useEffect(() => {
+    const getOrderList = async () => {
+      let url = "";
+      if (val && date)
+        url = API_URL + `/api/order/${storePk}/complete?date=${date}`;
+      else if (val) url = API_URL + `/api/order/${storePk}/complete`;
+      else url = API_URL + `/api/order/${storePk}/incomplete`;
+      try {
+        const res = await api<Array<Order>>(url, "GET", null);
+        let orders = res.data;
+        orders =
+          orders?.sort(
+            (a, b) =>
+              new Date(b.orderedAt).getTime() - new Date(a.orderedAt).getTime()
+          ) || [];
 
-  const removeOrder = (order_pk: string) => {
-    setOrderList((prev) => prev.filter((order) => order.order_pk !== order_pk));
+        setOrderList(orders || []);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    if (storePk) getOrderList();
+  }, [storePk, val, date]);
+
+  const removeOrder = async (order_pk: string) => {
+    try {
+      await api(
+        API_URL + `/api/order/${storePk}/incomplete/${order_pk}/refund`,
+        "PUT",
+        null
+      );
+      setOrderList((prev) =>
+        prev.filter((order) => order.order_pk !== order_pk)
+      );
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useEffect(() => {
+    console.log(newOrder);
+    if (!val && newOrder) {
+      setOrderList((prev) => [newOrder, ...prev]);
+    }
+  }, [val, newOrder]);
+
+  const onClear = async (order_pk: string) => {
+    try {
+      await api(
+        API_URL + `/api/order/${storePk}/incomplete/${order_pk}/isClear`,
+        "PUT",
+        null
+      );
+      setOrderList((prev) =>
+        prev.filter((order) => order.order_pk !== order_pk)
+      );
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -45,16 +85,25 @@ export const Calculation: React.FC<CalculationProp> = ({ val, date }) => {
         marginTop: 3,
       }}
     >
-      <View style={styles.container}>
-        <FlatList
-          data={orderList} // 업데이트된 orderList 사용
-          keyExtractor={(item) => item.order_pk}
-          renderItem={({ item }) => (
-            <OrderItem item={item} onRemove={removeOrder} />
-          )}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-        />
-      </View>
+      {!orderList || orderList.length == 0 ? (
+        <Text>오늘 주문 내역이 없습니다</Text>
+      ) : (
+        <View style={styles.container}>
+          <FlatList
+            data={orderList} // 업데이트된 orderList 사용
+            keyExtractor={(item) => item.order_pk}
+            renderItem={({ item }) => (
+              <OrderItem
+                item={item}
+                onRemove={removeOrder}
+                onClear={onClear}
+                val={val}
+              />
+            )}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+          />
+        </View>
+      )}
     </View>
   );
 };
@@ -67,35 +116,62 @@ type Order = {
   tableNumber: string;
   totalPrice: number;
   paymentType: string;
-  isPaidAll: boolean;
-  isClear: boolean;
-  orderedAt: string;
+  orderedAt: Date;
+  orderItems: [
+    {
+      menuName: string;
+      menuCount: number;
+      optionltemList: string;
+    }
+  ];
 };
 
 type OrderItemProps = {
   item: Order;
+  onClear: (order_pk: string) => void;
   onRemove: (order_pk: string) => void;
+  val: boolean;
 };
 
-const OrderItem: React.FC<OrderItemProps> = ({ item, onRemove }) => (
+const OrderItem: React.FC<OrderItemProps> = ({
+  item,
+  onRemove,
+  onClear,
+  val,
+}) => (
   <View style={styles.itemContainer}>
     <View>
       <Text>{item.tableNumber} 번 테이블</Text>
       <Text>결제 금액: {item.totalPrice}원</Text>
       <Text>결제 유형: {item.paymentType}</Text>
       <Text>{new Date(item.orderedAt).toLocaleString()}</Text>
+
+      <View style={{ marginTop: 10 }}>
+        <Text>주문내역</Text>
+        {item.orderItems.map((element, index) => (
+          <View key={index} style={{ flexDirection: "row", gap: 5 }}>
+            <Text>{element.menuName} |</Text>
+            <Text>{element.optionltemList} |</Text>
+            <Text>{element.menuCount}</Text>
+          </View>
+        ))}
+      </View>
     </View>
-    <View style={{ flexDirection: "row", gap: 5, justifyContent: "flex-end" }}>
-      <Button
-        title="주문취소"
-        color={"red"}
-        onPress={() => onRemove(item.order_pk)} // 주문취소 클릭 시 해당 항목 삭제
-      />
-      <Button
-        title="요리완료"
-        onPress={() => onRemove(item.order_pk)} // 요리완료 클릭 시 해당 항목 삭제
-      />
-    </View>
+    {!val && (
+      <View
+        style={{ flexDirection: "row", gap: 5, justifyContent: "flex-end" }}
+      >
+        <Button
+          title="주문취소"
+          color={"red"}
+          onPress={() => onRemove(item.order_pk)} // 주문취소 클릭 시 해당 항목 삭제
+        />
+        <Button
+          title="요리완료"
+          onPress={() => onClear(item.order_pk)} // 요리완료 클릭 시 해당 항목 삭제
+        />
+      </View>
+    )}
   </View>
 );
 

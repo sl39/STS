@@ -1,15 +1,63 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Switch } from "react-native";
 import { StyleSheet, Text, View } from "react-native";
+import { useMessaging } from "../../context/MessagingContext";
+import { useStore } from "../../context/StoreContext";
+import { api } from "../../api/api";
 
 interface Toptab {
   title: string;
 }
+interface Waiting {
+  waitingPk: number;
+  storePk: number;
+  phone: string;
+  headCount: number; //인원수
+  waitingState: String; //아래 설명
+  waitingOrder: number; //가게별 대기번호
+}
+
+const API_URL = process.env.API_URL;
 
 export const TopTab: React.FC<Toptab> = ({ title }) => {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
-  const [ready, setReady] = useState<number>(0);
+  const [ready, setReady] = useState<Array<Waiting>>([]);
+  const { newDate } = useMessaging();
+  // const { storePk } = useStore();
+  const storePk = 20;
+  useEffect(() => {
+    if (storePk) {
+      const waiting = async () => {
+        const res = await api<Array<Waiting>>(
+          API_URL + `/api/waiting/store/${storePk}`,
+          "GET"
+        );
+        console.log(res.data);
+        setReady(
+          res.data?.filter((item) => item.waitingState === "STANDBY") || []
+        );
+      };
+      waiting();
+    }
+  }, [newDate, storePk]);
+  const handleTeams = async () => {
+    if (ready.length > 0 && storePk) {
+      try {
+        const res = await api(
+          API_URL + `/api/waiting/${ready[0].waitingPk}`,
+          "PATCH",
+          {
+            waitingState: "ENTRANCE",
+          }
+        );
+        console.log(res);
+        setReady((prev) => prev.filter((item, index) => index !== 0));
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -27,9 +75,9 @@ export const TopTab: React.FC<Toptab> = ({ title }) => {
               />
             </View>
             {isEnabled && (
-              <Text style={{ fontSize: 20 }}>대기팀 : {ready}명</Text>
+              <Text style={{ fontSize: 20 }}>대기팀 : {ready.length}명</Text>
             )}
-            {isEnabled && <Button title="다음팀 입장" />}
+            {isEnabled && <Button title="다음팀 입장" onPress={handleTeams} />}
           </View>
         ) : null}
       </View>

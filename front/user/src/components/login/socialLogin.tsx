@@ -7,10 +7,12 @@ import {
   useWindowDimensions,
   TextInput,
   Button,
+  Platform,
 } from "react-native";
 import KakaoImage from "../../../assets/images/ic-login-kakao.svg";
 import NaverImage from "../../../assets/images/ic-login-naver.svg";
 import GoogleImage from "../../../assets/images/ic-login-google.svg";
+import { handleOAuthLogin } from "../../login/oauthLogin";
 
 const MAINIMAGE = require("../../../assets/images/icon.png");
 
@@ -20,13 +22,13 @@ export const SocialLogin = () => {
 
   const [textNum, setTextNum] = useState("");
   const kakaoClick = () => {
-    console.log("카카오");
+    handleOAuthLogin("kakao");
   };
   const naverClick = () => {
-    console.log("네이버");
+    handleOAuthLogin("naver");
   };
   const googleClick = () => {
-    console.log("구글");
+    handleOAuthLogin("google");
   };
 
   return (

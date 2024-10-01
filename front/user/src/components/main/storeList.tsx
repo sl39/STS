@@ -8,20 +8,81 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView, Text, TouchableOpacity } from "react-native";
+import { api } from "../../login/api";
+import { ask, getLocation } from "./location";
 
 interface InputDateProps {
   inputData: { type: number; val: string };
 }
-
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 export const StoreList: React.FC<InputDateProps> = ({ inputData }) => {
   const { height, width } = useWindowDimensions();
-  const { type, val } = inputData;
   const [storeList, setStoreList] = useState<itemData[]>([]);
   const [numColumns, setNumColumns] = useState<number>(1);
   const router = useRouter();
-  const handleEnter = (storepk : number) => {
+
+  const [locationPermission, setLocationPermission] = useState<boolean>(false);
+  const [lat, setLat] = useState(35.1580036);
+  const [lng, setLng] = useState(129.0667028);
+
+  const handleEnter = (storepk: number) => {
     router.push(`/store/${storepk}`);
   };
+  const getStoreList = async () => {
+    console.log(API_URL);
+    if (inputData) {
+      if (inputData.type === 1) {
+        // keyword로 검색
+        try {
+          const res = await api<Array<itemData>>(
+            API_URL +
+              `/api/store/user/search?query=${inputData.val}&lat=${lat}&lng=${lng}`,
+            "GET",
+            null
+          );
+          console.log(res.data);
+          setStoreList(res.data || []);
+        } catch (e) {
+          console.log(e);
+        }
+      } else if (inputData.type === 2) {
+        // category로 검색
+        try {
+          console.log(lat, lng);
+          const res = await api<Array<itemData>>(
+            API_URL +
+              `/api/store/user/category/${inputData.val}?&lat=${lat}&lng=${lng}`,
+            "GET",
+            null
+          );
+          console.log(res.data);
+          setStoreList(res.data || []);
+        } catch (e) {
+          console.log(e);
+        }
+      }
+    }
+  };
+  const permmit = async () => {
+    const per = await ask();
+    if (per) {
+      setLocationPermission(true);
+      const { latitude, longitude } = await getLocation();
+      setLat(latitude);
+      setLng(longitude);
+    }
+    return per;
+  };
+
+  const getStoreListLocation = async () => {
+    const per = await permmit();
+    if (per) {
+      getStoreList();
+    }
+  };
+  useEffect(() => {
+    permmit();
+  }, []);
   useEffect(() => {
     if (width >= 768) {
       setNumColumns(2);
@@ -30,30 +91,19 @@ export const StoreList: React.FC<InputDateProps> = ({ inputData }) => {
     }
   }, [width]);
 
-  const store = {
-    storePk: 1,
-    storeImage:
-      "https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20240723_36%2F1721719991223QOQ3E_JPEG%2F%25B9%25E9%25BC%25D2%25C1%25A4_IMG_29.jpg",
-
-    storeName: "백소정 센텀점",
-    address: "부산 해운대구 센텀동로 35 103호",
-    info: "부산 센텀 맛집, 백소정 센텀점을 찾아주셔서 감사합니다^^",
-  };
-
   useEffect(() => {
-    const arr: itemData[] = [];
-    for (let i = 0; i < type * 5; i++) {
-      const newStore = { ...store, storePk: i };
-      arr.push(newStore);
+    if (locationPermission) {
+      getStoreList();
+    } else {
+      getStoreListLocation();
     }
-    setStoreList(arr);
-  }, [type]);
+  }, [inputData]);
   const renderItem = ({ item }: { item: itemData }) => {
     return (
       <Item
         item={item}
         onPress={() => {
-          handleEnter(item.storePk)
+          handleEnter(item.storePk);
         }}
         backgroundColor={"#FFFFFF"}
         width={width >= 768 ? 384 : width}
@@ -61,7 +111,7 @@ export const StoreList: React.FC<InputDateProps> = ({ inputData }) => {
     );
   };
 
-  return type !== 0 ? (
+  return inputData && inputData.type !== 0 ? (
     <SafeAreaView style={{ marginTop: 10, flex: 1 }}>
       <FlatList
         scrollEnabled={true}
@@ -78,10 +128,9 @@ export const StoreList: React.FC<InputDateProps> = ({ inputData }) => {
 
 type itemData = {
   storePk: number;
-  storeImage: string;
+  storeImages: Array<string>;
   storeName: string;
   address: string;
-  info: string;
 };
 type ItemProps = {
   item: itemData;
@@ -90,21 +139,28 @@ type ItemProps = {
   width: number;
 };
 
-const Item = ({ item, onPress, backgroundColor, width }: ItemProps) => (
-  <TouchableOpacity
-    onPress={onPress}
-    style={[{ backgroundColor: backgroundColor, width: width }]}
-  >
-    <View style={styles.storeContainer}>
-      <Image source={{ uri: item.storeImage }} style={styles.storeImage} />
-      <View style={{ flex: 1 }}>
-        <Text style={styles.storeName}>{item.storeName}</Text>
-        <Text style={styles.storeAddress}>{item.address}</Text>
-        <Text style={styles.storeInfo}>{item.info}</Text>
+const Item = ({ item, onPress, backgroundColor, width }: ItemProps) => {
+  const formattedAddress = item.address.replace("|n", "\n");
+  console.log(item.storeImages);
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={[{ backgroundColor: backgroundColor, width: width }]}
+    >
+      <View style={styles.storeContainer}>
+        <Image
+          source={{ uri: item.storeImages[0] }}
+          style={styles.storeImage}
+        />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.storeName}>{item.storeName}</Text>
+          <Text style={styles.storeAddress}>{formattedAddress}</Text>
+        </View>
       </View>
-    </View>
-  </TouchableOpacity>
-);
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   storeContainer: {
