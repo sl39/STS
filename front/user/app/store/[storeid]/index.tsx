@@ -351,7 +351,7 @@ const Main = () => {
     if(isWeb) {
       const cartPk = await AsyncStorage.getItem('cart_pk')
       apiClient.get(`api/cart/nonuser/${cartPk}`)
-      router.push(`store/${param.storeid}/table/1/cart/${cartPk}/myShoppingCart`);
+      router.push(`store/38/table/1/cart/51/myShoppingCart`);
     } else {
       const cartPk = await apiClient.get(`/api/cart/user`)
       apiClient.get(`api/cart/user/${cartPk}`)
@@ -546,7 +546,7 @@ const Main = () => {
     <View style={{backgroundColor: '#F2F2F2', flex: 1, alignItems:'center'}}>
       <View style={{backgroundColor: '#FFFFFF', width: width >= 786 ? 786 : '100%'}}>
       <View style={{ width: '100%', margin: 'auto' }}>
-      {storeInfo ? (
+      {/* {storeInfo ? (
       <Swiper style={{width: '100%', height: 200}}
         horizontal={true}
         loop={true}
@@ -556,7 +556,7 @@ const Main = () => {
             <Image source={{ uri: imageUrl }} style={{width: '100%', height: 200, resizeMode:'stretch'}}/>
           </View>
         ))}
-      </Swiper> ) : (<Text>loading.....</Text>) }
+      </Swiper> ) : (<Text>loading.....</Text>) } */}
       </View>
       <View>
       <Text style={{fontSize:30, margin: 10}}>{storeInfo?.storeName}</Text>

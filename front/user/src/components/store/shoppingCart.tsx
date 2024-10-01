@@ -7,7 +7,6 @@ interface A1Props {
   cartData: cartItems;
   cartPK: number;
   cartItemId: number;
-  updateData: (newData: number) => void
 }
 interface ShoppingCarts {
   cart_pk: number;
@@ -27,7 +26,7 @@ interface cartItems {
   optionItemList : string;
 }
 
-const ShoppingCart : React.FC<A1Props> = ({ cartData, cartPK, cartItemId, updateData })  => {
+const ShoppingCart : React.FC<A1Props> = ({ cartData, cartPK, cartItemId})  => {
 
   const isMember = Platform.OS !== 'web';
 
@@ -46,7 +45,7 @@ const ShoppingCart : React.FC<A1Props> = ({ cartData, cartPK, cartItemId, update
       if(isMember) {
         if (currentNumber > 1) {
           setCurrentNumber(newNumber)
-          updateData(newNumber)
+          
           apiClient.patch(`/api/cart/user/${cartPK}/cartItem/${cartItemId}`, {menuCount : currentNumber})
           console.log('장바구니 수량 - data user', currentNumber)
       } else if (currentNumber === 1) {
@@ -55,7 +54,6 @@ const ShoppingCart : React.FC<A1Props> = ({ cartData, cartPK, cartItemId, update
       } } else {
         if (currentNumber > 1) {
           setCurrentNumber(newNumber)
-          updateData(newNumber)
           apiClient.patch(`/api/cart/nonuser/${cartPK}/cartItem/${cartItemId}`, {menuCount : currentNumber})
           console.log('장바구니 수량 - data non', currentNumber)
       } else if (currentNumber === 1) {
