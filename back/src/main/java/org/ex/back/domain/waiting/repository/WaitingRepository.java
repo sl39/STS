@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface WaitingRepository extends JpaRepository<WaitingEntity, Integer> {
 
-    List<WaitingEntity> findAllByStore(StoreEntity store);
+    List<WaitingEntity> findAllByStoreOrderByOrderQueueAsc(StoreEntity store);
 
     // 웨이팅 리스트 오름차순으로 정렬해서 반환
     @Query(value = "SELECT w FROM WaitingEntity w " +

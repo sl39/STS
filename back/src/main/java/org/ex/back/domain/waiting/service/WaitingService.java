@@ -64,7 +64,7 @@ public class WaitingService {
         StoreEntity store = storeRepository.findById(storeId).orElseThrow(() -> new CustomException(ErrorCode.STORE_NOT_FOUND));
 
         // 2. storeId 별로 모든 건 리스트 조회
-        List<WaitingEntity> entities = waitingRepository.findAllByStore(store);
+        List<WaitingEntity> entities = waitingRepository.findAllByStoreOrderByOrderQueueAsc(store);
 
         // 3. dto 반환
         return entities.stream().map(WaitingEntity::toDto).collect(Collectors.toList());
