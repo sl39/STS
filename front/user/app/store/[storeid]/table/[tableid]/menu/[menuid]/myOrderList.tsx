@@ -1,10 +1,13 @@
 import React from 'react'
 import { View, Text, ScrollView, useWindowDimensions, Image, TouchableOpacity, Button } from 'react-native';
-import HorizonLine from '../../../src/utils/store/HorizontalLine';
-import OrderList from '../../../src/components/store/OrderList'
+// import HorizonLine from '../../../src/utils/store/HorizontalLine';
+// import OrderList from '../../../src/components/store/OrderList'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGlobalSearchParams, useRouter } from 'expo-router';
 import {MD2Colors as Colors} from 'react-native-paper'
+import axios from 'axios';
+import HorizonLine from '../../../../../../../src/utils/store/HorizontalLine';
+import OrderList from '../../../../../../../src/components/store/OrderList';
 
 const imageUrl='https://search.pstatic.net/common/?src=https%3A%2F%2Fldb-phinf.pstatic.net%2F20240730_266%2F1722342582932jnQFn_JPEG%2FKakaoTalk_20240730_212808944_01.jpg'
 const nickname='STS'
@@ -42,7 +45,9 @@ const OrderLists = [
       },
 ]
 
-
+const apiClient = axios.create({
+  baseURL: 'http://192.168.30.10:8080',
+});
 
 function myOrderList() {
   
@@ -51,11 +56,20 @@ function myOrderList() {
   const param = useGlobalSearchParams();
   const router = useRouter();
 
-  const handlePaymentRequest = () => {
+  const handleOrderDetail = () => {
     router.push(`store/${param.storeid}/myDetailOrderList`);
   };
 
-return (  
+  const handleMain = () => {
+    router.push(`main`);
+  };
+
+  const logOut = async () => {
+    await apiClient.post(`/api/auth/logout`)
+    router.push(`main`)
+  }
+
+return (
   <ScrollView showsVerticalScrollIndicator={false}>
     <View style={{backgroundColor: '#F2F2F2', flex: 1, alignItems:'center'}}>
       <View style={{backgroundColor: '#FFFFFF', width: width >= 786 ? 786 : width}}>
@@ -68,8 +82,11 @@ return (
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'flex-start' }}>
           <Text >{nickname}</Text>
         </View>
-        <View style={{ justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-          <TouchableOpacity style={{width: 85, height : 30, marginRight : 10, backgroundColor:Colors.grey300}}>
+        <View style={{ justifyContent: 'flex-end', alignItems: 'flex-end', flexDirection:'row' }}>
+          <TouchableOpacity style={{width: 85, height : 30, marginRight : 10, backgroundColor:Colors.grey300}} onPress={handleMain}>
+            <Text style={{textAlign:'center', justifyContent:'center', alignContent:'center'}}>메인화면</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={logOut} style={{width: 85, height : 30, marginRight : 10, backgroundColor:Colors.grey300}}>
             <Text style={{textAlign:'center', justifyContent:'center', alignContent:'center'}}>로그아웃</Text>
           </TouchableOpacity>
         </View>
@@ -83,10 +100,10 @@ return (
             )}
           </View>
       </View>
-      <Button onPress={handlePaymentRequest} title='주문내역 디테일창 가기'/>
+      <Button onPress={handleOrderDetail} title='주문내역 디테일창 가기'/>
     </View>
   </ScrollView>
-)
+  )
 }
 
 export default myOrderList

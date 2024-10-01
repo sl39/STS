@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 export default function index() {
   const router = useRouter();
   const handleEnter = () => {
-    router.push("/store/1");
+    router.push("/store/38");
   };
   const { height, width } = useWindowDimensions();
 
