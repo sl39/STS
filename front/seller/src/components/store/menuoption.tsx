@@ -104,8 +104,13 @@ export const MenuOption: React.FC<MenuOption> = ({
       )
     );
   };
-  const deleteOptionCate = (pk: number) => {
-    setOption((prev) => prev.filter((e) => e.menu_option_pk != pk));
+  const deleteOptionCate = async (pk: number) => {
+    try {
+      const res = await api(API_URL + `/api/option/${pk}`, "DELETE", null);
+      setOption((prev) => prev.filter((e) => e.menu_option_pk != pk));
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const handleImage = (img: Array<string>) => {

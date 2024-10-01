@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { OptionListProps, OptionProps, OptionRequest } from "./type";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "react-native";
 import { OptionDetail } from "./optionDetail";
 import { api } from "../../api/api";
@@ -28,6 +28,9 @@ export const OptionCategory: React.FC<OptionDetailProps> = ({
     name: "",
     extraPrice: 0,
   });
+  useEffect(() => {
+    console.log(val.optionItems);
+  }, [val]);
 
   const addNewOptionItem = async () => {
     const form: OptionRequest = {
@@ -41,14 +44,17 @@ export const OptionCategory: React.FC<OptionDetailProps> = ({
         form
       );
       const newForm = res.data;
+      console.log(newForm, val.menu_option_pk);
 
-      if (newForm) setNewOptionItem([...newOptionItem, newForm]);
-      setOption({
-        option_item_pk: Math.round(Math.random() * 100000),
-        name: "",
-        extraPrice: 0,
-      });
-      setIsOption(false);
+      if (newForm) {
+        setNewOptionItem([...newOptionItem, newForm]);
+        setOption({
+          option_item_pk: Math.round(Math.random() * 100000),
+          name: "",
+          extraPrice: 0,
+        });
+        setIsOption(false);
+      }
     } catch (e) {
       console.log(e);
     }

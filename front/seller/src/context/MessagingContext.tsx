@@ -12,6 +12,7 @@ import { api } from "../api/api";
 
 interface MessagingContextProps {
   newOrder: Order | null;
+  newDate: Date | null;
 }
 type Order = {
   store_pk: number;
@@ -44,6 +45,7 @@ export const MessagingProvider: React.FC<StoreProviderProps> = ({
   children,
 }) => {
   const [newOrder, setNewOrder] = useState<Order | null>(null);
+  const [newDate, setNewDate] = useState<Date | null>(null);
   const { storePk } = useStore();
 
   async function handleAllowNotification() {
@@ -59,6 +61,7 @@ export const MessagingProvider: React.FC<StoreProviderProps> = ({
           vapidKey: VAPID_PUBLIC_KEY,
         });
         if (token) {
+          console.log(token);
           try {
             const res = await api(
               API_URL + "/api/order/token/" + storePk,
@@ -80,19 +83,26 @@ export const MessagingProvider: React.FC<StoreProviderProps> = ({
         onMessage(messaging, (payload) => {
           let orderData: Order;
           let data: MyData | null = payload.data || null;
+          console.log(payload);
+          if (data?.title === "새 주문 알림") {
+            if (typeof data?.body === "string") {
+              // payload.data가 문자열이라면 JSON.parse 실행
+              orderData = JSON.parse(data.body) as Order;
+            } else {
+              // 이미 객체일 경우 그대로 사용
+              orderData = data?.body as unknown as Order;
+            }
+            setNewOrder((prev) => orderData);
 
-          // payload.data가 문자열이라면 JSON.parse 실행
-          if (typeof data?.body === "string") {
-            orderData = JSON.parse(data.body) as Order;
+            // Notification API를 사용하여 알림 표시
+            if (Notification.permission === "granted") {
+              new Notification("주문이 들어왔습니다");
+            }
           } else {
-            // 이미 객체일 경우 그대로 사용
-            orderData = data?.body as unknown as Order;
-          }
-          setNewOrder((prev) => orderData);
-
-          // Notification API를 사용하여 알림 표시
-          if (Notification.permission === "granted") {
-            new Notification("주문이 들어왔습니다");
+            setNewDate(new Date());
+            if (Notification.permission === "granted") {
+              new Notification("예약이 들어왔습니다");
+            }
           }
         });
       } else if (permission === "denied") {
@@ -112,7 +122,7 @@ export const MessagingProvider: React.FC<StoreProviderProps> = ({
   }, [storePk]);
 
   return (
-    <MessagingContext.Provider value={{ newOrder }}>
+    <MessagingContext.Provider value={{ newOrder, newDate }}>
       {children}
     </MessagingContext.Provider>
   );
