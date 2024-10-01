@@ -98,7 +98,7 @@ return (
       <View style={{backgroundColor: '#F2F2F2',  alignItems:'center'}}>
       <View style={{backgroundColor: '#FFFFFF', width: width >= 786 ? 786 : width}}>
         <Text style={{fontSize: 40, textAlign:'center', margin: 10}}>{cartItems?.store_name}</Text>
-      {cartItems?.cartItem.map(Menu => <ShoppingCart key={Menu.cart_item_pk} cartData={Menu} cartPK={cartPK} cartItemId={Menu.cart_item_pk} updateData={updateData}/>)}
+      {cartItems?.cartItem.map(Menu => <ShoppingCart key={Menu.cart_item_pk} cartData={Menu} cartPK={cartPK} cartItemId={Menu.cart_item_pk}/>)}
     <Button style={[styles.button]} onPress={() => handleEnter()}>
       <Text style={[styles.text]}>{cartItems?.cartTotalPrice}원 결제하기</Text>
     </Button>

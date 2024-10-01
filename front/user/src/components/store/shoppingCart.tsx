@@ -3,7 +3,7 @@ import react, { useEffect, useState } from 'react'
 import { TouchableOpacity, View, Text, StyleSheet, useWindowDimensions, Image, Platform } from 'react-native'
 import { MD2Colors as Colors} from 'react-native-paper';
 
-interface A1Props {
+interface cartData {
   cartData: cartItems;
   cartPK: number;
   cartItemId: number;
@@ -26,7 +26,7 @@ interface cartItems {
   optionItemList : string;
 }
 
-const ShoppingCart : React.FC<A1Props> = ({ cartData, cartPK, cartItemId})  => {
+const ShoppingCart : React.FC<cartData> = ({ cartData, cartPK, cartItemId})  => {
 
   const isMember = Platform.OS !== 'web';
 
