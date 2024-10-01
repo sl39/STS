@@ -86,7 +86,7 @@ public class OrderService {
 
         return orderRepository.save(orderEntity);
     }
-
+    // fcm 데이터 양식
     public StoreOrderListResponseDTO getOrder(OrderEntity createdOrder) {
 
                 List<OrderItemCheckDTO> orderItems = createdOrder.getOrderItems().stream()

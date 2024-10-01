@@ -54,9 +54,6 @@ public class WaitingService {
         // 2. 판매자에게 새로운 예약건 FCM 발송
         String token = store.getFcmToken();
         fcmService.sendNotification(token, "새 예약 알림", "새로운 예약팀이 있습니다.");
-        /*
-
-         */
 
         return entity.toDto();
     }
