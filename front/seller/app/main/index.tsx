@@ -1,10 +1,13 @@
-import { Link, useRouter } from "expo-router";
-import { Text, View } from "react-native";
+import { useEffect } from "react";
+import Main from "../../src/components/common/main";
+import { StoreProvider } from "../../src/context/StoreContext";
+
+const VAPID_PUBLIC_KEY = process.env.VAPID_KEY;
 
 export default function index() {
   return (
-    <View>
-      <Text> main 화면 입니다</Text>
-    </View>
+    <StoreProvider>
+      <Main />
+    </StoreProvider>
   );
 }

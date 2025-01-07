@@ -33,3 +33,9 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+fierbaseConfig.js
+firebaseMessagingConfig.js
+.env
+firebase-messagin-sw.js
+firebase-messaging-sw.js
